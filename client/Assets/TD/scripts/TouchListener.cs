@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class TouchListener : MonoBehaviour
 {
-    private string ChooseCircleTagName = "chooseCircle";
+    private const string ChooseCircleTagName = "chooseCircle";
     private const string TowerTagName = "Tower";
     // Use this for initialization
     private void Start()
     {
+        _sidePanel.SetActive(false);
+        _humburgerButton.SetActive(true);
     }
 
     // Update is called once per frame
@@ -50,6 +52,20 @@ public class TouchListener : MonoBehaviour
             if (circleRenderer != null)
                 circleRenderer.enabled = !circleRenderer.enabled; 
         }
+    }
+
+    public void BackToMenu()
+    {
+        Application.LoadLevel("MainMenu");
+    }
+
+    public GameObject _humburgerButton;
+    public GameObject _sidePanel;
+
+    public void ProcessHamburgerButton()
+    {
+        _humburgerButton.SetActive(!_humburgerButton.activeSelf);
+        _sidePanel.SetActive(!_sidePanel.activeSelf);
     }
 }
 
