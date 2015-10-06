@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class GameScene : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class GameScene : MonoBehaviour
         //check if the screen is touched / clicked  
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
+            if (WasJustAButton())
+                return;
             //declare a variable of RaycastHit struct
             RaycastHit hit;
             //Create a Ray on the tapped / clicked position
@@ -45,7 +48,6 @@ public class GameScene : MonoBehaviour
                 endPoint = hit.point;
                 //as we do not want to change the y axis value based on touch position, reset it to original y axis value
                 endPoint.y = yAxis;
-                Debug.Log(endPoint);
             }
         }
         //check if the flag for movement is true and the current gameobject position is not same as the clicked / tapped position
@@ -60,7 +62,18 @@ public class GameScene : MonoBehaviour
         else if (flag && Mathf.Approximately(gameObject.transform.position.magnitude, endPoint.magnitude))
         {
             flag = false;
-            Debug.Log("I am here");
         }
+    }
+
+    private static bool WasJustAButton()
+    {
+        var ct = UnityEngine.EventSystems.EventSystem.current;
+
+        if (!ct.IsPointerOverGameObject()) return false;
+        if (!ct.currentSelectedGameObject) return false;
+        if (ct.currentSelectedGameObject.GetComponent<Button>() == null)
+            return false;
+
+        return true;
     }
 }
