@@ -25,7 +25,7 @@ public class GameScene : MonoBehaviour
         //check if the screen is touched / clicked  
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
-            if (WasJustADamnedButton())
+            if (WasJustAButton())
                 return;
             //declare a variable of RaycastHit struct
             RaycastHit hit;
@@ -65,10 +65,9 @@ public class GameScene : MonoBehaviour
         }
     }
 
-    private bool WasJustADamnedButton()
+    private static bool WasJustAButton()
     {
-        UnityEngine.EventSystems.EventSystem ct
-              = UnityEngine.EventSystems.EventSystem.current;
+        var ct = UnityEngine.EventSystems.EventSystem.current;
 
         if (!ct.IsPointerOverGameObject()) return false;
         if (!ct.currentSelectedGameObject) return false;

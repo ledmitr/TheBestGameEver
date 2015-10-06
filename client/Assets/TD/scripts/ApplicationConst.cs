@@ -10,5 +10,6 @@ namespace Assets.TD.scripts
         public static string FieldTag = "Field";
         public static string TowerTag = "Tower";
         public static string ChooseCircleTag = "chooseCircle";
+        public static string TentTag = "Tent";
     }
 }

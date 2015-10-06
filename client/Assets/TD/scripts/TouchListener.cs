@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using Assets.TD.scripts;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ public class TouchListener : MonoBehaviour
         SidePanel.SetActive(false);
         HumburgerButton.SetActive(true);
         HintPanel.SetActive(false);
+        //CreateKnightButton.SetActive(true);
     }
 
     // Update is called once per frame
@@ -36,7 +38,13 @@ public class TouchListener : MonoBehaviour
                 if (_isCreateTowerMode && hit.collider.tag == ApplicationConst.FieldTag)
                 {
                     CreateTower(hit.transform.position);
+                    HintPanel.SetActive(false);
                     _isCreateTowerMode = false;
+                } else if (_isCreateKnightMode && hit.collider.tag == ApplicationConst.TentTag)
+                {
+                    CreateKnight(hit.collider.gameObject);
+                    HintPanel.SetActive(false);
+                    _isCreateKnightMode = false;
                 }
                 else
                 {
@@ -46,29 +54,34 @@ public class TouchListener : MonoBehaviour
         }
     }
 
-    private void CreateTower(Vector3 targetTowerPosition)
-    {
-        var position = new Vector3(targetTowerPosition.x, targetTowerPosition.y + 5.0F, targetTowerPosition.z);
-        Debug.Log(position);
-        Instantiate(TowerPrefab, position, Quaternion.identity);
-        HintPanel.SetActive(false);
+
+    private void UnchooseAll() {
+        //hide all chooseCircles
+        var circles = GameObject.FindGameObjectsWithTag(ApplicationConst.ChooseCircleTag);
+        foreach (var circleRendererL in circles.Select(x => x.GetComponent<Renderer>()))
+        {
+            circleRendererL.enabled = false;
+        }
     }
 
     private IEnumerator ProcessHit(RaycastHit hit)
     {
-        if (hit.collider.tag == ApplicationConst.TowerTag)
+        if (hit.collider.tag == ApplicationConst.TowerTag || hit.collider.tag == ApplicationConst.TentTag)
         {
-            var circles = GameObject.FindGameObjectsWithTag(ApplicationConst.ChooseCircleTag);
-            foreach (var circleRendererL in circles.Select(x => x.GetComponent<Renderer>()))
-            {
-                circleRendererL.enabled = false;
-                yield return 0;
-            }
+            UnchooseAll();
 
+            //show chooseCircle at selected object
             var circleRenderer = hit.transform.gameObject.GetComponentsInChildren<Renderer>().FirstOrDefault(x => x.gameObject.tag == ApplicationConst.ChooseCircleTag);
             if (circleRenderer != null)
-                circleRenderer.enabled = !circleRenderer.enabled; 
+                circleRenderer.enabled = !circleRenderer.enabled;
+
+            /*if (hit.collider.tag == ApplicationConst.TentTag) {
+                CreateKnightButton.SetActive(true);
+                HumburgerButton.SetActive(false);
+                SidePanel.SetActive(true);
+            }*/
         }
+        yield return 0;
     }
 
     public void BackToMenu()
@@ -78,17 +91,29 @@ public class TouchListener : MonoBehaviour
 
     public GameObject HumburgerButton;
     public GameObject SidePanel;
+    public GameObject CreateTowerButton;
+    public GameObject CreateKnightButton;
 
     public void ProcessHamburgerButton()
     {
         HumburgerButton.SetActive(!HumburgerButton.activeSelf);
         SidePanel.SetActive(!SidePanel.activeSelf);
+        //CreateKnightButton.SetActive(false);
+        //CreateTowerButton.SetActive(true);
     }
 
     public GameObject TowerPrefab;
+    public GameObject KnightPrefab;
     public GameObject HintPanel;
 
     private bool _isCreateTowerMode = false;
+    private bool _isCreateKnightMode = false;
+
+    private void CreateTower(Vector3 targetTowerPosition)
+    {
+        var position = new Vector3(targetTowerPosition.x, targetTowerPosition.y + 5.0F, targetTowerPosition.z);
+        Instantiate(TowerPrefab, position, Quaternion.identity);
+    }
 
     public void ProcessCreateTowerButton()
     {
@@ -97,17 +122,26 @@ public class TouchListener : MonoBehaviour
         _isCreateTowerMode = true;
     }
 
-    private bool WasJustADamnedButton()
+    private void CreateKnight(GameObject tent)
     {
-        UnityEngine.EventSystems.EventSystem ct
-              = UnityEngine.EventSystems.EventSystem.current;
+        var knight = KnightPrefab;
+        knight.transform.localScale.Set(1, 1, 1);
+        var knightPosition = new Vector3(tent.transform.position.x, 0.5F, tent.transform.position.z - 3);
+        Instantiate(knight, knightPosition, Quaternion.identity);
+    }
 
-        if (!ct.IsPointerOverGameObject()) return false;
-        if (!ct.currentSelectedGameObject) return false;
-        if (ct.currentSelectedGameObject.GetComponent<Button>() == null)
-            return false;
+    public void ProcessCreateKnightButton()
+    {
+        ProcessHamburgerButton();
+        HintPanel.SetActive(true);
+        //HintPanel.FindChild("HintText").SetText("TAP ON TENT TO CREATE KNIGHT")
+        _isCreateKnightMode = true;
+    }
 
-        return true;
+    public void HideSidePanel() {
+        SidePanel.SetActive(false);
+        HumburgerButton.SetActive(true);
+        UnchooseAll();
     }
 }
 
