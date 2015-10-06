@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Assets.TD.scripts;
 using UnityEngine;
 
 public class CreateCubesArray : MonoBehaviour
@@ -39,6 +40,7 @@ public class CreateCubesArray : MonoBehaviour
                 if (CubeArrayDefiner[x][z] != 0)
                 {
                     var cube = (GameObject)Instantiate(Prototype, new Vector3(x * 6, CubeArrayDefiner[x][z], z * 6), transform.rotation);
+                    cube.tag = ApplicationConst.FieldTag;
                     CubeArray[x, z] = cube;
                 }
                 yield return 0;
