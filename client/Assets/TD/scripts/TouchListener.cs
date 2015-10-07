@@ -1,9 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using Assets.TD.scripts;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TouchListener : MonoBehaviour
 {
