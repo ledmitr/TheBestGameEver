@@ -49,9 +49,12 @@
      <Compile Include="Assets\TD\scripts\CreateCubesArray.cs" />
      <Compile Include="Assets\TD\scripts\GameMenu.cs" />
      <Compile Include="Assets\TD\scripts\GameScene.cs" />
+     <Compile Include="Assets\TD\scripts\GameState.cs" />
+     <Compile Include="Assets\TD\scripts\KnightScript.cs" />
      <Compile Include="Assets\TD\scripts\MainMenu.cs" />
      <Compile Include="Assets\TD\scripts\SettingsMenu.cs" />
      <Compile Include="Assets\TD\scripts\StatisticsMenu.cs" />
+     <Compile Include="Assets\TD\scripts\TerrainGenerator.cs" />
      <Compile Include="Assets\TD\scripts\TouchListener.cs" />
      <None Include="Assets\Standard Assets (Mobile)\Shaders\Particle Shaders\Mobile Multiply Culled.shader" />
      <None Include="Assets\Standard Assets (Mobile)\Shaders\Miscellaneous Shaders\Mobile Background.shader" />
@@ -59,7 +62,9 @@
      <None Include="Assets\field.txt" />
      <None Include="Assets\Standard Assets (Mobile)\Shaders\Miscellaneous Shaders\Mobile Detail.shader" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
+     <None Include="Assets\texturepackA\shaders\bumpedspecmap.shader" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
+     <None Include="Assets\TD\shaders\ProjectorAdditiveTint.shader" />
      <None Include="Assets\Standard Assets (Mobile)\Shaders\Lightmap Shaders (Legacy)\Mobile Lightmap Reflective.shader" />
      <None Include="Assets\Standard Assets (Mobile)\Shaders\Particle Shaders\Mobile Particles Additive Culled.shader" />
      <None Include="Assets\Standard Assets (Mobile)\Shaders\Vertex Colored Shaders\Mobile Vertex Colored.shader" />
@@ -68,11 +73,17 @@
  <Reference Include="Assembly-UnityScript-firstpass">
  <HintPath>D:/Projects/Android/TheBestGameEver/client/Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll</HintPath>
  </Reference>
+ <Reference Include="UnityEngine.Advertisements">
+ <HintPath>D:/Installed/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Installed/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Networking">
  <HintPath>D:/Installed/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.Analytics">
+ <HintPath>D:/Installed/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Cecil">
  <HintPath>D:/Installed/Unity/Editor/Data/Managed/Mono.Cecil.dll</HintPath>

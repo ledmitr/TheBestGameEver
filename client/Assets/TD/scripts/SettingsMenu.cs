@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class SettingsMenu : MonoBehaviour {
+    
 	// Логическая переменная, отвечающая за нажатие кнопки High.
 	public bool is_high;
 	// Логическая переменная, отвечающая за нажатие кнопки Medium.
@@ -29,19 +30,20 @@ public class SettingsMenu : MonoBehaviour {
 	// fantastic. Аналогично происходит и с другими блоками if. При
 	// нажатии объекта с флагом is_back, возвращаемся в главное меню.
 	void OnMouseUp() {
-		if(is_high==true)
+		if(is_high)
 		{
-			QualitySettings.currentLevel = QualityLevel.Fantastic;
+            QualitySettings.SetQualityLevel(QualitySettings.names.Length-1, true);
 		}
-		if(is_medium==true)
+		if(is_medium)
 		{
-			QualitySettings.currentLevel = QualityLevel.Simple;
+            if (QualitySettings.names.Length != 2)
+                QualitySettings.SetQualityLevel(QualitySettings.names.Length - 2);
 		}
-		if(is_low==true)
+		if(is_low)
 		{
-			QualitySettings.currentLevel = QualityLevel.Fastest;
+            QualitySettings.SetQualityLevel(0, true);
 		}
-		if(is_back==true)
+		if(is_back)
 		{
 			Application.LoadLevel(back);
 		}
