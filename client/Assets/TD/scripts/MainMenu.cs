@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 // Класс главного меню.
 public class MainMenu : MonoBehaviour {
-	// Логическая переменная, отвечающая за нажатие кнопки Start.
+    
+    public void Start()
+    {
+        QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
+    }
+
+    // Логическая переменная, отвечающая за нажатие кнопки Start.
 	public bool is_start;
 	// Строковая переменная, хранящая название сцены Start.
 	public string start;

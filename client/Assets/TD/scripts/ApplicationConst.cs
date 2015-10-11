@@ -7,9 +7,11 @@ namespace Assets.TD.scripts
 {
     public static class ApplicationConst
     {
-        public static string FieldTag = "Field";
-        public static string TowerTag = "Tower";
-        public static string ChooseCircleTag = "chooseCircle";
-        public static string TentTag = "Tent";
+        public const string FieldTag = "Field";
+        public const string TowerTag = "Tower";
+        public const string ChooseCircleTag = "chooseCircle";
+        public const string TentTag = "Tent";
+        public const string KnightTag = "Knight";
+        public const string LandTag = "Land";
     }
 }
