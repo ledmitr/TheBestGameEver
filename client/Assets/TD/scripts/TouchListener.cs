@@ -15,12 +15,19 @@ public class TouchListener : MonoBehaviour
         SidePanel.SetActive(false);
         HumburgerButton.SetActive(true);
         HintPanel.SetActive(false);
-        //CreateKnightButton.SetActive(true);
+        MessagePanel.SetActive(false);
     }
 
     // Update is called once per frame
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+            //MessagePanel.SetActive(true);
+            return;
+        }
+
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
             //declare a variable of RaycastHit struct
@@ -53,6 +60,18 @@ public class TouchListener : MonoBehaviour
                 //}
             }
         }
+    }
+
+    public GameObject MessagePanel;
+    
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+
+    public void BackToGameFromMessageCanvas()
+    {
+        MessagePanel.SetActive(false);
     }
 
     private void ProcessClick(RaycastHit hit)
@@ -203,6 +222,8 @@ public class TouchListener : MonoBehaviour
 
         return true;
     }
+
+
 }
 
 

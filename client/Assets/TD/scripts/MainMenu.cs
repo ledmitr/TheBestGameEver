@@ -8,6 +8,13 @@ public class MainMenu : MonoBehaviour {
         QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
     }
 
+    public void Update() {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
+
     // Логическая переменная, отвечающая за нажатие кнопки Start.
 	public bool is_start;
 	// Строковая переменная, хранящая название сцены Start.
