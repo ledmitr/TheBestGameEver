@@ -45,6 +45,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Camera\TouchCamera.cs" />
      <Compile Include="Assets\TD\scripts\ApplicationConst.cs" />
      <Compile Include="Assets\TD\scripts\CreateCubesArray.cs" />
      <Compile Include="Assets\TD\scripts\GameMenu.cs" />
