@@ -4,6 +4,30 @@ using UnityEngine;
 
 public class TouchCamera : MonoBehaviour
 {
+    public GameObject Land;
+
+    private float minCameraXPosition;
+    private float minCameraZPosition;
+    private float maxCameraXPosition;
+    private float maxCameraZPosition;
+    private float minCameraYPosition;
+    private float maxCameraYPosition;
+
+    private float zoomSpeed = 1.5f;
+    private float moveSpeed = 100f;
+
+    public void Start()
+    {
+        var landSize = Land.GetComponent<Terrain>().terrainData.size;
+        minCameraXPosition = -landSize.x/2;
+        minCameraZPosition = -landSize.z/2;
+        maxCameraXPosition = landSize.x/2;
+        maxCameraZPosition = landSize.z/2;
+
+        minCameraYPosition = 25;
+        maxCameraYPosition = 100;
+    }
+
     private readonly Vector2?[] _oldTouchPositions =
     {
         null,
@@ -34,11 +58,16 @@ public class TouchCamera : MonoBehaviour
                 {
                     var newTouchPosition = Input.GetTouch(0).position;
 
-                    transform.position +=
-                        transform.TransformDirection((Vector3) ((_oldTouchPositions[0] - newTouchPosition)
-                                                                *cameraComponent.orthographicSize/
-                                                                cameraComponent.pixelHeight*2f));
+                    var newCameraPosition = transform.position +
+                        transform.TransformDirection((Vector3)((_oldTouchPositions[0] - newTouchPosition) * moveSpeed / cameraComponent.pixelHeight));
 
+                    if (newCameraPosition.x >= minCameraXPosition && newCameraPosition.x <= maxCameraXPosition
+                            && newCameraPosition.z >= minCameraZPosition && newCameraPosition.z <= maxCameraZPosition
+                                && newCameraPosition.y >= minCameraYPosition && newCameraPosition.y <= maxCameraYPosition)
+                    {
+                        transform.position = newCameraPosition;
+                    }
+                    
                     _oldTouchPositions[0] = newTouchPosition;
                 }
             }
@@ -53,8 +82,6 @@ public class TouchCamera : MonoBehaviour
                 }
                 else
                 {
-                    var screen = new Vector2(cameraComponent.pixelWidth, cameraComponent.pixelHeight);
-
                     Vector2[] newTouchPositions =
                     {
                         Input.GetTouch(0).position,
@@ -63,20 +90,11 @@ public class TouchCamera : MonoBehaviour
                     var newTouchVector = newTouchPositions[0] - newTouchPositions[1];
                     var newTouchDistance = newTouchVector.magnitude;
 
-                    transform.position +=
-                        transform.TransformDirection((Vector3) ((_oldTouchPositions[0] + _oldTouchPositions[1] - screen)
-                                                                *cameraComponent.orthographicSize/screen.y));
-
-                    transform.localRotation *= Quaternion.Euler(new Vector3(0, 0, Mathf.Asin(
-                        Mathf.Clamp((_oldTouchVector.y*newTouchVector.x
-                                     - _oldTouchVector.x*newTouchVector.y)/_oldTouchDistance/newTouchDistance, -1f, 1f))/
-                                                                                  0.0174532924f));
-
-                    cameraComponent.orthographicSize *= _oldTouchDistance/newTouchDistance;
-
-                    transform.position -=
-                        transform.TransformDirection((newTouchPositions[0] + newTouchPositions[1] - screen)
-                                                     *cameraComponent.orthographicSize/screen.y);
+                    // kind of buggy but idk why
+                    float k = newTouchDistance/_oldTouchDistance;
+                    Vector3 pos = Camera.main.ScreenToViewportPoint(newTouchPositions[0]);
+                    Vector3 move = pos.y * zoomSpeed * (k > 1 ? transform.forward : -transform.forward);
+                    transform.Translate(move, Space.World);
 
                     _oldTouchPositions[0] = newTouchPositions[0];
                     _oldTouchPositions[1] = newTouchPositions[1];
