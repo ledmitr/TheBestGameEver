@@ -12,12 +12,7 @@ public class App
     public static void main( String[] args )
     {
         System.out.println("Server started");
-        NetworkConnection netThread = null;
-        try {
-            netThread = new NetworkConnection();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        NetworkConnection netThread = new NetworkConnection();
         netThread.start();
         while(true){
             try {
