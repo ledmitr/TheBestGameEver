@@ -1,5 +1,7 @@
 ﻿// Just add this script to your camera. It doesn't need any configuration.
 
+using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public class TouchCamera : MonoBehaviour
@@ -26,6 +28,8 @@ public class TouchCamera : MonoBehaviour
 
         minCameraYPosition = 25;
         maxCameraYPosition = 100;
+
+        
     }
 
     private readonly Vector2?[] _oldTouchPositions =

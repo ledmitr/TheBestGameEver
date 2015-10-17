@@ -5,6 +5,7 @@ public class MainMenu : MonoBehaviour {
     
     public void Start()
     {
+        LoadingSplashScreen.SetActive(false);
         QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
     }
 
@@ -14,6 +15,8 @@ public class MainMenu : MonoBehaviour {
             Application.Quit();
         }
     }
+
+    public GameObject LoadingSplashScreen;
 
     // Логическая переменная, отвечающая за нажатие кнопки Start.
 	public bool is_start;
@@ -47,6 +50,7 @@ public class MainMenu : MonoBehaviour {
 	void OnMouseUp() {
 		if(is_start==true)
 		{
+		    LoadingSplashScreen.SetActive(true);
 			Application.LoadLevel(start);
 		}
 		if(is_statistics==true)
