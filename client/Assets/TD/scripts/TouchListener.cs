@@ -22,8 +22,8 @@ public class TouchListener : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Application.Quit();
-            //MessagePanel.SetActive(true);
+            //Application.Quit();
+            MessagePanel.SetActive(true);
             return;
         }
 
@@ -42,21 +42,6 @@ public class TouchListener : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 ProcessClick(hit);
-                //if (_isCreateTowerMode && hit.collider.tag == ApplicationConst.FieldTag)
-                //{
-                //    CreateTower(hit.transform.position);
-                //    HintPanel.SetActive(false);
-                //    _isCreateTowerMode = false;
-                //} else if (_isCreateKnightMode && hit.collider.tag == ApplicationConst.TentTag)
-                //{
-                //    CreateKnight(hit.collider.gameObject);
-                //    HintPanel.SetActive(false);
-                //    _isCreateKnightMode = false;
-                //}
-                //else
-                //{
-                //    StartCoroutine(ProcessHit(hit));
-                //}
             }
         }
     }
