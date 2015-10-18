@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Linq;
+﻿using System.Linq;
 using Assets.TD.scripts;
 using UnityEngine;
 using UnityEngine.UI;
@@ -109,6 +108,7 @@ public class TouchListener : MonoBehaviour
                 else
                 {
                     GameState = GameState.TowerSelected;
+                    //hit.collider.gameObject.GetComponent<>().Select();
                     //hit.collider.gameObject.GetComponent<TowerScript>().Select();
                 }
                 break;
@@ -175,7 +175,7 @@ public class TouchListener : MonoBehaviour
 
     private void CreateTower(Vector3 targetTowerPosition)
     {
-        //var position = new Vector3(targetTowerPosition.x, targetTowerPosition.y + 5.0F, targetTowerPosition.z);
+        //var position = new Vector3(targetTowerPosition.x, targetTowerPosition.y + 2.95F, targetTowerPosition.z);
         var position = targetTowerPosition;
         Instantiate(TowerPrefab, position, Quaternion.identity);
     }
@@ -192,7 +192,7 @@ public class TouchListener : MonoBehaviour
     {
         var knight = KnightPrefab;
         knight.transform.localScale.Set(1, 1, 1);
-        var knightPosition = new Vector3(tent.transform.position.x, 0.5F, tent.transform.position.z - 3);
+        var knightPosition = new Vector3(tent.transform.position.x + 1.6F, tent.transform.position.y, tent.transform.position.z - 2.5F);
         Instantiate(knight, knightPosition, Quaternion.identity);
     }
 
