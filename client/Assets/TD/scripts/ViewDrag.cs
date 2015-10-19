@@ -6,20 +6,32 @@ public class ViewDrag : MonoBehaviour
     Vector3 hit_position = Vector3.zero;
     Vector3 current_position = Vector3.zero;
     Vector3 camera_position = Vector3.zero;
-    float z = 0.0f;
+    //float z = 0.0f;
 
-    private float oldDistance = 0f;
+    //private float oldDistance = 0f;
 
-    public float CurrentZoom = 0;
-    public float ZoomSpeed = 1;
-    private Vector3 initialPosition;
-    private Vector3 initialRotation;
-    public Vector2 zoomRange = new Vector2(1, 15);
+    //public float CurrentZoom = 0;
+    //public float ZoomSpeed = 1;
+    //private Vector3 initialPosition;
+    //private Vector3 initialRotation;
+    public Vector2 ZoomRange = new Vector2(1, 15);
+
+    public GameObject Land;
+
+    private float minCameraXPosition;
+    private float minCameraZPosition;
+    private float maxCameraXPosition;
+    private float maxCameraZPosition;
 
     // Use this for initialization
     void Start()
     {
-
+        var landSize = Land.GetComponent<Terrain>().terrainData.size;
+        minCameraXPosition = -landSize.x / 2;
+        minCameraZPosition = -landSize.z / 2;
+        maxCameraXPosition = landSize.x / 2;
+        maxCameraZPosition = landSize.z / 2;
+        _lCamera = GetComponent<Camera>();
     }
 
     void Update()
@@ -38,14 +50,15 @@ public class ViewDrag : MonoBehaviour
             }
         } else if (Input.touchCount >= 2)
         {
-            var touch0 = Input.GetTouch(0).position;
-            var touch1 = Input.GetTouch(1).position;
-            var distance = Vector2.Distance(touch0, touch1);
-            var diffValue = (distance - oldDistance) / oldDistance;
-            CurrentZoom -= diffValue * Time.deltaTime * 1000 * ZoomSpeed;
-            CurrentZoom = Mathf.Clamp(CurrentZoom, zoomRange.x, zoomRange.y);
-            GetComponent<Camera>().orthographicSize = CurrentZoom;
-            oldDistance = distance;
+            ExecutePinchZoom();
+            //var touch0 = Input.GetTouch(0).position;
+            //var touch1 = Input.GetTouch(1).position;
+            //var distance = Vector2.Distance(touch0, touch1);
+            //var diffValue = (distance - oldDistance) / oldDistance + 1;
+            //CurrentZoom -= diffValue * Time.deltaTime * 100 * ZoomSpeed;
+            //CurrentZoom = Mathf.Clamp(CurrentZoom, zoomRange.x, zoomRange.y);
+            //GetComponent<Camera>().orthographicSize = CurrentZoom;
+            //oldDistance = distance;
         }
     }
 
@@ -64,6 +77,51 @@ public class ViewDrag : MonoBehaviour
 
         Vector3 position = camera_position + direction;
 
-        transform.position = position;
+        transform.position = new Vector3(
+            Mathf.Clamp(position.x, minCameraXPosition, maxCameraXPosition), 
+            position.y,
+            Mathf.Clamp(position.z, minCameraZPosition, maxCameraZPosition)
+        );
+    }
+
+    public float PerspectiveZoomSpeed = 0.5f;        // The rate of change of the field of view in perspective mode.
+    public float OrthoZoomSpeed = 0.5f;        // The rate of change of the orthographic size in orthographic mode.
+
+    private Camera _lCamera;
+    public void ExecutePinchZoom()
+    {
+        
+        // Store both touches.
+        Touch touchZero = Input.GetTouch(0);
+        Touch touchOne = Input.GetTouch(1);
+
+        // Find the position in the previous frame of each touch.
+        Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+        Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+        // Find the magnitude of the vector (the distance) between the touches in each frame.
+        float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude;
+        float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
+
+        // Find the difference in the distances between each frame.
+        float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
+
+        // If the camera is orthographic...
+        if (_lCamera.orthographic)
+        {
+            // ... change the orthographic size based on the change in distance between the touches.
+            _lCamera.orthographicSize += deltaMagnitudeDiff * OrthoZoomSpeed;
+
+            // Make sure the orthographic size never drops below zero.
+            _lCamera.orthographicSize = Mathf.Clamp(_lCamera.orthographicSize, ZoomRange.x, ZoomRange.y);
+        }
+        else
+        {
+            // Otherwise change the field of view based on the change in distance between the touches.
+            _lCamera.fieldOfView += deltaMagnitudeDiff * PerspectiveZoomSpeed;
+
+            // Clamp the field of view to make sure it's between 0 and 180.
+            _lCamera.fieldOfView = Mathf.Clamp(_lCamera.fieldOfView, 0.1f, 179.9f);
+        }
     }
 }

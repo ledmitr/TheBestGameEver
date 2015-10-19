@@ -9,33 +9,33 @@ namespace Assets.Scripts.Pathfinding
     {
         class SearchNode<TNodeState, TNodeAction> : IComparable<SearchNode<TNodeState, TNodeAction>>
         {
-            public SearchNode<TNodeState, TNodeAction> parent;
+            public SearchNode<TNodeState, TNodeAction> Parent;
             public TNodeState NodeState;
             public TNodeAction NodeAction;
-            public float g; // cost
-            public float f; // estimate
-            public SearchNode(SearchNode<TNodeState, TNodeAction> parent, float g, float f, TNodeState NodeState, TNodeAction NodeAction)
+            public float Cost; // cost
+            public float Estimate; // estimate
+            public SearchNode(SearchNode<TNodeState, TNodeAction> parent, float cost, float estimate, TNodeState nodeState, TNodeAction nodeAction)
             {
-                this.parent = parent;
-                this.g = g;
-                this.f = f;
-                this.NodeState = NodeState;
-                this.NodeAction = NodeAction;
+                Parent = parent;
+                Cost = cost;
+                Estimate = estimate;
+                NodeState = nodeState;
+                NodeAction = nodeAction;
             }
             // Reverse sort order (smallest numbers first)
             public int CompareTo(SearchNode<TNodeState, TNodeAction> other)
             {
-                return other.f.CompareTo(f);
+                return other.Estimate.CompareTo(Estimate);
             }
             public override string ToString()
             {
-                return "SN {f:" + f + ", state: " + NodeState + " action: " + NodeAction + "}";
+                return "SN {f:" + Estimate + ", state: " + NodeState + " action: " + NodeAction + "}";
             }
         }
-        private IShortestPath<TState, TAction> info;
+        private IShortestPath<TState, TAction> _info;
         public ShortestPathGraphSearch(IShortestPath<TState, TAction> info)
         {
-            this.info = info;
+            _info = info;
         }
         public List<TAction> GetShortestPath(TState fromState, TState toState)
         {
@@ -52,23 +52,23 @@ namespace Assets.Scripts.Pathfinding
                 if (node.NodeState.Equals(toState)) return BuildSolution(node);
                 exploredSet.Add(node.NodeState);
                 // expand node and add to frontier
-                foreach (TAction action in info.Expand(node.NodeState))
+                foreach (TAction action in _info.Expand(node.NodeState))
                 {
-                    TState child = info.ApplyAction(node.NodeState, action);
+                    TState child = _info.ApplyAction(node.NodeState, action);
                     SearchNode<TState, TAction> frontierNode = null;
                     bool isNodeInFrontier = frontierMap.TryGetValue(child, out frontierNode);
                     if (!exploredSet.Contains(child) && !isNodeInFrontier)
                     {
                         SearchNode<TState, TAction> searchNode = CreateSearchNode(node, action, child, toState);
-                        frontier.Enqueue(searchNode, searchNode.f);
+                        frontier.Enqueue(searchNode, searchNode.Estimate);
                         exploredSet.Add(child);
                     }
                     else if (isNodeInFrontier)
                     {
                         SearchNode<TState, TAction> searchNode = CreateSearchNode(node, action, child, toState);
-                        if (frontierNode.f > searchNode.f)
+                        if (frontierNode.Estimate > searchNode.Estimate)
                         {
-                            frontier.Replace(frontierNode, frontierNode.f, searchNode.f);
+                            frontier.Replace(frontierNode, frontierNode.Estimate, searchNode.Estimate);
                         }
                     }
                 }
@@ -76,9 +76,9 @@ namespace Assets.Scripts.Pathfinding
         }
         private SearchNode<TState, TAction> CreateSearchNode(SearchNode<TState, TAction> node, TAction action, TState child, TState toState)
         {
-            float cost = info.ActualCost(node.NodeState, action);
-            float heuristic = info.Heuristic(child, toState);
-            return new SearchNode<TState, TAction>(node, node.g + cost, node.g + cost + heuristic, child, action);
+            float cost = _info.ActualCost(node.NodeState, action);
+            float heuristic = _info.Heuristic(child, toState);
+            return new SearchNode<TState, TAction>(node, node.Cost + cost, node.Cost + cost + heuristic, child, action);
         }
         private List<TAction> BuildSolution(SearchNode<TState, TAction> seachNode)
         {
@@ -89,7 +89,7 @@ namespace Assets.Scripts.Pathfinding
                 {
                     list.Insert(0, seachNode.NodeAction);
                 }
-                seachNode = seachNode.parent;
+                seachNode = seachNode.Parent;
             }
             return list;
         }
