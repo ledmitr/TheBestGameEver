@@ -23,7 +23,7 @@ public class TempConnection implements Callable{
         try {
             ServerSocket gameSocket = new ServerSocket();
             createdPort = gameSocket.getLocalPort();
-            ClientMessage message = new ClientMessage(createdPort);
+            //ClientMessage message = new ClientMessage(createdPort);
         } catch (IOException e) {
             e.printStackTrace();
         }
