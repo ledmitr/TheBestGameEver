@@ -1,20 +1,49 @@
 package gserv;
-
 import java.net.*;
-
 import org.json.simple.JSONObject;
 
 /**
- * Created by bodrik on 19.10.15.
+ * Класс, который собственно и является игровым сервером для двух клиентов
+ * Запускать класс следует в отдельном потоке, передавая номер порта,
+ * индетификтор игры и секретный ключ в конструктор
  */
 public class GameServer implements Runnable {
+
     private static final String SERVER_NAME = "TheBestGameEver";
+
+    /**
+     * Номер сетевого порта
+     */
     protected volatile int port;
+
+    /**
+     * Индетификатор игры на сервере выше
+     */
     protected volatile int game_id;
+
+    /**
+     * Секретный ключ, по которому будет происводиться авторизация
+     */
     protected volatile String secret_key;
+
+    /**
+     * Уникальные объекты для каждого игрока
+     *
+     * @see gserv.Client
+     */
     private Client[] clients;
+
+    /**
+     * Открытый общий сокет для прослушивания входящих клиентов
+     */
     private ServerSocket wait_socket;
 
+    /**
+     * Конструктор
+     * @param p номер порта
+     * @param g индетификатор игры
+     * @param s секретный ключ
+     */
     GameServer(int p, int g, String s) {
         port = p;
         game_id = g;
@@ -22,6 +51,10 @@ public class GameServer implements Runnable {
         clients = new Client[2];
     }
 
+    /**
+     * Точка входа нового потока, аналог функции main
+     * Здесь происходит начальная инициализация подключений клиентов
+     */
     public void run() {
         try {
             wait_socket = new ServerSocket(port, 0, InetAddress.getByName("localhost"));
@@ -29,14 +62,20 @@ public class GameServer implements Runnable {
             for (int i = 0; i < 2; i++) {
                 newClient(i, wait_socket.accept());
             }
-            startGame();
+            proccessGame();
             System.out.println("Game server with id = " + game_id + " has been stoped!");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void startGame() throws Exception {
+    /**
+     * Данная функция запускает процесс прослушивания подключений и обработку сообщений от клиентов,
+     * а также отслеживает рабочее состояние клиентов
+     *
+     * @throws Exception
+     */
+    private void proccessGame() throws Exception {
         JSONObject data;
         while (true) {
             for (int i = 0; i < 2; i++) {
@@ -53,11 +92,21 @@ public class GameServer implements Runnable {
         }
     }
 
+    /**
+     * Создаёт новое объектное представление клиента
+     * @param number номер клиента от 0 до 1
+     * @param sc сокет нового клиента
+     */
     private void newClient(int number, Socket sc) {
         clients[number] = new Client(sc);
         clients[number].start();
     }
 
+    /**
+     * Метод обрабатывает полученные данные от клиентов, выполняет требуемые инструкции и отправляет ответ
+     * @param numClient номер клиента от 0 до 1
+     * @param data json.simple объект сформированный по ходу чтения входящих данных
+     */
     private void handler(int numClient, JSONObject data) {
         int code = 0;
         JSONObject new_content = new JSONObject();
