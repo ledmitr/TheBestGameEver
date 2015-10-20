@@ -4,9 +4,15 @@ import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
 
 /**
- * Created by bodrik on 19.10.15.
+ * Класс с разнообразными полезными функциями
  */
 public class Helper {
+    /**
+     * Функция извлекает из json строки json объект
+     *
+     * @param message json строка
+     * @return json объект
+     */
     public static JSONObject tryReadJSON(String message) {
         try {
             JSONParser parser = new JSONParser();
