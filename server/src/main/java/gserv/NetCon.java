@@ -12,10 +12,10 @@ import sun.misc.Regexp;
  * Created by bodrik on 19.10.15.
  */
 public class NetCon extends Thread {
-    private static final String END_OF_RECIVE_DATA = "!end";
-    private Socket sock;
-    private String buffer;
-    private Queue<JSONObject> reciveData;
+    protected static final String END_OF_RECIVE_DATA = "!end";
+    protected Socket sock;
+    protected String buffer;
+    protected Queue<JSONObject> reciveData;
 
     NetCon(Socket sc) {
         super();
@@ -41,6 +41,7 @@ public class NetCon extends Thread {
                     if (data == null) {
                         continue;
                     }
+                    //Добавляем данные в очередь приёма
                     reciveData.add(data);
                 }
             }
@@ -51,5 +52,20 @@ public class NetCon extends Thread {
 
     public JSONObject tryGetReciveData() {
         return reciveData.poll();
+    }
+
+    public boolean sendData(String str) {
+        try {
+            str = str.concat("!end");
+            OutputStream os = sock.getOutputStream();
+            os.write(str.getBytes());
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean sendData(JSONObject obj) {
+        return sendData(obj.toJSONString());
     }
 }
