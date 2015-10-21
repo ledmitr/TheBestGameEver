@@ -173,10 +173,14 @@ public class TouchListener : MonoBehaviour
 
     private void CreateKnight(GameObject tent)
     {
-        var knight = KnightPrefab;
-        knight.transform.localScale.Set(1, 1, 1);
+        var knightPrefab = KnightPrefab;
+        knightPrefab.transform.localScale.Set(1, 1, 1);
         var knightPosition = new Vector3(tent.transform.position.x + 1.6F, tent.transform.position.y, tent.transform.position.z - 2.5F);
-        Instantiate(knight, knightPosition, Quaternion.identity);
+        var knight = (GameObject)Instantiate(knightPrefab, knightPosition, Quaternion.identity);
+
+        var tentScript = tent.GetComponent<TentScript>();
+        var knightScript = knight.GetComponent<KnightScript>();
+        knightScript.SetPath(tentScript.GetPath());
     }
 
     public void ProcessCreateKnightButton()
