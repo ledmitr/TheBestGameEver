@@ -26,11 +26,17 @@ public class TempConnection implements Runnable{
 
         OutputStream os = null;
         try {
+<<<<<<< HEAD
             os = sock.getOutputStream();
             if (createdPort != null) {
                 os.write(createdPort.byteValue());
                 os.write(key.getBytes());
             }
+=======
+            ServerSocket gameSocket = new ServerSocket();
+            createdPort = gameSocket.getLocalPort();
+            //ClientMessage message = new ClientMessage(createdPort);
+>>>>>>> 0b036322d70d002245ad907f0bf46d548a71c212
         } catch (IOException e) {
             e.printStackTrace();
         }
