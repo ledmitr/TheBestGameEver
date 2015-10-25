@@ -1,5 +1,7 @@
 package game;
 
+import gserv.GameServer;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -62,7 +64,7 @@ public class NetworkConnection extends Thread {
                 e.printStackTrace();
             }
 
-            GameServer gameServer = new GameServer(gameSocket, TempConnection.key);
+            GameServer gameServer = new GameServer(gameSocket, 123, TempConnection.key);
 
         }
 

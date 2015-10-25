@@ -44,7 +44,7 @@ public class GameServer implements Runnable {
      * @param g индетификатор игры
      * @param s секретный ключ
      */
-    GameServer(ServerSocket ws, int g, String s) {
+    public GameServer(ServerSocket ws, int g, String s) {
         wait_socket = ws;
         game_id = g;
         secret_key = s;
