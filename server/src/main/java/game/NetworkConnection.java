@@ -64,7 +64,8 @@ public class NetworkConnection extends Thread {
                 e.printStackTrace();
             }
 
-            GameServer gameServer = new GameServer(gameSocket, 123, TempConnection.key);
+            Thread gameThread = new Thread(new GameServer(gameSocket, 123, TempConnection.key));
+            gameServer.start();
 
         }
 
