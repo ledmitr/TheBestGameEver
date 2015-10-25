@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 
 /**
  * Класс, который собственно и является игровым сервером для двух клиентов
- * Запускать класс следует в отдельном потоке, передавая номер порта,
+ * Запускать класс следует в отдельном потоке, передавая сокет,
  * индетификтор игры и секретный ключ в конструктор
  */
 public class GameServer implements Runnable {
@@ -40,12 +40,12 @@ public class GameServer implements Runnable {
 
     /**
      * Конструктор
-     * @param p номер порта
+     * @param ws сокет для прослушивания
      * @param g индетификатор игры
      * @param s секретный ключ
      */
-    GameServer(int p, int g, String s) {
-        port = p;
+    GameServer(ServerSocket ws, int g, String s) {
+        wait_socket = ws;
         game_id = g;
         secret_key = s;
         clients = new Client[2];
@@ -57,7 +57,6 @@ public class GameServer implements Runnable {
      */
     public void run() {
         try {
-            wait_socket = new ServerSocket(port, 0, InetAddress.getByName("localhost"));
             System.out.println("Game server with id = " + game_id + " has been started!");
             for (int i = 0; i < 2; i++) {
                 newClient(i, wait_socket.accept());
