@@ -23,8 +23,6 @@ public class App
                     default:
                 }
             } catch (IOException e) {
-
-                // TODO: change catch handling
                 e.printStackTrace();
             }
         }

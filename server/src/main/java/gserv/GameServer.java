@@ -22,7 +22,7 @@ public class GameServer implements Runnable {
     protected volatile int game_id;
 
     /**
-     * Секретный ключ, по которому будет происводиться авторизация
+     * Секретный ключ, по которому будет производиться авторизация
      */
     protected volatile String secret_key;
 
