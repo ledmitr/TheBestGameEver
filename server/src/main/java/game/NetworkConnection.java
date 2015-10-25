@@ -41,13 +41,15 @@ public class NetworkConnection extends Thread {
             try {
                 TempConnection first = new TempConnection(mainSocket.accept());
                 TempConnection second = new TempConnection(mainSocket.accept());
+                new Thread(first).start();
+                new Thread(second).start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             ServerSocket gameSocket = null;
             try {
-                gameSocket = new ServerSocket();
+                gameSocket = new ServerSocket(0);
                 int createdPort = gameSocket.getLocalPort();
                 TempConnection.setPort(createdPort);
             } catch (IOException e) {
@@ -65,6 +67,7 @@ public class NetworkConnection extends Thread {
             }
 
             Thread gameThread = new Thread(new GameServer(gameSocket, 123, TempConnection.key));
+            gameThread.start();
 
         }
 

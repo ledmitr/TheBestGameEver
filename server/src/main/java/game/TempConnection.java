@@ -21,7 +21,6 @@ public class TempConnection implements Runnable{
     }
 
     public void run(){
-        Integer createdPort = null;
         while(!isReady){}
 
         OutputStream os = null;
@@ -30,6 +29,8 @@ public class TempConnection implements Runnable{
             if (createdPort != null) {
                 os.write(createdPort.byteValue());
                 os.write(key.getBytes());
+            } else {
+                throw new IOException();
             }
             ServerSocket gameSocket = new ServerSocket();
             createdPort = gameSocket.getLocalPort();
