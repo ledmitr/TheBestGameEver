@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class TouchCamera : MonoBehaviour
 {
+    private Camera cameraComponent;
     public GameObject Land;
 
     private float minCameraXPosition;
@@ -29,7 +30,7 @@ public class TouchCamera : MonoBehaviour
         minCameraYPosition = 25;
         maxCameraYPosition = 100;
 
-        
+        cameraComponent = GetComponent<Camera>();
     }
 
     private readonly Vector2?[] _oldTouchPositions =
@@ -40,7 +41,7 @@ public class TouchCamera : MonoBehaviour
 
     private Vector2 _oldTouchVector;
     private float _oldTouchDistance;
-
+    
     private void Update()
     {
         if (Input.touchCount == 0)
