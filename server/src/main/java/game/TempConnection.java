@@ -1,6 +1,7 @@
 package game;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Callable;
@@ -8,28 +9,39 @@ import java.util.concurrent.Callable;
 /**
  * Created by Елена on 10.10.2015.
  */
-public class TempConnection implements Callable{
+public class TempConnection implements Runnable{
 
     Socket sock;
     volatile static boolean isReady = false;
+    volatile static Integer createdPort;
+    volatile static String key;
 
     TempConnection(Socket sock){
         this.sock = sock;
     }
 
-    public Integer call(){
+    public void run(){
         Integer createdPort = null;
         while(!isReady){}
+
+        OutputStream os = null;
         try {
-            ServerSocket gameSocket = new ServerSocket();
-            createdPort = gameSocket.getLocalPort();
-            ClientMessage message = new ClientMessage(createdPort);
+            os = sock.getOutputStream();
+            if (createdPort != null) {
+                os.write(createdPort.byteValue());
+                os.write(key.getBytes());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return createdPort;
+    }
 
+    public static void setPort(int port){
+        createdPort = port;
+    }
 
+    public static void generateKey(){
+        key = "abc";
     }
 }

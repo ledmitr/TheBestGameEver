@@ -37,12 +37,33 @@ public class NetworkConnection extends Thread {
 
             TempConnection.isReady = false;
             try {
-                new TempConnection(mainSocket.accept());
-                new TempConnection(mainSocket.accept());
+                TempConnection first = new TempConnection(mainSocket.accept());
+                TempConnection second = new TempConnection(mainSocket.accept());
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            ServerSocket gameSocket = null;
+            try {
+                gameSocket = new ServerSocket();
+                int createdPort = gameSocket.getLocalPort();
+                TempConnection.setPort(createdPort);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            TempConnection.generateKey();
+
             TempConnection.isReady = true;
+
+            // TODO: REMOVE IT by latch or smth else
+            try {
+                sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            GameServer gameServer = new GameServer(gameSocket, TempConnection.key);
+
         }
 
     }
