@@ -65,7 +65,6 @@ public class NetworkConnection extends Thread {
             }
 
             Thread gameThread = new Thread(new GameServer(gameSocket, 123, TempConnection.key));
-            gameServer.start();
 
         }
 
