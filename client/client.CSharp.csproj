@@ -82,6 +82,7 @@
     <Compile Include="Assets\TD\scripts\GameState.cs" />
     <Compile Include="Assets\TD\scripts\KnightScript.cs" />
     <Compile Include="Assets\TD\scripts\MainMenu.cs" />
+    <Compile Include="Assets\TD\scripts\Selectable.cs" />
     <Compile Include="Assets\TD\scripts\SettingsMenu.cs" />
     <Compile Include="Assets\TD\scripts\StatisticsMenu.cs" />
     <Compile Include="Assets\TD\scripts\TentScript.cs" />

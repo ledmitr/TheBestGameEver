@@ -2,6 +2,7 @@
 using Assets.TD.scripts;
 using UnityEngine;
 using UnityEngine.UI;
+using Selectable = Assets.TD.scripts.Selectable;
 
 public class TouchListener : MonoBehaviour
 {
@@ -29,9 +30,6 @@ public class TouchListener : MonoBehaviour
             }
             else
             {
-                /*SidePanel.SetActive(false);
-                HumburgerButton.SetActive(false);
-                HintPanel.SetActive(false);*/
                 MessagePanel.SetActive(true);
                 return;
             }
@@ -65,9 +63,6 @@ public class TouchListener : MonoBehaviour
 
     public void BackToGameFromMessageCanvas()
     {
-        /*SidePanel.SetActive(false);
-        HumburgerButton.SetActive(true);
-        HintPanel.SetActive(false);*/
         MessagePanel.SetActive(false);
     }
 
@@ -81,8 +76,21 @@ public class TouchListener : MonoBehaviour
         switch (hit.collider.tag)
         {
             case ApplicationConst.KnightTag:
-                GameState = GameState.KnightSelected;
-                hit.collider.gameObject.GetComponent<KnightScript>().Select();
+                if (GameState == GameState.KnightSelected)
+                {
+                    var knightScript = hit.collider.gameObject.GetComponent<KnightScript>();
+                    if (!knightScript.IsSelected())
+                    {
+                        UnselectAll();
+                        knightScript.Select(true);
+                    }
+                }
+                else
+                {
+                    UnselectAll();
+                    GameState = GameState.KnightSelected;
+                    hit.collider.gameObject.GetComponent<KnightScript>().Select(true);
+                }
                 break;
             case ApplicationConst.TentTag:
                 if (GameState == GameState.ChooseNewKnightPosition)
@@ -97,13 +105,14 @@ public class TouchListener : MonoBehaviour
                 {
                     var selectedKnight = GameObject.FindGameObjectsWithTag(ApplicationConst.KnightTag)
                         .Select(x => x.GetComponent<KnightScript>())
-                        .Single(x => x.IsSelected);
+                        .Single(x => x.IsSelected());
                     selectedKnight.GetComponent<KnightScript>().TargetPositionChanged(hit.collider.transform.position);
+                    selectedKnight.Select(false);
                     GameState = GameState.Playing;
                 }
                 else
                 {
-                    GameState = GameState.TowerSelected;
+                    //GameState = GameState.TowerSelected;
                 }
                 break;
             case ApplicationConst.LandTag:
@@ -111,6 +120,11 @@ public class TouchListener : MonoBehaviour
                 {
                     CreateTower(hit.point);
                     HintPanel.SetActive(false);
+                    GameState = GameState.Playing;
+                }
+                else
+                {
+                    UnselectAll();
                     GameState = GameState.Playing;
                 }
                 break;
@@ -127,12 +141,12 @@ public class TouchListener : MonoBehaviour
         }
     }
 
-    private void UnchooseAll() {
-        //hide all chooseCircles
-        var circles = GameObject.FindGameObjectsWithTag(ApplicationConst.ChooseCircleTag);
-        foreach (var circleRendererL in circles.Select(x => x.GetComponent<Renderer>()))
+    private void UnselectAll() {
+        var selectableObjects = GameObject.FindGameObjectsWithTag(ApplicationConst.SelectableTag);
+        foreach (GameObject selectableObject in selectableObjects)
         {
-            circleRendererL.enabled = false;
+            Selectable objectMain = selectableObject.transform.parent.gameObject.GetComponent<Selectable>();
+            objectMain.Select(false);
         }
     }
     
@@ -158,7 +172,6 @@ public class TouchListener : MonoBehaviour
     
     private void CreateTower(Vector3 targetTowerPosition)
     {
-        //var position = new Vector3(targetTowerPosition.x, targetTowerPosition.y + 2.95F, targetTowerPosition.z);
         var position = targetTowerPosition;
         Instantiate(TowerPrefab, position, Quaternion.identity);
     }
@@ -194,7 +207,7 @@ public class TouchListener : MonoBehaviour
     public void HideSidePanel() {
         SidePanel.SetActive(false);
         HumburgerButton.SetActive(true);
-        UnchooseAll();
+        UnselectAll();
     }
 
     private static bool WasJustAButton()
@@ -208,9 +221,4 @@ public class TouchListener : MonoBehaviour
 
         return true;
     }
-
-
 }
-
-
-

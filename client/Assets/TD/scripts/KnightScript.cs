@@ -3,23 +3,35 @@ using UnityEngine;
 
 namespace Assets.TD.scripts
 {
-    public class KnightScript : MonoBehaviour
+    public class KnightScript : Selectable
     {
         public int Health { get; private set; }
 
         private Vector3 _targetPosition;
 
-        public bool IsSelected { get; private set; }
+        private bool _isSelected;
+        public override bool IsSelected()
+        {
+            return _isSelected;
+        }
 
         private Vector3[] _pathToMainTower;
 
         private int _currentPosition;
 
-        public void Select()
+        private Renderer _renderer; 
+        public override void Select(bool isSelected)
         {
-            IsSelected = true;
+            _isSelected = isSelected;
+            if (isSelected)
+                _renderer.sharedMaterials = SelectMaterial;
+            else
+                _renderer.sharedMaterials = DefaultMaterial;
         }
 
+        public Material[] SelectMaterial;
+        private Material[] DefaultMaterial;
+        
         private bool _isMoving;
 
         public float Speed = 1.5F;
@@ -27,8 +39,10 @@ namespace Assets.TD.scripts
         public void Start()
         {
             Health = 100;
-            IsSelected = false;
+            _isSelected = false;
             _isMoving = _pathToMainTower != null && _pathToMainTower.Length > 1;
+            _renderer = GetComponent<Renderer>();
+            DefaultMaterial = _renderer.sharedMaterials;
         }
 
         public void SetPath(Vector3[] path)
@@ -42,7 +56,7 @@ namespace Assets.TD.scripts
         public void TargetPositionChanged(Vector3 newTargetPosition)
         {
             _targetPosition = newTargetPosition;
-            IsSelected = false;
+            _isSelected = false;
             _isMoving = true;
             Debug.Log("target position changed to: " + newTargetPosition);
         }
@@ -51,6 +65,15 @@ namespace Assets.TD.scripts
         {
             if (_isMoving)
                 Move();
+        }
+
+        void OnCollisionEnter(Collision collision)
+        {
+            var isItTargetTower = Math.Approximately(collision.gameObject.transform.position.magnitude, _targetPosition.magnitude);
+            if (collision.gameObject.tag == ApplicationConst.TowerTag && isItTargetTower)
+            {
+                _isMoving = false;
+            }
         }
 
         private Collider lCollider {
