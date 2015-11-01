@@ -6,7 +6,7 @@ public class MainMenu : MonoBehaviour {
     public void Start()
     {
         LoadingSplashScreen.SetActive(false);
-        QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
+        QualitySettings.SetQualityLevel(0);
     }
 
     public void Update() {

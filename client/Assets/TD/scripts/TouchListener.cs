@@ -73,7 +73,66 @@ public class TouchListener : MonoBehaviour
 
         Debug.Log(GameState);
         Debug.Log(hit.collider.tag);
-        switch (hit.collider.tag)
+        switch (GameState)
+        {
+            case GameState.Playing:
+                if (hit.collider.tag == ApplicationConst.KnightTag)
+                {
+                    UnselectAll();
+                    GameState = GameState.KnightSelected;
+                    hit.collider.gameObject.GetComponent<KnightScript>().Select(true);
+                }
+                break;
+            case GameState.ChooseNewTowerPosition:
+                if (hit.collider.tag == ApplicationConst.LandTag)
+                {
+                    CreateTower(hit.point);
+                    HintPanel.SetActive(false);
+                    GameState = GameState.Playing;
+                }
+                break;
+            case GameState.ChooseNewKnightPosition:
+                if (hit.collider.tag == ApplicationConst.TentTag)
+                {
+                    CreateKnight(hit.collider.gameObject);
+                    HintPanel.SetActive(false);
+                    GameState = GameState.Playing;
+                }
+                break;
+            case GameState.TentSelected:
+                break;
+            case GameState.KnightSelected:
+                if (hit.collider.tag == ApplicationConst.KnightTag)
+                {
+                    var knightScript = hit.collider.gameObject.GetComponent<KnightScript>();
+                    if (!knightScript.IsSelected())
+                    {
+                        UnselectAll();
+                        knightScript.Select(true);
+                    }
+                } 
+                else if (hit.collider.tag == ApplicationConst.TowerTag)
+                {
+                    var selectedKnight = GameObject.FindGameObjectsWithTag(ApplicationConst.KnightTag)
+                        .Select(x => x.GetComponent<KnightScript>())
+                        .Single(x => x.IsSelected());
+                    selectedKnight.GetComponent<KnightScript>().TargetPositionChanged(hit.collider.transform.position);
+                    selectedKnight.Select(false);
+                    GameState = GameState.Playing;
+                }
+                else if (hit.collider.tag == ApplicationConst.LandTag)
+                {
+                    UnselectAll();
+                }
+                break;
+            case GameState.TowerSelected:
+                break;
+            case GameState.Finished:
+                break;
+            case GameState.WaitingForPlayer:
+                break;
+        }
+        /*switch (hit.collider.tag)
         {
             case ApplicationConst.KnightTag:
                 if (GameState == GameState.KnightSelected)
@@ -128,7 +187,7 @@ public class TouchListener : MonoBehaviour
                     GameState = GameState.Playing;
                 }
                 break;
-        }
+        }*/
         Debug.Log(GameState);
     }
 
