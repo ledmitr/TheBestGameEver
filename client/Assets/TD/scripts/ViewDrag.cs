@@ -68,12 +68,12 @@ public class ViewDrag : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                hit_position = Input.mousePosition;
-                camera_position = transform.position;
+                _hitPosition = Input.mousePosition;
+                _cameraPosition = transform.position;
             }
             if (Input.GetMouseButton(0))
             {
-                current_position = Input.mousePosition;
+                _currentPosition = Input.mousePosition;
                 LeftMouseDrag();
             }
         } else if (Input.touchCount >= 2)

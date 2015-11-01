@@ -113,12 +113,7 @@ public class TouchListener : MonoBehaviour
                 } 
                 else if (hit.collider.tag == ApplicationConst.TowerTag)
                 {
-                    var selectedKnight = GameObject.FindGameObjectsWithTag(ApplicationConst.KnightTag)
-                        .Select(x => x.GetComponent<KnightScript>())
-                        .Single(x => x.IsSelected());
-                    selectedKnight.GetComponent<KnightScript>().TargetPositionChanged(hit.collider.transform.position);
-                    selectedKnight.Select(false);
-                    GameState = GameState.Playing;
+                    SendKnightToTower(hit);
                 }
                 else if (hit.collider.tag == ApplicationConst.LandTag)
                 {
@@ -132,63 +127,29 @@ public class TouchListener : MonoBehaviour
             case GameState.WaitingForPlayer:
                 break;
         }
-        /*switch (hit.collider.tag)
-        {
-            case ApplicationConst.KnightTag:
-                if (GameState == GameState.KnightSelected)
-                {
-                    var knightScript = hit.collider.gameObject.GetComponent<KnightScript>();
-                    if (!knightScript.IsSelected())
-                    {
-                        UnselectAll();
-                        knightScript.Select(true);
-                    }
-                }
-                else
-                {
-                    UnselectAll();
-                    GameState = GameState.KnightSelected;
-                    hit.collider.gameObject.GetComponent<KnightScript>().Select(true);
-                }
-                break;
-            case ApplicationConst.TentTag:
-                if (GameState == GameState.ChooseNewKnightPosition)
-                {
-                    CreateKnight(hit.collider.gameObject);
-                    HintPanel.SetActive(false);
-                    GameState = GameState.Playing;
-                }
-                break;
-            case ApplicationConst.TowerTag:
-                if (GameState == GameState.KnightSelected)
-                {
-                    var selectedKnight = GameObject.FindGameObjectsWithTag(ApplicationConst.KnightTag)
-                        .Select(x => x.GetComponent<KnightScript>())
-                        .Single(x => x.IsSelected());
-                    selectedKnight.GetComponent<KnightScript>().TargetPositionChanged(hit.collider.transform.position);
-                    selectedKnight.Select(false);
-                    GameState = GameState.Playing;
-                }
-                else
-                {
-                    //GameState = GameState.TowerSelected;
-                }
-                break;
-            case ApplicationConst.LandTag:
-                if (GameState == GameState.ChooseNewTowerPosition)
-                {
-                    CreateTower(hit.point);
-                    HintPanel.SetActive(false);
-                    GameState = GameState.Playing;
-                }
-                else
-                {
-                    UnselectAll();
-                    GameState = GameState.Playing;
-                }
-                break;
-        }*/
         Debug.Log(GameState);
+    }
+
+    private void SendKnightToTower(RaycastHit hit)
+    {
+        var knights = GameObject.FindGameObjectsWithTag(ApplicationConst.KnightTag);
+        KnightScript selectedKnight = null;
+        foreach (var knight in knights)
+        {
+            var knightComponent = knight.GetComponent<KnightScript>();
+            if (knightComponent != null && knightComponent.IsSelected())
+            {
+                selectedKnight = knightComponent;
+                break;
+            }
+        }
+        if (selectedKnight != null)
+        {
+            selectedKnight.TargetPositionChanged(hit.collider.transform.position);
+            //selectedKnight.Select(false);
+            GameState = GameState.Playing;
+        }
+        UnselectAll();
     }
 
     private void SetHint(string hintText)
@@ -202,10 +163,13 @@ public class TouchListener : MonoBehaviour
 
     private void UnselectAll() {
         var selectableObjects = GameObject.FindGameObjectsWithTag(ApplicationConst.SelectableTag);
-        foreach (GameObject selectableObject in selectableObjects)
+        if (selectableObjects != null && selectableObjects.Length != 0)
         {
-            Selectable objectMain = selectableObject.transform.parent.gameObject.GetComponent<Selectable>();
-            objectMain.Select(false);
+            foreach (GameObject selectableObject in selectableObjects)
+            {
+                Selectable objectMain = selectableObject.transform.parent.gameObject.GetComponent<Selectable>();
+                objectMain.Select(false);
+            }
         }
     }
     

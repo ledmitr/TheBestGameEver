@@ -81,9 +81,9 @@
     <Compile Include="Assets\TD\scripts\CreateCubesArray.cs" />
     <Compile Include="Assets\TD\scripts\GameScene.cs" />
     <Compile Include="Assets\TD\scripts\GameState.cs" />
-    <Compile Include="Assets\TD\scripts\GameStateMachine.cs" />
     <Compile Include="Assets\TD\scripts\KnightScript.cs" />
     <Compile Include="Assets\TD\scripts\MainMenu.cs" />
+    <Compile Include="Assets\TD\scripts\EnemyHealth.cs" />
     <Compile Include="Assets\TD\scripts\Selectable.cs" />
     <Compile Include="Assets\TD\scripts\SettingsMenu.cs" />
     <Compile Include="Assets\TD\scripts\StatisticsMenu.cs" />
@@ -108,6 +108,7 @@
     <None Include="Assets\TD\shaders\OutlineDiffise.shader" />
     <None Include="Assets\TD\shaders\ProjectorAdditiveTint.shader" />
     <None Include="Assets\field.txt" />
+    <None Include="Assets\TD\shaders\TerrainCartoon.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2012\UnityVS.CSharp.targets" />
 </Project>

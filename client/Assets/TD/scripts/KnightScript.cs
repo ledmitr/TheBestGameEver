@@ -5,7 +5,6 @@ namespace Assets.TD.scripts
 {
     public class KnightScript : Selectable
     {
-        public int Health { get; private set; }
 
         private Vector3 _targetPosition;
 
@@ -38,7 +37,7 @@ namespace Assets.TD.scripts
 
         public void Start()
         {
-            Health = 100;
+            //HealthBar = new HealthBar();
             _isSelected = false;
             _isMoving = _pathToMainTower != null && _pathToMainTower.Length > 1;
             _renderer = GetComponent<Renderer>();
