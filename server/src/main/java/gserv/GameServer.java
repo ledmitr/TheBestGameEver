@@ -117,15 +117,16 @@ public class GameServer implements Runnable {
                     code = -2;
                     throw new Error("You have already logged on this server");
                 }
-                if (!secret_key.equals(content.get("secretkey"))) {
+                if (!secret_key.equals(content.get("secret_key"))) {
                     code = -1;
                     throw new Error("You have invalid secret key.");
                 }
-                new_content.put("servername", SERVER_NAME);
-                new_content.put("gameid", game_id);
-                clients[numClient].name = content.get("name").toString();
+                new_content.put("server_name", SERVER_NAME);
+                new_content.put("game_id", game_id);
+                clients[numClient].userId = Integer.valueOf(content.get("user_id").toString());
                 clients[numClient].setStatus(Client.STATUS_LOGGED);
-                throw new Error("Hello " + clients[numClient].name + "! You have successfully logged on this server");
+                System.out.println("User #" + clients[numClient].userId + " has logged succeful!");
+                throw new Error("Hello! You have successfully logged on this server");
             } catch (Error err) {
                 new_content.put("message", err.getMessage());
             }
@@ -138,11 +139,11 @@ public class GameServer implements Runnable {
             return;
         }
         //Ниже обрабатываются запросы уже для представившихся и одобренных клиентов
-        if (data.get("action").toString().equals("post")) {
+        if (data.get("action").toString().equals("message")) {
             if (numClient == 1) {
-                clients[0].sendData(APITemplates.build("post", 0, data.get("content").toString()));
+                clients[0].sendData(APITemplates.build("message", 0, data.get("content").toString()));
             } else {
-                clients[1].sendData(APITemplates.build("post", 0, data.get("content").toString()));
+                clients[1].sendData(APITemplates.build("message", 0, data.get("content").toString()));
             }
             return;
         }

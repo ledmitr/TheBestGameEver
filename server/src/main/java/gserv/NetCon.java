@@ -15,12 +15,6 @@ import gserv.Helper;
  */
 public class NetCon extends Thread {
     /**
-     * Определяет последовательность символов, которая говорит об
-     * окончании приёма целого пакета данных
-     */
-    protected static final String END_OF_RECIVE_DATA = "!end";
-
-    /**
      * Сокет для связи с клиентом
      */
     protected Socket sock;
@@ -57,22 +51,9 @@ public class NetCon extends Thread {
         try {
             System.out.println("Client has started!");
             InputStream is = sock.getInputStream();
-            byte buff[] = new byte[64 * 1024];
-            String partsBuffer[];
+            NetParser parser = new NetParser(is, reciveData);
             while (true) {
-                buffer = buffer.concat(new String(buff, 0, is.read(buff)));
-                //Проверяем, пришли ли данные полностью, разделяем буфер делителем END_OF_RECIVE_DATA
-                while (buffer.indexOf(END_OF_RECIVE_DATA) != -1) {
-                    partsBuffer = buffer.split(END_OF_RECIVE_DATA, 2);
-                    buffer = partsBuffer[1];
-                    //Пытаемся прочитать json сообщение
-                    JSONObject data = Helper.tryReadJSON(partsBuffer[0]);
-                    if (data == null) {
-                        continue;
-                    }
-                    //Добавляем данные в очередь приёма
-                    reciveData.add(data);
-                }
+                parser.goParse();
             }
         } catch (Exception e) {
             e.printStackTrace();

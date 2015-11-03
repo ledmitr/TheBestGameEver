@@ -25,9 +25,9 @@ public class Client extends NetCon {
     private int status;
 
     /**
-     * Имя клиента/игрока
+     * Индетификтор пользователя на фронт-сервере
      */
-    public String name;
+    public int userId;
 
     /**
      * Конструктор
