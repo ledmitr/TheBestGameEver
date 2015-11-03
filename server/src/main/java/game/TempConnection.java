@@ -1,8 +1,13 @@
 package game;
 
+import gserv.NetParser;
+import org.json.simple.JSONObject;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -11,23 +16,43 @@ import java.util.concurrent.CountDownLatch;
 public class TempConnection extends Thread{
 
     Socket sock;
-    private CountDownLatch latch;
     volatile boolean isReady = false;
     volatile Integer createdPort;
     volatile String key;
+    private byte[] inBuf = new byte[256];
+    private byte[] outBuf = new byte[256];
+    InputStream is;
+    OutputStream os;
 
     TempConnection(Socket sock){
-        //this.latch = latch;
         this.sock = sock;
         this.start();
     }
 
     public void run(){
+        try {
+            is = sock.getInputStream();
+            os = sock.getOutputStream();
+
+            Queue<JSONObject> reciveData = null;
+            InputStream is = sock.getInputStream();
+            NetParser parser = new NetParser(is, reciveData);
+           // while (true) {
+                parser.goParse();
+            //}
+            System.out.print(reciveData.poll().toString());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         while(!isReady){}
 
-        OutputStream os = null;
+
         try {
-            os = sock.getOutputStream();
             if (createdPort != null) {
                 // TODO: change to sending json message
                 System.out.println("Send port number to client");
@@ -44,7 +69,6 @@ public class TempConnection extends Thread{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //latch.countDown();
 
     }
 

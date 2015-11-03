@@ -60,7 +60,7 @@ public class NetParser {
      * @param arg_is ссылка на объект InputStream
      * @param arg_rd ссылка на объект очереди Queue<JSONObject>
      */
-    NetParser(InputStream arg_is, Queue<JSONObject> arg_rd) {
+    public NetParser(InputStream arg_is, Queue<JSONObject> arg_rd) {
         is = arg_is;
         reciveData = arg_rd;
         buffer = "";
