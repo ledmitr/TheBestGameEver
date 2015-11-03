@@ -35,20 +35,23 @@ public class NetworkConnection extends Thread {
     @Override
     public void run() {
 
+
         while(true){
 
+            CountDownLatch latch = new CountDownLatch(2);
             TempConnection.isReady = false;
             try {
-                TempConnection first = new TempConnection(mainSocket.accept());
-                TempConnection second = new TempConnection(mainSocket.accept());
-                new Thread(first).start();
-                new Thread(second).start();
+                new TempConnection(latch, mainSocket.accept()).start();
+                System.out.println("First client connected");
+                new TempConnection(latch, mainSocket.accept()).start();
+                System.out.println("Second client connected");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             ServerSocket gameSocket = null;
             try {
+                System.out.println("Create game socket");
                 gameSocket = new ServerSocket(0);
                 int createdPort = gameSocket.getLocalPort();
                 TempConnection.setPort(createdPort);
@@ -59,18 +62,17 @@ public class NetworkConnection extends Thread {
 
             TempConnection.isReady = true;
 
-            // TODO: REMOVE IT by latch or smth else
             try {
-                sleep(100);
+                latch.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            Thread gameThread = new Thread(new GameServer(gameSocket, 123, TempConnection.key));
-            gameThread.start();
-
+            System.out.println("Start game thread");
+            new Thread(new GameServer(gameSocket, 123, TempConnection.key)).start();
         }
-
     }
 
+    public void waitForTwoClients(){
+
+    }
 }
