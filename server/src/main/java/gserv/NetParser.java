@@ -8,14 +8,14 @@ import java.util.Queue;
 /**
  * Класс обеспечивает парсинг сообщений из сети от клиентов, помещая прочитанное в очередь.
  * Пример вызова из кода:
- * <p/>
+ *
  * Queue<JSONObject> reciveData;
  * InputStream is = sock.getInputStream();
  * NetParser parser = new NetParser(is, reciveData);
  * while (true) {
- * parser.goParse();
+ *      parser.goParse();
  * }
- * <p/>
+ *
  * Пример того, как достать данные из очереди:
  * JSONObject message = reciveData.poll(); - достаём сообщение из очереди
  * Чтобы понять как происходит обработка этих данных, следует обратиться к документации
