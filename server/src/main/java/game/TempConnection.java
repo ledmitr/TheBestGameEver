@@ -2,10 +2,7 @@ package game;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -15,13 +12,14 @@ public class TempConnection extends Thread{
 
     Socket sock;
     private CountDownLatch latch;
-    volatile static boolean isReady = false;
-    volatile static Integer createdPort;
-    volatile static String key;
+    volatile boolean isReady = false;
+    volatile Integer createdPort;
+    volatile String key;
 
-    TempConnection(CountDownLatch latch, Socket sock){
-        this.latch = latch;
+    TempConnection(Socket sock){
+        //this.latch = latch;
         this.sock = sock;
+        this.start();
     }
 
     public void run(){
@@ -35,7 +33,7 @@ public class TempConnection extends Thread{
                 System.out.println("Send port number to client");
                 os.write(createdPort.byteValue());
             } else {
-                throw new IOException();
+                throw new IOException("New port number is not available");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -46,21 +44,13 @@ public class TempConnection extends Thread{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        latch.countDown();
+        //latch.countDown();
 
     }
 
-    public static void setPort(int port){
-        createdPort = port;
-    }
-
-    public static void generateKey(){
-            Random random = new Random();
-            String allowedChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            char[] tmpKey = new char[8];
-            for (int i = 0; i < 8; i++) {
-                tmpKey[i] = allowedChars.charAt(random.nextInt(allowedChars.length()));
-            }
-        key = String.valueOf(tmpKey);
+    void setReady(Integer port, String key){
+        this.createdPort = port;
+        this.key = key;
+        this.isReady = true;
     }
 }

@@ -1,13 +1,7 @@
 package game;
 
-import gserv.GameServer;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.*;
 
 //import org.json.simple.JSONObject;
 
@@ -35,44 +29,17 @@ public class NetworkConnection extends Thread {
     @Override
     public void run() {
 
-
+        ConnectionManager manager = new ConnectionManager();
+        manager.start();
         while(true){
 
-            CountDownLatch latch = new CountDownLatch(2);
-            TempConnection.isReady = false;
             try {
-                new TempConnection(latch, mainSocket.accept()).start();
-                System.out.println("First client connected");
-                new TempConnection(latch, mainSocket.accept()).start();
-                System.out.println("Second client connected");
+                TempConnection tempConnection = new TempConnection(mainSocket.accept());
+                manager.addConnection(tempConnection);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            ServerSocket gameSocket = null;
-            try {
-                System.out.println("Create game socket");
-                gameSocket = new ServerSocket(0);
-                int createdPort = gameSocket.getLocalPort();
-                TempConnection.setPort(createdPort);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            TempConnection.generateKey();
-
-            TempConnection.isReady = true;
-
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("Start game thread");
-            new Thread(new GameServer(gameSocket, 123, TempConnection.key)).start();
         }
     }
 
-    public void waitForTwoClients(){
-
-    }
 }
