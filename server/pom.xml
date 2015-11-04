@@ -54,9 +54,9 @@
                         </goals>
                         <configuration>
                             <artifactSet>
-                                <excludes>
-                                    <exclude>com.googlecode.json-simple:json-simple</exclude>
-                                </excludes>
+                                <includes>
+                                    <include>com.googlecode.json-simple:json-simple</include>
+                                </includes>
                             </artifactSet>
                         </configuration>
                     </execution>
