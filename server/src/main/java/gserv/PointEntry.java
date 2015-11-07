@@ -13,8 +13,8 @@ import java.net.ServerSocket;
 public class PointEntry {
     public static void main(String[] args) throws Exception {
         //Запускаем новый сервер в новом потоке
-        Thread game1 = new Thread(new GameServer(new ServerSocket(1993, 0, InetAddress.getByName("localhost")), 21, "H34MS23"));
+        Thread game1 = new Thread(new GameServer(new ServerSocket(1995, 0, InetAddress.getByName(args[0].toString())), 21, "H34MS23"));
         game1.start();
-        System.out.println("Main stream has complited!");
+        System.out.println("Main stream has complited!" + args[0]);
     }
 }
