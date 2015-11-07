@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Linq;
+﻿using System.Linq;
 using Assets.TD.scripts;
 using UnityEngine;
 using UnityEngine.UI;
+using Selectable = Assets.TD.scripts.Selectable;
 
 public class TouchListener : MonoBehaviour
 {
@@ -15,12 +15,26 @@ public class TouchListener : MonoBehaviour
         SidePanel.SetActive(false);
         HumburgerButton.SetActive(true);
         HintPanel.SetActive(false);
-        //CreateKnightButton.SetActive(true);
+        MessagePanel.SetActive(false);
     }
 
     // Update is called once per frame
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (MessagePanel.activeSelf)
+            {
+                BackToGameFromMessageCanvas();
+                return;
+            }
+            else
+            {
+                MessagePanel.SetActive(true);
+                return;
+            }
+        }
+
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
             //declare a variable of RaycastHit struct
@@ -36,23 +50,20 @@ public class TouchListener : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 ProcessClick(hit);
-                //if (_isCreateTowerMode && hit.collider.tag == ApplicationConst.FieldTag)
-                //{
-                //    CreateTower(hit.transform.position);
-                //    HintPanel.SetActive(false);
-                //    _isCreateTowerMode = false;
-                //} else if (_isCreateKnightMode && hit.collider.tag == ApplicationConst.TentTag)
-                //{
-                //    CreateKnight(hit.collider.gameObject);
-                //    HintPanel.SetActive(false);
-                //    _isCreateKnightMode = false;
-                //}
-                //else
-                //{
-                //    StartCoroutine(ProcessHit(hit));
-                //}
             }
         }
+    }
+
+    public GameObject MessagePanel;
+    
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+
+    public void BackToGameFromMessageCanvas()
+    {
+        MessagePanel.SetActive(false);
     }
 
     private void ProcessClick(RaycastHit hit)
@@ -62,73 +73,106 @@ public class TouchListener : MonoBehaviour
 
         Debug.Log(GameState);
         Debug.Log(hit.collider.tag);
-        switch (hit.collider.tag)
+        switch (GameState)
         {
-            case ApplicationConst.KnightTag:
-                GameState = GameState.KnightSelected;
-                hit.collider.gameObject.GetComponent<KnightScript>().Select();
+            case GameState.Playing:
+                if (hit.collider.tag == ApplicationConst.KnightTag)
+                {
+                    UnselectAll();
+                    GameState = GameState.KnightSelected;
+                    hit.collider.gameObject.GetComponent<KnightScript>().Select(true);
+                }
                 break;
-            case ApplicationConst.TentTag:
-                //hit.collider.gameObject.GetComponent<TentScript>().Select();
-                //GameState = GameState.TentSelected;
-                if (GameState == GameState.ChooseNewKnightPosition)
+            case GameState.ChooseNewTowerPosition:
+                if (hit.collider.tag == ApplicationConst.LandTag)
+                {
+                    CreateTower(hit.point);
+                    HintPanel.SetActive(false);
+                    GameState = GameState.Playing;
+                }
+                break;
+            case GameState.ChooseNewKnightPosition:
+                if (hit.collider.tag == ApplicationConst.TentTag)
                 {
                     CreateKnight(hit.collider.gameObject);
                     HintPanel.SetActive(false);
                     GameState = GameState.Playing;
                 }
                 break;
-            case ApplicationConst.TowerTag:
-                if (GameState == GameState.KnightSelected)
+            case GameState.TentSelected:
+                break;
+            case GameState.KnightSelected:
+                if (hit.collider.tag == ApplicationConst.KnightTag)
                 {
-                    var selectedKnight = GameObject.FindGameObjectsWithTag(ApplicationConst.KnightTag)
-                        .Select(x => x.GetComponent<KnightScript>())
-                        .Single(x => x.IsSelected);
-                    selectedKnight.GetComponent<KnightScript>().TargetPositionChanged(hit.collider.transform.position);
-                    GameState = GameState.Playing;
+                    var knightScript = hit.collider.gameObject.GetComponent<KnightScript>();
+                    if (!knightScript.IsSelected())
+                    {
+                        UnselectAll();
+                        knightScript.Select(true);
+                    }
+                } 
+                else if (hit.collider.tag == ApplicationConst.TowerTag)
+                {
+                    SendKnightToTower(hit);
                 }
-                else
+                else if (hit.collider.tag == ApplicationConst.LandTag)
                 {
-                    GameState = GameState.TowerSelected;
-                    //hit.collider.gameObject.GetComponent<TowerScript>().Select();
+                    UnselectAll();
                 }
                 break;
-            case ApplicationConst.LandTag:
-                if (GameState == GameState.ChooseNewTowerPosition)
-                {
-                    CreateTower(hit.point);
-                    HintPanel.SetActive(false);
-                    //_isCreateTowerMode = false;
-                    GameState = GameState.Playing;
-                }
+            case GameState.TowerSelected:
+                break;
+            case GameState.Finished:
+                break;
+            case GameState.WaitingForPlayer:
                 break;
         }
         Debug.Log(GameState);
     }
-    
-    private void UnchooseAll() {
-        //hide all chooseCircles
-        var circles = GameObject.FindGameObjectsWithTag(ApplicationConst.ChooseCircleTag);
-        foreach (var circleRendererL in circles.Select(x => x.GetComponent<Renderer>()))
+
+    private void SendKnightToTower(RaycastHit hit)
+    {
+        var knights = GameObject.FindGameObjectsWithTag(ApplicationConst.KnightTag);
+        KnightScript selectedKnight = null;
+        foreach (var knight in knights)
         {
-            circleRendererL.enabled = false;
+            var knightComponent = knight.GetComponent<KnightScript>();
+            if (knightComponent != null && knightComponent.IsSelected())
+            {
+                selectedKnight = knightComponent;
+                break;
+            }
+        }
+        if (selectedKnight != null)
+        {
+            selectedKnight.TargetPositionChanged(hit.collider.transform.position);
+            //selectedKnight.Select(false);
+            GameState = GameState.Playing;
+        }
+        UnselectAll();
+    }
+
+    private void SetHint(string hintText)
+    {
+        var text = HintPanel.GetComponentInChildren<Text>();
+        if (text != null)
+        {
+            text.text = hintText;
         }
     }
 
-    //private IEnumerator ProcessHit(RaycastHit hit)
-    //{
-    //    if (hit.collider.tag == ApplicationConst.TowerTag || hit.collider.tag == ApplicationConst.TentTag)
-    //    {
-    //        UnchooseAll();
-
-    //        //show chooseCircle at selected object
-    //        var circleRenderer = hit.transform.gameObject.GetComponentsInChildren<Renderer>().FirstOrDefault(x => x.gameObject.tag == ApplicationConst.ChooseCircleTag);
-    //        if (circleRenderer != null)
-    //            circleRenderer.enabled = !circleRenderer.enabled;
-    //    }
-    //    yield return 0;
-    //}
-
+    private void UnselectAll() {
+        var selectableObjects = GameObject.FindGameObjectsWithTag(ApplicationConst.SelectableTag);
+        if (selectableObjects != null && selectableObjects.Length != 0)
+        {
+            foreach (GameObject selectableObject in selectableObjects)
+            {
+                Selectable objectMain = selectableObject.transform.parent.gameObject.GetComponent<Selectable>();
+                objectMain.Select(false);
+            }
+        }
+    }
+    
     public void BackToMenu()
     {
         Application.LoadLevel("MainMenu");
@@ -143,20 +187,14 @@ public class TouchListener : MonoBehaviour
     {
         HumburgerButton.SetActive(!HumburgerButton.activeSelf);
         SidePanel.SetActive(!SidePanel.activeSelf);
-        //CreateKnightButton.SetActive(false);
-        //CreateTowerButton.SetActive(true);
     }
 
     public GameObject TowerPrefab;
     public GameObject KnightPrefab;
     public GameObject HintPanel;
-
-    //private bool _isCreateTowerMode = false;
-    //private bool _isCreateKnightMode = false;
-
+    
     private void CreateTower(Vector3 targetTowerPosition)
     {
-        //var position = new Vector3(targetTowerPosition.x, targetTowerPosition.y + 5.0F, targetTowerPosition.z);
         var position = targetTowerPosition;
         Instantiate(TowerPrefab, position, Quaternion.identity);
     }
@@ -164,32 +202,35 @@ public class TouchListener : MonoBehaviour
     public void ProcessCreateTowerButton()
     {
         ProcessHamburgerButton();
+        SetHint(ApplicationConst.CreateTowerHint);
         HintPanel.SetActive(true);
-        //_isCreateTowerMode = true;
         GameState = GameState.ChooseNewTowerPosition;
     }
 
     private void CreateKnight(GameObject tent)
     {
-        var knight = KnightPrefab;
-        knight.transform.localScale.Set(1, 1, 1);
-        var knightPosition = new Vector3(tent.transform.position.x, 0.5F, tent.transform.position.z - 3);
-        Instantiate(knight, knightPosition, Quaternion.identity);
+        var knightPrefab = KnightPrefab;
+        knightPrefab.transform.localScale.Set(1, 1, 1);
+        var knightPosition = new Vector3(tent.transform.position.x + 1.6F, tent.transform.position.y, tent.transform.position.z - 2.5F);
+        var knight = (GameObject)Instantiate(knightPrefab, knightPosition, Quaternion.identity);
+
+        var tentScript = tent.GetComponent<TentScript>();
+        var knightScript = knight.GetComponent<KnightScript>();
+        knightScript.SetPath(tentScript.GetPath());
     }
 
     public void ProcessCreateKnightButton()
     {
         ProcessHamburgerButton();
+        SetHint(ApplicationConst.CreateKnightHint);
         HintPanel.SetActive(true);
-        //HintPanel.FindChild("HintText").SetText("TAP ON TENT TO CREATE KNIGHT")
-        //_isCreateKnightMode = true;
         GameState = GameState.ChooseNewKnightPosition;
     }
 
     public void HideSidePanel() {
         SidePanel.SetActive(false);
         HumburgerButton.SetActive(true);
-        UnchooseAll();
+        UnselectAll();
     }
 
     private static bool WasJustAButton()
@@ -204,6 +245,3 @@ public class TouchListener : MonoBehaviour
         return true;
     }
 }
-
-
-

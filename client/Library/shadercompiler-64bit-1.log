@@ -1,21 +1,59 @@
 Base path: D:/Installed/Unity/Editor/Data
-Pipe name: \\.\pipe\UnityShaderCompiler-64bit-1-1584
+Pipe name: \\.\pipe\UnityShaderCompiler-64bit-1-212
 Cmd: getPlatforms
 Cmd: compileSnippet
-  api=5 type=0 insize=886 outsize=8323 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF _NORMALMAP pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+  api=4 type=0 insize=4078 outsize=2753 kw=POINT SHADOWS_OFF pd= ok=1
 Cmd: compileSnippet
-  api=5 type=0 insize=886 outsize=8943 kw=DIRECTIONAL SHADOWS_SCREEN SHADOWS_NATIVE LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF _NORMALMAP pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+  api=4 type=1 insize=4078 outsize=6165 kw=POINT SHADOWS_OFF pd= ok=1
 Cmd: compileSnippet
-  api=5 type=1 insize=886 outsize=6 kw=DIRECTIONAL SHADOWS_SCREEN SHADOWS_NATIVE LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF _NORMALMAP pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+  api=4 type=0 insize=63421 outsize=4402 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF pd= ok=1
 Cmd: compileSnippet
-  api=5 type=0 insize=816 outsize=6806 kw=POINT SHADOWS_OFF _NORMALMAP pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+  api=4 type=1 insize=63421 outsize=3143 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF pd= ok=1
 Cmd: compileSnippet
-  api=5 type=0 insize=816 outsize=7877 kw=SPOT SHADOWS_DEPTH SHADOWS_NATIVE _NORMALMAP pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+  api=4 type=0 insize=3666 outsize=2753 kw=POINT pd= ok=1
 Cmd: compileSnippet
-  api=5 type=0 insize=816 outsize=6841 kw=DIRECTIONAL SHADOWS_SCREEN SHADOWS_NATIVE _NORMALMAP pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+  api=4 type=1 insize=3666 outsize=1948 kw=POINT pd= ok=1
 Cmd: compileSnippet
-  api=5 type=1 insize=816 outsize=6 kw=DIRECTIONAL SHADOWS_OFF _NORMALMAP pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+  api=4 type=0 insize=6895 outsize=5117 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF VERTEXLIGHT_ON pd= ok=1
+Cmd: preprocess
+  error: 2 plat 18 at (65): Too many texture interpolators would be used for ForwardBase pass (11 out of max 10)
+  insize=3413 outsize=2863 ok=0
+Cmd: preprocess
+  error: 2 plat 18 at (65): Too many texture interpolators would be used for ForwardBase pass (11 out of max 10)
+  insize=3434 outsize=2864 ok=0
 Cmd: compileSnippet
-  api=5 type=1 insize=816 outsize=6 kw=SPOT SHADOWS_DEPTH SHADOWS_NONATIVE _NORMALMAP pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+  api=5 type=0 insize=1070 outsize=1059 kw= pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
 Cmd: compileSnippet
-  api=5 type=1 insize=816 outsize=6 kw=POINT SHADOWS_CUBE _NORMALMAP pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+  api=5 type=1 insize=1070 outsize=6 kw= pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+Cmd: compileSnippet
+  api=5 type=0 insize=1162 outsize=552 kw= pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+Cmd: compileSnippet
+  api=5 type=1 insize=1162 outsize=6 kw= pd=UNITY_NO_DXT5nm UNITY_NO_RGBM UNITY_NO_SCREENSPACE_SHADOWS UNITY_NO_LINEAR_COLORSPACE ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=7335 outsize=4963 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF VERTEXLIGHT_ON pd= ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=41386 outsize=3256 kw=POINT pd= ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=41386 outsize=3988 kw=POINT pd= ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=39595 outsize=3256 kw=POINT pd= ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=39595 outsize=3078 kw=POINT pd= ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=63421 outsize=5856 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF VERTEXLIGHT_ON pd= ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=6895 outsize=5507 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF VERTEXLIGHT_ON pd= ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=63421 outsize=5466 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF VERTEXLIGHT_ON pd= ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=530 outsize=2224 kw= pd= ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=530 outsize=1899 kw= pd= ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=1041 outsize=2265 kw= pd= ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=1041 outsize=892 kw= pd= ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=982 outsize=5751 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF VERTEXLIGHT_ON pd= ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=982 outsize=7351 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF VERTEXLIGHT_ON _PARALLAXMAP pd= ok=1

@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class SettingsMenu : MonoBehaviour {
-    
+public class SettingsMenu : MonoBehaviour
+{
+    public GameObject MainMenuItems;
+    public GameObject SettingsMenuItems;
+
 	// Логическая переменная, отвечающая за нажатие кнопки High.
 	public bool is_high;
 	// Логическая переменная, отвечающая за нажатие кнопки Medium.
@@ -10,7 +12,7 @@ public class SettingsMenu : MonoBehaviour {
 	// Логическая переменная, отвечающая за нажатие кнопки Low.
 	public bool is_low;
 	// Строковая переменная, хранящая название сцены Settings.
-	public string back;
+	//public string back;
 	// Логическая переменная, отвечающая за нажатие кнопки Exit.
 	public bool is_back;
 	
@@ -45,7 +47,10 @@ public class SettingsMenu : MonoBehaviour {
 		}
 		if(is_back)
 		{
-			Application.LoadLevel(back);
+            OnMouseExit();
+            SettingsMenuItems.SetActive(false);
+            MainMenuItems.SetActive(true);
+			//Application.LoadLevel(back);
 		}
 	}
 }

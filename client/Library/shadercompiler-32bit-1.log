@@ -1,7 +1,13 @@
-Base path: D:/Installed/Unity/Editor/Data
-Pipe name: \\.\pipe\UnityShaderCompiler-32bit-1-1584
+Base path: C:/Program Files/Unity5/Editor/Data
+Pipe name: \\.\pipe\UnityShaderCompiler-32bit-1-3152
 Cmd: getPlatforms
-Unhandled exception: Readfile from pipe failed. GLE=Канал был закрыт.
-
-
-Quitting shader compiler process
+Cmd: compileSnippet
+  api=4 type=0 insize=7364 outsize=3508 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF pd= ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=7364 outsize=10163 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF pd= ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=7364 outsize=4963 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF VERTEXLIGHT_ON pd= ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=4107 outsize=2753 kw=POINT SHADOWS_OFF pd= ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4107 outsize=6165 kw=POINT SHADOWS_OFF pd= ok=1

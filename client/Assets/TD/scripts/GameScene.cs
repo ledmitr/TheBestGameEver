@@ -12,7 +12,7 @@ public class GameScene : MonoBehaviour
     public float duration = 0.1f;
     //vertical position of the gameobject
     private float yAxis;
-    
+
     private void Start()
     {
         //save the y axis value of gameobject
