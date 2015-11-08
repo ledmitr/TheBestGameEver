@@ -2,6 +2,7 @@ package gserv;
 
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * Класс с разнообразными полезными функциями
@@ -16,9 +17,11 @@ public class Helper {
     public static JSONObject tryReadJSON(String message) {
         try {
             JSONParser parser = new JSONParser();
-            JSONObject jsonObj = (JSONObject) parser.parse(message);
+            JSONObject jsonObj = null;
+            jsonObj = (JSONObject) parser.parse(message);
             return jsonObj;
-        } catch (Exception e) {
+        } catch (ParseException e) {
+            System.out.println("Catch ParseException");
             return null;
         }
     }

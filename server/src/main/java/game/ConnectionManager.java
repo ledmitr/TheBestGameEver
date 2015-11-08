@@ -12,10 +12,12 @@ import java.util.concurrent.*;
  */
 public class ConnectionManager extends Thread{
     ConcurrentLinkedDeque<TempConnection> connections;
+    ConcurrentLinkedDeque<TempConnection> loggedConnections;
+    LogChecker logChecker;
 
     public void run(){
         while(true){
-            if (connections.size()>=2){
+            if (loggedConnections.size()>=2){
                 System.out.println("Create game socket");
                 ServerSocket gameSocket = null;
                 try {
@@ -25,10 +27,10 @@ public class ConnectionManager extends Thread{
                 }
                 int createdPort = gameSocket.getLocalPort();
 
-                TempConnection first = connections.removeFirst();
+                TempConnection first = loggedConnections.removeFirst();
                 String key = generateKey();
                 first.setReady(createdPort, key);
-                TempConnection second = connections.removeFirst();
+                TempConnection second = loggedConnections.removeFirst();
                 second.setReady(createdPort, key);
 
                 System.out.println("Start game thread");
@@ -39,6 +41,9 @@ public class ConnectionManager extends Thread{
 
     ConnectionManager() {
         connections = new ConcurrentLinkedDeque<TempConnection>();
+        loggedConnections = new ConcurrentLinkedDeque<TempConnection>();
+        logChecker = new LogChecker(this);
+        logChecker.start();
     }
 
     void addConnection(TempConnection connection){

@@ -2,22 +2,25 @@ package gserv;
 
 import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Queue;
+
+import static gserv.Helper.tryReadJSON;
 
 /**
  * Класс обеспечивает парсинг сообщений из сети от клиентов, помещая прочитанное в очередь.
  * Пример вызова из кода:
  *
- * Queue<JSONObject> reciveData;
+ * Queue<JSONObject> receiveData;
  * InputStream is = sock.getInputStream();
- * NetParser parser = new NetParser(is, reciveData);
+ * NetParser parser = new NetParser(is, receiveData);
  * while (true) {
  *      parser.goParse();
  * }
  *
  * Пример того, как достать данные из очереди:
- * JSONObject message = reciveData.poll(); - достаём сообщение из очереди
+ * JSONObject message = receiveData.poll(); - достаём сообщение из очереди
  * Чтобы понять как происходит обработка этих данных, следует обратиться к документации
  * по библиотеке simple json.
  * Пример обработки данных json реализован в функции handler файла GameServer в пакете gserv
@@ -27,7 +30,7 @@ public class NetParser {
      * Определяет последовательность символов, которая говорит об
      * окончании приёма целого пакета данных
      */
-    protected static final String END_OF_RECIVE_DATA = "!end";
+    protected static final String END_OF_RECEIVE_DATA = "!end";
 
     /**
      * Буффер данных, которые пока ещё не прошли успешную обработку на json строку
@@ -37,7 +40,7 @@ public class NetParser {
     /**
      * Очередь данных, полученных от клиента скапливается здесь
      */
-    private Queue<JSONObject> reciveData;
+    private Queue<JSONObject> receiveData;
 
     /**
      * Входящий поток от сокета клиента
@@ -62,7 +65,7 @@ public class NetParser {
      */
     public NetParser(InputStream arg_is, Queue<JSONObject> arg_rd) {
         is = arg_is;
-        reciveData = arg_rd;
+        receiveData = arg_rd;
         buffer = "";
         buff = new byte[64 * 1024];
     }
@@ -70,21 +73,22 @@ public class NetParser {
     /**
      * Запускаем процесс парсинга
      *
-     * @throws Exception вылетает, когда возникают проблемы с входным потоком
+     * @throws IOException вылетает, когда возникают проблемы с входным потоком
      */
-    public void goParse() throws Exception {
+    public void goParse() throws IOException {
         buffer = buffer.concat(new String(buff, 0, is.read(buff)));
-        //Проверяем, пришли ли данные полностью, разделяем буфер делителем END_OF_RECIVE_DATA
-        while (buffer.indexOf(END_OF_RECIVE_DATA) != -1) {
-            partsBuffer = buffer.split(END_OF_RECIVE_DATA, 2);
+        //Проверяем, пришли ли данные полностью, разделяем буфер делителем END_OF_RECEIVE_DATA
+        while (buffer.contains(END_OF_RECEIVE_DATA)) {
+            partsBuffer = buffer.split(END_OF_RECEIVE_DATA, 2);
             buffer = partsBuffer[1];
             //Пытаемся прочитать json сообщение
-            JSONObject data = Helper.tryReadJSON(partsBuffer[0]);
+            JSONObject data = tryReadJSON(partsBuffer[0]);
+
             if (data == null) {
                 continue;
             }
             //Добавляем данные в очередь приёма
-            reciveData.add(data);
+            receiveData.add(data);
         }
     }
 }

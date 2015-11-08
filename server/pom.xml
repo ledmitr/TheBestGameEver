@@ -37,7 +37,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>gserv.PointEntry</mainClass>
+                            <mainClass>game.App</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
