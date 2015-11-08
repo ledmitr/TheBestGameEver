@@ -12,7 +12,7 @@ public class App
     public static void main( String[] args )
     {
         System.out.println("Server started");
-        NetworkConnection netThread = new NetworkConnection();
+        NetworkConnection netThread = new NetworkConnection((String)args[0], (String)args[1]);
         netThread.start();
         while(true){
             try {

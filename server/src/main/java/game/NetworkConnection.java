@@ -1,6 +1,7 @@
 package game;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 
 //import org.json.simple.JSONObject;
@@ -14,11 +15,12 @@ public class NetworkConnection extends Thread {
     private byte[] inBuf = new byte[256];
     private byte[] outBuf = new byte[256];
 
-    NetworkConnection(){
+    NetworkConnection(String host, String port){
         System.out.println("Connection started");
 
         try {
-            mainSocket = new ServerSocket(8000);
+            System.out.println(Integer.parseInt(port));
+            mainSocket = new ServerSocket(Integer.parseInt(port), 0, InetAddress.getByName(host));
             System.out.println("Main socket opened");
         } catch (IOException e) {
             e.printStackTrace();

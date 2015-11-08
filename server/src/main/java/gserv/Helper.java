@@ -3,6 +3,7 @@ package gserv;
 import gserv.extra.LogException;
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * Класс с разнообразными полезными функциями
