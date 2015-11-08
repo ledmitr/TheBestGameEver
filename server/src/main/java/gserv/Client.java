@@ -1,6 +1,7 @@
 package gserv;
 
 import gserv.NetCon;
+import gserv.extra.LogException;
 import org.json.simple.JSONObject;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -34,7 +35,8 @@ public class Client extends NetCon {
      *
      * @param sc сокет клиента
      */
-    Client(Socket sc) {
+    Client(Socket sc)
+    {
         super(sc);
         status = STATUS_NOT_LOGGED;
     }
@@ -60,5 +62,26 @@ public class Client extends NetCon {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean sendData(String str)
+    {
+        if (super.sendData(str)) {
+            LogException.saveToLog("The data was successfully sent to the client with userid " + userId, str);
+            return true;
+        }
+        LogException.saveToLog("Unable to send data to the client with userid " + userId, str);
+        return false;
+    }
+
+    @Override
+    public JSONObject tryGetReciveData()
+    {
+        JSONObject jsobj = reciveData.poll();
+        if (jsobj != null) {
+            LogException.saveToLog("The data was successfully get from the client with userid " + userId, jsobj.toJSONString());
+        }
+        return jsobj;
     }
 }

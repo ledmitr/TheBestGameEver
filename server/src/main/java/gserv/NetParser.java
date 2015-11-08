@@ -1,7 +1,9 @@
 package gserv;
 
+import gserv.extra.LogException;
 import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Queue;
 
@@ -27,7 +29,7 @@ public class NetParser {
      * Определяет последовательность символов, которая говорит об
      * окончании приёма целого пакета данных
      */
-    protected static final String END_OF_RECIVE_DATA = "!end";
+    protected static final String END_OF_RECIEVE_DATA = "!end";
 
     /**
      * Буффер данных, которые пока ещё не прошли успешную обработку на json строку
@@ -72,18 +74,16 @@ public class NetParser {
      *
      * @throws Exception вылетает, когда возникают проблемы с входным потоком
      */
-    public void goParse() throws Exception {
+    public void goParse() throws IOException {
         buffer = buffer.concat(new String(buff, 0, is.read(buff)));
         //Проверяем, пришли ли данные полностью, разделяем буфер делителем END_OF_RECIVE_DATA
-        while (buffer.indexOf(END_OF_RECIVE_DATA) != -1) {
-            partsBuffer = buffer.split(END_OF_RECIVE_DATA, 2);
+        while (buffer.contains(END_OF_RECIEVE_DATA)) {
+            partsBuffer = buffer.split(END_OF_RECIEVE_DATA, 2);
             buffer = partsBuffer[1];
-            //Пытаемся прочитать json сообщение
             JSONObject data = Helper.tryReadJSON(partsBuffer[0]);
             if (data == null) {
                 continue;
             }
-            //Добавляем данные в очередь приёма
             reciveData.add(data);
         }
     }

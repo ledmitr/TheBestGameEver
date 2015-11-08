@@ -4,6 +4,7 @@ import gserv.GameServer;
 
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import gserv.extra.LogException;
 
 /**
  * Точка для запуска сервера.
@@ -15,6 +16,6 @@ public class PointEntry {
         //Запускаем новый сервер в новом потоке
         Thread game1 = new Thread(new GameServer(new ServerSocket(1995, 0, InetAddress.getByName(args[0].toString())), 21, "H34MS23"));
         game1.start();
-        System.out.println("Main stream has complited!" + args[0]);
+        LogException.saveToLog("Main stream has complited!", args[0]);
     }
 }

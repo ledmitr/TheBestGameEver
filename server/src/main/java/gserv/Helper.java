@@ -1,5 +1,6 @@
 package gserv;
 
+import gserv.extra.LogException;
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
 
@@ -19,6 +20,7 @@ public class Helper {
             JSONObject jsonObj = (JSONObject) parser.parse(message);
             return jsonObj;
         } catch (Exception e) {
+            LogException.saveToLog("Invalid json string.", message);
             return null;
         }
     }

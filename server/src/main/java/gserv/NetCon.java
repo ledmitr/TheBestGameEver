@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import gserv.extra.LogException;
 import org.json.simple.JSONObject;
 import gserv.Helper;
 
@@ -49,14 +50,14 @@ public class NetCon extends Thread {
     public void run()
     {
         try {
-            System.out.println("Client has started!");
+            LogException.saveToLog("Client has started!", "Anonymous");
             InputStream is = sock.getInputStream();
             NetParser parser = new NetParser(is, reciveData);
             while (true) {
                 parser.goParse();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
         }
     }
 
@@ -83,6 +84,7 @@ public class NetCon extends Thread {
             OutputStream os = sock.getOutputStream();
             os.write(str.getBytes());
         } catch (Exception e) {
+            LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
             return false;
         }
         return true;

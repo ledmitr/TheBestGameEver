@@ -1,5 +1,7 @@
 package gserv;
 import java.net.*;
+
+import gserv.extra.LogException;
 import org.json.simple.JSONObject;
 
 /**
@@ -57,12 +59,12 @@ public class GameServer implements Runnable {
      */
     public void run() {
         try {
-            System.out.println("Game server with id = " + game_id + " has been started!");
+            LogException.saveToLog("Game server with id = " + game_id + " has been started!", "");
             for (int i = 0; i < 2; i++) {
                 newClient(i, wait_socket.accept());
             }
             proccessGame();
-            System.out.println("Game server with id = " + game_id + " has been stoped!");
+            LogException.saveToLog("Game server with id = " + game_id + " has been stoped!", "");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,7 +81,7 @@ public class GameServer implements Runnable {
         while (true) {
             for (int i = 0; i < 2; i++) {
                 if (clients[i].getState() == Thread.State.TERMINATED) {
-                    System.out.println("Client #" + (i + 1) + " was disconnected. The server goes into standby mode.");
+                    LogException.saveToLog("Client #" + (i + 1) + " was disconnected. The server goes into standby mode.", "");
                     newClient(i, wait_socket.accept());
                 }
                 data = clients[i].tryGetReciveData();
