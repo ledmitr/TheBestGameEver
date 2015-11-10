@@ -1,0 +1,50 @@
+//
+   Created by bodrik on 10.11.15.
+
+h1.pull-left События
+label#statusout.pull-right (не подключён)
+table.table-striped.table.table-hover
+    thead
+        tr
+            th #
+            th Время события
+            th Название события
+            th Дополнительно
+    tbody#out
+
+script(type='text/javascript').
+    var sock = new WebSocket("ws://#{constants.SERVER_HOST}:#{constants.WEB_SOCKET_PORT}");
+
+    sock.onmessage = function(event) {
+        var message = JSON.parse(event.data);
+
+        if (message['action'] == 'new-event') {
+            var rows = message.data;
+            for (var i in rows) {
+                addEventToTable(rows[i].id, rows[i].content, rows[i].extra, rows[i].date_event);
+            }
+        }
+
+        if (message['action'] == 'hello') {
+            $('#statusout').html('(подключён к ' + message.data['SERVERHOST'] + ')');
+        }
+    }
+
+    sock.onclose = function(event) {
+        $('#statusout').html('(не подключён)');
+    }
+
+    function addEventToTable(id, content, extra, dateEvent) {
+        var tbody = document.getElementById('out');
+        var tr = tbody.insertRow();
+        $(tr).css('opacity', 0);
+        var td_id = tr.insertCell(0);
+        var td_date_event = tr.insertCell(1);
+        var td_content = tr.insertCell(2);
+        var td_extra = tr.insertCell(3);
+        td_id.innerHTML = id;
+        td_content.innerHTML = content;
+        td_date_event.innerHTML = dateEvent;
+        td_extra.innerHTML = extra;
+        $(tr).animate({'opacity': 1}, 500);
+    }

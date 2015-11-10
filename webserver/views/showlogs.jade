@@ -1,0 +1,13 @@
+h1 Просмотр событий сервера
+table
+    thead
+        tr
+            th Номер записи
+            th Событие
+            th Дата и время
+            th Дополнительная информация
+    tbody
+        - each log in logs
+            tr
+                -each attr in log
+                    td #{attr}
