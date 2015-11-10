@@ -14,7 +14,7 @@ var ext = module.exports = {
     'pg': require('pg'),
     'constants': {
         'SERVER_NAME': 'TheBestGameEverWEB',
-        'SERVER_HOST': 'localhost',
+        'SERVER_HOST': '104.155.17.75',
         'CONTROLLERS_DIR': __dirname + '/controllers',
         'WEB_SERVER_PORT': 8080,
         'WEB_SOCKET_PORT': 8081,
