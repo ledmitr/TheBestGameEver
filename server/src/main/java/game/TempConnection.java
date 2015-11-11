@@ -1,6 +1,7 @@
 package game;
 
 import gserv.NetParser;
+import gserv.extra.LogException;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class TempConnection extends Thread{
 
     public void run() {
         System.out.println("New client connected");
+        LogException.saveToLog("New client connected", "main server");
         waitForAutorization();
 
         // Waiting for game
@@ -63,7 +65,7 @@ public class TempConnection extends Thread{
                     String email = (String) tmp.get("email");
                     String password = (String) tmp.get("md5_password");
                     isLogged = true;
-                    System.out.println("client loginned as "+email);
+                    LogException.saveToLog("client loginned as " + email, "main server");
                 }
             }
             else {
@@ -72,8 +74,10 @@ public class TempConnection extends Thread{
             }
 
         } catch (IOException e) {
+            LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
             e.printStackTrace();
         } catch (ParseException e) {
+            LogException.saveToLog(e.getMessage(), "main server");
             e.printStackTrace();
         }
 
@@ -82,7 +86,7 @@ public class TempConnection extends Thread{
     private void sendGameProperties(){
         try {
             if (createdPort != null) {
-                System.out.println("Send port number to client");
+                LogException.saveToLog("Send port number to client", "main server");
                 JSONObject obj = new JSONObject();
                 obj.put("action", "connect_to_game");
 
@@ -100,12 +104,14 @@ public class TempConnection extends Thread{
                 throw new IOException("New port number is not available");
             }
         } catch (IOException e) {
+            LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
             e.printStackTrace();
         }
         try {
-            System.out.println("Close temporary connection");
+            LogException.saveToLog("Close temporary connection", "main server");
             sock.close();
         } catch (IOException e) {
+            LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
             e.printStackTrace();
         }
     }

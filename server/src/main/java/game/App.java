@@ -1,5 +1,7 @@
 package game;
 
+import gserv.extra.LogException;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
 
@@ -11,7 +13,7 @@ public class App
 {
     public static void main( String[] args )
     {
-        System.out.println("Server started");
+        LogException.saveToLog("Main server started", "HOST: " + (String)args[0] + " PORT:" + (String)args[1]);
         NetworkConnection netThread = new NetworkConnection((String)args[0], (String)args[1]);
         netThread.start();
         while(true){
@@ -23,6 +25,7 @@ public class App
                     default:
                 }
             } catch (IOException e) {
+                LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
                 e.printStackTrace();
             }
         }

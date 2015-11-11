@@ -86,7 +86,7 @@ public class NetParser {
             if (data == null) {
                 continue;
             }
-            reciveData.add(data);
+            receiveData.add(data);
         }
     }
 }

@@ -1,5 +1,7 @@
 package game;
 
+import gserv.extra.LogException;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -16,13 +18,14 @@ public class NetworkConnection extends Thread {
     private byte[] outBuf = new byte[256];
 
     NetworkConnection(String host, String port){
-        System.out.println("Connection started");
+        LogException.saveToLog("Connection started", "main server");
 
         try {
             System.out.println(Integer.parseInt(port));
             mainSocket = new ServerSocket(Integer.parseInt(port), 0, InetAddress.getByName(host));
-            System.out.println("Main socket opened");
+            LogException.saveToLog("Main socket opened", "main server");
         } catch (IOException e) {
+            LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
             e.printStackTrace();
         }
     }

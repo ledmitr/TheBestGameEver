@@ -1,6 +1,7 @@
 package game;
 
 import gserv.GameServer;
+import gserv.extra.LogException;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,7 +19,7 @@ public class ConnectionManager extends Thread{
     public void run(){
         while(true){
             if (loggedConnections.size()>=2){
-                System.out.println("Create game socket");
+                LogException.saveToLog("Create game socket", "main server");
                 ServerSocket gameSocket = null;
                 try {
                     gameSocket = new ServerSocket(0);
@@ -33,8 +34,8 @@ public class ConnectionManager extends Thread{
                 TempConnection second = loggedConnections.removeFirst();
                 second.setReady(createdPort, key);
 
-                System.out.println("Start game thread");
-                new Thread(new GameServer(gameSocket, 123, key)).start();
+                LogException.saveToLog("Start game thread", "main server");
+                new Thread(new GameServer(gameSocket, (new Random()).nextInt(5), key)).start();
             }
         }
     }
