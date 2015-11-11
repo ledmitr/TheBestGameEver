@@ -16,7 +16,7 @@ var ext = module.exports = {
         'SERVER_NAME': 'TheBestGameEverWEB',
         'SERVER_HOST': '104.155.17.75',
         'CONTROLLERS_DIR': __dirname + '/controllers',
-        'WEB_SERVER_PORT': 8080,
+        'WEB_SERVER_PORT': 80,
         'WEB_SOCKET_PORT': 8081,
         'PG_USER': 'postgres',
         'PG_PASSWORD': '111',
@@ -161,12 +161,12 @@ setInterval(function() {
         if (result.rowCount < 1) {
             return;
         }
-        var rows = result.rows;
+        lastRecordId = result.rows[0].id;
+        var rows = result.rows.reverse();
         var json = JSON.stringify({
             'action': 'new-event',
             'data': rows
         });
-        lastRecordId = rows[0].id;
         for (var id in webSockClients) {
             webSockClients[id].send(json);
         }
