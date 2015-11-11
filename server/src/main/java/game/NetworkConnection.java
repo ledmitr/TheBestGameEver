@@ -22,7 +22,7 @@ public class NetworkConnection extends Thread {
 
         try {
             System.out.println(Integer.parseInt(port));
-            mainSocket = new ServerSocket(Integer.parseInt(port), 0, InetAddress.getByName(host.toString()));
+            mainSocket = new ServerSocket(Integer.parseInt(port), 0, InetAddress.getByName(host));
             LogException.saveToLog("Main socket opened", "main server");
         } catch (IOException e) {
             LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
