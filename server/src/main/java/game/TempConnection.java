@@ -78,10 +78,8 @@ public class TempConnection extends Thread{
 
         } catch (IOException e) {
             LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
-            e.printStackTrace();
         } catch (ParseException e) {
-            LogException.saveToLog(e.getMessage(), "main server");
-            e.printStackTrace();
+            LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
         }
 
     }
@@ -108,14 +106,12 @@ public class TempConnection extends Thread{
             }
         } catch (IOException e) {
             LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
-            e.printStackTrace();
         }
         try {
             LogException.saveToLog("Close temporary connection", "main server");
             sock.close();
         } catch (IOException e) {
             LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
-            e.printStackTrace();
         }
     }
 

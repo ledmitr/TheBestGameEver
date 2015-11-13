@@ -28,7 +28,6 @@ public class NetworkConnection extends Thread {
             LogException.saveToLog("Main socket opened", "main server");
         } catch (IOException e) {
             LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
-            e.printStackTrace();
         }
     }
 
@@ -39,12 +38,11 @@ public class NetworkConnection extends Thread {
         ConnectionManager manager = new ConnectionManager();
         manager.start();
         while(true){
-
             try {
                 TempConnection tempConnection = new TempConnection(mainSocket.accept(), outerHost);
                 manager.addConnection(tempConnection);
             } catch (IOException e) {
-                e.printStackTrace();
+                LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
             }
         }
     }

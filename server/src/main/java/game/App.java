@@ -25,7 +25,6 @@ public class App
                 }
             } catch (IOException e) {
                 LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
-                e.printStackTrace();
             }
         }
     }
