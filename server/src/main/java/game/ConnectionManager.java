@@ -16,8 +16,6 @@ public class ConnectionManager extends Thread{
     ConcurrentLinkedDeque<TempConnection> loggedConnections;
     LogChecker logChecker;
 
-    private String host;
-
     public void run(){
         while(true){
             if (loggedConnections.size()>=2){
@@ -37,17 +35,16 @@ public class ConnectionManager extends Thread{
                 second.setReady(createdPort, key);
 
                 LogException.saveToLog("Start game thread", "main server");
-                new Thread(new GameServer(gameSocket, (new Random()).nextInt(5), key, host)).start();
+                new Thread(new GameServer(gameSocket, (new Random()).nextInt(5), key)).start();
             }
         }
     }
 
-    ConnectionManager(String host) {
+    ConnectionManager() {
         connections = new ConcurrentLinkedDeque<TempConnection>();
         loggedConnections = new ConcurrentLinkedDeque<TempConnection>();
         logChecker = new LogChecker(this);
         logChecker.start();
-        this.host = host;
     }
 
     void addConnection(TempConnection connection){

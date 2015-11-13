@@ -31,11 +31,6 @@ public class GameServer implements Runnable {
     protected volatile String secret_key;
 
     /**
-     * Внешний ip для передачи клиентам
-     */
-    protected volatile String outerHost;
-
-    /**
      * Уникальные объекты для каждого игрока
      *
      * @see gserv.Client
@@ -53,12 +48,11 @@ public class GameServer implements Runnable {
      * @param g индетификатор игры
      * @param s секретный ключ
      */
-    public GameServer(ServerSocket ws, int g, String s, String outerHost) {
+    public GameServer(ServerSocket ws, int g, String s) {
         wait_socket = ws;
         game_id = g;
         secret_key = s;
         clients = new Client[2];
-        this.outerHost = outerHost;
     }
 
     /**

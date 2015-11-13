@@ -36,12 +36,12 @@ public class NetworkConnection extends Thread {
     @Override
     public void run() {
 
-        ConnectionManager manager = new ConnectionManager(outerHost);
+        ConnectionManager manager = new ConnectionManager();
         manager.start();
         while(true){
 
             try {
-                TempConnection tempConnection = new TempConnection(mainSocket.accept());
+                TempConnection tempConnection = new TempConnection(mainSocket.accept(), outerHost);
                 manager.addConnection(tempConnection);
             } catch (IOException e) {
                 e.printStackTrace();

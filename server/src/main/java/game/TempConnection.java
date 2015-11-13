@@ -28,8 +28,11 @@ public class TempConnection extends Thread{
     InputStream is;
     OutputStream os;
 
-    TempConnection(Socket sock){
+    private String outerHost;
+
+    TempConnection(Socket sock, String outerHost){
         this.sock = sock;
+        this.outerHost = outerHost;
         this.start();
     }
 
@@ -95,7 +98,7 @@ public class TempConnection extends Thread{
                 Random random = new Random();
                 content.put("port", createdPort);
                 // TODO: replace with host name
-                content.put("host", "localhost");
+                content.put("host", outerHost);
                 content.put("secret_key", key);
                 obj.put("content", content);
                 String response = obj.toString().concat("!end");
