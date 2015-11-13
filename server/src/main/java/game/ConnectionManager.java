@@ -5,8 +5,8 @@ import gserv.extra.LogException;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Created by Елена on 03.11.2015.
@@ -15,6 +15,8 @@ public class ConnectionManager extends Thread{
     ConcurrentLinkedDeque<TempConnection> connections;
     ConcurrentLinkedDeque<TempConnection> loggedConnections;
     LogChecker logChecker;
+
+    private String host;
 
     public void run(){
         while(true){
@@ -35,16 +37,17 @@ public class ConnectionManager extends Thread{
                 second.setReady(createdPort, key);
 
                 LogException.saveToLog("Start game thread", "main server");
-                new Thread(new GameServer(gameSocket, (new Random()).nextInt(5), key)).start();
+                new Thread(new GameServer(gameSocket, (new Random()).nextInt(5), key, host)).start();
             }
         }
     }
 
-    ConnectionManager() {
+    ConnectionManager(String host) {
         connections = new ConcurrentLinkedDeque<TempConnection>();
         loggedConnections = new ConcurrentLinkedDeque<TempConnection>();
         logChecker = new LogChecker(this);
         logChecker.start();
+        this.host = host;
     }
 
     void addConnection(TempConnection connection){

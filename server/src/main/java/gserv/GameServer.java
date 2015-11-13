@@ -1,8 +1,10 @@
 package gserv;
-import java.net.*;
 
 import gserv.extra.LogException;
 import org.json.simple.JSONObject;
+
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * Класс, который собственно и является игровым сервером для двух клиентов
@@ -29,6 +31,11 @@ public class GameServer implements Runnable {
     protected volatile String secret_key;
 
     /**
+     * Внешний ip для передачи клиентам
+     */
+    protected volatile String outerHost;
+
+    /**
      * Уникальные объекты для каждого игрока
      *
      * @see gserv.Client
@@ -46,11 +53,12 @@ public class GameServer implements Runnable {
      * @param g индетификатор игры
      * @param s секретный ключ
      */
-    public GameServer(ServerSocket ws, int g, String s) {
+    public GameServer(ServerSocket ws, int g, String s, String outerHost) {
         wait_socket = ws;
         game_id = g;
         secret_key = s;
         clients = new Client[2];
+        this.outerHost = outerHost;
     }
 
     /**
