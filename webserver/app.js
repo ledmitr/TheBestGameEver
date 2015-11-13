@@ -168,7 +168,11 @@ setInterval(function() {
             'data': rows
         });
         for (var id in webSockClients) {
-            webSockClients[id].send(json);
+            try { //Переделать этот момент
+                webSockClients[id].send(json);
+            } catch(e) {
+                delete webSockClients[id];
+            }
         }
         console.log('Log has been update last in %s', rows[0].date_event);
     });
