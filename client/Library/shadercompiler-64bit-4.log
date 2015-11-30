@@ -1,5 +1,5 @@
 Base path: D:/Installed/Unity/Editor/Data
-Pipe name: \\.\pipe\UnityShaderCompiler-64bit-4-9404
+Pipe name: \\.\pipe\UnityShaderCompiler-64bit-4-7084
 Cmd: getPlatforms
 Unhandled exception: Readfile from pipe failed. GLE=Канал был закрыт.
 

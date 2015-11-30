@@ -20,59 +20,58 @@ public class MainMenu : MonoBehaviour {
     }
 
     public void Update() {
-        if(flag_start==true)
+        if(_flagStart)
         {
-            if (socket.Connected == true)
+            if (_socket.Connected)
             {
-                if (stream.DataAvailable == true)
+                if (_stream.DataAvailable)
                 {
-                    while (socket.Connected == true)
+                    while (_socket.Connected)
                     {
                         // Буфер для хранения принятого массива bytes.
                         Byte[] buffer = new Byte[256];
                         // Читаем пакет ответа сервера. 
-                        Int32 bytes = stream.Read(buffer, 0, buffer.Length);
+                        Int32 bytes = _stream.Read(buffer, 0, buffer.Length);
                         // Преобразуем в строку.
-                        string responseData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytes);
+                        string responseData = Encoding.ASCII.GetString(buffer, 0, bytes);
                         // !!! возможно здесь таится ошибка
-                        if (responseData.Contains(END_JSON)==true)
+                        if (responseData.Contains(EndJsonStr))
                         {
-                            string [] splitData = responseData.Split(End_json);
+                            string [] splitData = responseData.Split(EndJson);
                             responseData = splitData[0];
                         }
                         else Debug.Log("Плохой пакет: " + responseData);
                         // Происзводим десериализацию.
-                        Head_RespFromServer_Login login_resp = JsonConvert.DeserializeObject<Head_RespFromServer_Login>(responseData);
+                        Head_RespFromServer_Login loginResponse = JsonConvert.DeserializeObject<Head_RespFromServer_Login>(responseData);
                         // Если поле action равно login, то используем login_resp, иначе используем другой класс десериализации.
-                        if (login_resp.action == "login")
+                        if (loginResponse.action == Actions.Login)
                         {
                             // Делаем надпись GameSearch активной, а Connecting убираем.
                             ConnectingSplashScreen.SetActive(false);
                             GameSearchSplashScreen.SetActive(true);
-                            SaveVar.Player_id = login_resp.content.your_id;
-                            msg_from_server = login_resp.content.message;
+                            SaveVar.Player_id = loginResponse.content.your_id;
+                            _msgFromServer = loginResponse.content.message;
                             Debug.Log(SaveVar.Player_id);
-                            Debug.Log(msg_from_server);
-                        };
-                        if (login_resp.action == "connect_to_game")
+                            Debug.Log(_msgFromServer);
+                        }
+                        if (loginResponse.action == Actions.ConnectToGame)
                         {
-                            Head_ReqFromServer_ConnectToGame connect_resp = JsonConvert.DeserializeObject<Head_ReqFromServer_ConnectToGame>(responseData);
-                            SaveVar.Port = connect_resp.content.port;
-                            SaveVar.Host = connect_resp.content.host;
-                            SaveVar.Key = connect_resp.content.secret_key;
+                            Head_ReqFromServer_ConnectToGame connectResponse = JsonConvert.DeserializeObject<Head_ReqFromServer_ConnectToGame>(responseData);
+                            SaveVar.Port = connectResponse.content.port;
+                            SaveVar.Host = connectResponse.content.host;
+                            SaveVar.Key = connectResponse.content.secret_key;
                             Debug.Log(SaveVar.Port);
                             Debug.Log(SaveVar.Host);
                             Debug.Log(SaveVar.Key);
                             // Закрывем соединение и поток.
-                            socket.Close();
-                            client.Close();
-                            stream.Close();
+                            _socket.Close();
+                            _client.Close();
+                            _stream.Close();
                             // Делаем надпись GameSearch неактивной, а Loading включаем.
                             GameSearchSplashScreen.SetActive(false);
                             LoadingSplashScreen.SetActive(true);
                             Application.LoadLevel(start);
-                        };
-
+                        }
                     }
                 }
             }
@@ -86,34 +85,34 @@ public class MainMenu : MonoBehaviour {
     public GameObject GameSearchSplashScreen;
     public GameObject LoadingSplashScreen;
     // Логическая переменная, отвечающая за нажатие кнопки Start.
-	public bool is_start;
+	public bool IsStart;
 	// Строковая переменная, хранящая название сцены Start.
 	public string start;
 	// Логическая переменная, отвечающая за нажатие кнопки Statistics.
-	public bool is_statistics;
+	public bool IsStatistics;
 	// Строковая переменная, хранящая название сцены Statistics.
 	public string statistics;
 	// Логическая переменная, отвечающая за нажатие кнопки Settings.
-	public bool is_settings;
+	public bool IsSettings;
 	// Логическая переменная, отвечающая за нажатие кнопки Exit.
-	public bool is_exit;
+	public bool IsExit;
     // Строковая переменная, содержащая IP-адрес сервера.
-    private string server = "104.155.17.158";
+    private const string Server = ApplicationConst.ServerAddress;
     // Целочисленная переменная, содержащая номер порта.
-    Int32 port = 2121;
+    private const Int32 Port = ApplicationConst.ServerPort;
     // Пустой экземпляр класса TCP Client.
-    TcpClient client = null;
+    private TcpClient _client = null;
     // Пустой экземпляр класса Socket.
-    Socket socket = null;
+    private Socket _socket = null;
     // Пустой экземпляр класса NetworkStream.
-    NetworkStream stream = null;
+    private NetworkStream _stream = null;
     // Полученное сообщение от сервера
-    string msg_from_server = "";
-    bool flag_start = false;
-    public string END_JSON = "!end";
-    public char End_json = '!';
+    private string _msgFromServer = "";
+    private bool _flagStart = false;
+    public const string EndJsonStr = "!end";
+    public const char EndJson = '!';
 
-	// Метод, описывающий действия при наведение курсора на объект.
+    // Метод, описывающий действия при наведение курсора на объект.
 	void OnMouseEnter() {
 		// В данном случае, мы получаем объект и меняем его цвет на серый:
 		GetComponent<Renderer>().material.color = Color.gray;
@@ -128,50 +127,54 @@ public class MainMenu : MonoBehaviour {
 	// объект с флагом is_start, то делается переход на сцену с именем
 	// start. Аналогично происходит и с другими блоками if.
 	    void OnMouseUp() {
-		    if(is_start)
+		    if(IsStart)
 		    {
-                flag_start = true;
+                _flagStart = true;
                 // Делаем надпись CONNECTING активной.
                 ConnectingSplashScreen.SetActive(true);
                 // Создаем экземпляр класса TcpClient и пытаемся подключится к серверу.
-                client = new TcpClient(server, port);
+                _client = new TcpClient(Server, Port);
                 // "Привязываем" сокет к нашему экземпляру соединения с сервером.
-                socket = client.Client;
+                _socket = _client.Client;
                 // Если соединение установлено, то...
-                if (socket.Connected == true)
+                if (_socket.Connected)
                 {
                     // Получаем поток для чтения и записи данных.
-                    stream = client.GetStream();
+                    _stream = _client.GetStream();
 
                     // Производим сериализацию Json пакета.
                     Head_ReqToServer_Login login = new Head_ReqToServer_Login()
                     {
-                        action = "login",
+                        action = Actions.Login,
                         content = new Head_ReqToServer_Login.Content()
                         {
-                            email = "blablabla@mail.ru",
+#if UNITY_EDITOR
+                            email = "unity-editor@mail.ru",
+#else
+                            email = "mobile-device@mail.ru",
+#endif
                             md5_password = "698d51a19d8a121ce581499d7b701668"
                         }
                     };
                     // С помощью JsonConvert производим сериализацию структуры выше.
                     string json = JsonConvert.SerializeObject(login, Formatting.Indented)+"!end";
                     // Переводим наше сообщение в ASCII, а затем в массив Byte.
-                    Byte[] data = System.Text.Encoding.ASCII.GetBytes(json);
+                    Byte[] data = Encoding.ASCII.GetBytes(json);
                     // Отправляем сообщение нашему серверу. 
-                    stream.Write(data, 0, data.Length);
+                    _stream.Write(data, 0, data.Length);
                 }
 		    }
-		if(is_statistics)
+		if(IsStatistics)
 		{
 			Application.LoadLevel(statistics);
 		}
-		if(is_settings)
+		if(IsSettings)
 		{
             OnMouseExit();
             MainMenuItems.SetActive(false);
             SettingsMenuItems.SetActive(true);
 		}
-		if(is_exit)
+		if(IsExit)
 		{
 			Application.Quit();
 		}
@@ -183,5 +186,4 @@ public class MainMenu : MonoBehaviour {
         byte[] info = new UTF8Encoding(true).GetBytes(value);
         fs.Write(info, 0, info.Length);
     }
-   
 }

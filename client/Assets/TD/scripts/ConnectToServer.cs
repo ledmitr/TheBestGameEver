@@ -1,36 +1,36 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Net.Sockets;
 using System;
+using Assets.TD.scripts;
 using Newtonsoft.Json;
 
 public class ConnectToServer : MonoBehaviour {
     // Экземпляр класса TCP Client.
-    TcpClient client = null;
+    private TcpClient _client = null;
     // Экземпляр класса Socket.
-    Socket socket = null;
-    public NetworkStream stream = null;
-    string NameServer = "";
-    int id_game = 0;
-    string msg_from_server = "";
-    public string END_JSON = "!end";
-    public char End_json = '!';
+    private Socket _socket = null;
+    private NetworkStream _stream = null;
+    private string _nameServer = "";
+    private int _idGame = 0;
+    private string _msgFromServer = "";
+    private const string EndJsonStr = "!end";
+    private const char EndJson = '!';
 
-	// Use this for initialization
+    // Use this for initialization
 	void Start () {
         // Создаем экземпляр класса TcpClient и пытаемся подключится к серверу.
-        client = new TcpClient(SaveVar.Host, SaveVar.Port);
+        _client = new TcpClient(SaveVar.Host, SaveVar.Port);
         // "Привязываем" сокет к нашему экземпляру соединения с сервером.
-        socket = client.Client;
-        if (socket.Connected == true)
+        _socket = _client.Client;
+        if (_socket.Connected)
         {
             // Получаем поток для чтения и записи данных.
-            stream = client.GetStream();
+            _stream = _client.GetStream();
 
             // Производим сериализацию Json пакета.
             Head_ReqToServer_HandShake handshake = new Head_ReqToServer_HandShake()
             {
-                action = "handshake",
+                action = Actions.HandShake,
                 content = new Head_ReqToServer_HandShake.Content()
                 {
                     user_id = SaveVar.Player_id,
@@ -42,39 +42,49 @@ public class ConnectToServer : MonoBehaviour {
             // Переводим наше сообщение в ASCII, а затем в массив Byte.
             Byte[] data = System.Text.Encoding.ASCII.GetBytes(json);
             // Отправляем сообщение нашему серверу. 
-            stream.Write(data, 0, data.Length);
+            _stream.Write(data, 0, data.Length);
         }
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (socket.Connected) 
+        if (_socket.Connected) 
         {
-            if (stream.DataAvailable == true)
+            if (_stream.DataAvailable)
             {
                 byte[] buffer = new Byte[256];
-                Int32 bytes = stream.Read(buffer, 0, buffer.Length);
+                Int32 bytes = _stream.Read(buffer, 0, buffer.Length);
                 // Преобразуем в строку.
                 string responseData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytes);
-                if (responseData.Contains(END_JSON) == true)
+                if (responseData.Contains(EndJsonStr))
                 {
-                    string[] splitData = responseData.Split(End_json);
+                    string[] splitData = responseData.Split(EndJson);
                     responseData = splitData[0];
                 }
                 else Debug.Log("Плохой пакет: " + responseData);
                 // Происзводим десериализацию.
-                Head_RespFromServer_HandShake resp_from_server = JsonConvert.DeserializeObject<Head_RespFromServer_HandShake>(responseData);
+                Head_RespFromServer_HandShake respFromServer = JsonConvert.DeserializeObject<Head_RespFromServer_HandShake>(responseData);
                 // Если поле action равно login, то используем login_resp, иначе используем другой класс десериализации.
-                if (resp_from_server.action == "handshake")
+                if (respFromServer.action == Actions.HandShake)
                 {
-                    NameServer = resp_from_server.content.server_name;
-                    id_game = resp_from_server.content.game_id;
-                    msg_from_server = resp_from_server.content.message;
-                    Debug.Log(NameServer);
-                    Debug.Log(id_game);
-                    Debug.Log(msg_from_server);
+                    _nameServer = respFromServer.content.server_name;
+                    _idGame = respFromServer.content.game_id;
+                    _msgFromServer = respFromServer.content.message;
+                    Debug.Log(_nameServer);
+                    Debug.Log(_idGame);
+                    Debug.Log(_msgFromServer);
                 }
             }
         }
 	}
+
+    public void SendMessageToServer(object objectToSend)
+    {
+        if (_socket.Connected && _stream.CanWrite)
+        {
+            var serializedObject = JsonConvert.SerializeObject(objectToSend);
+            byte[] data = System.Text.Encoding.ASCII.GetBytes(serializedObject);
+            _stream.Write(data, 0, data.Length);
+        }
+    }
 }

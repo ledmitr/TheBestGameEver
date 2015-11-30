@@ -1,19 +1,12 @@
 Base path: D:/Installed/Unity/Editor/Data
-Pipe name: \\.\pipe\UnityShaderCompiler-64bit-1-4516
+Pipe name: \\.\pipe\UnityShaderCompiler-64bit-1-5744
 Cmd: getPlatforms
 Cmd: preprocess
   insize=848 outsize=848 ok=1
 Cmd: preprocess
-  insize=3834 outsize=1383 ok=1
-Cmd: preprocess
-  insize=1005 outsize=1287 ok=1
-Cmd: preprocess
   insize=495 outsize=495 ok=1
 Cmd: preprocess
   insize=876 outsize=876 ok=1
-Cmd: preprocess
-  error: 2 plat 18 at (65): Too many texture interpolators would be used for ForwardBase pass (11 out of max 10)
-  insize=3434 outsize=2864 ok=0
 Cmd: preprocess
   insize=769 outsize=769 ok=1
 Cmd: preprocess

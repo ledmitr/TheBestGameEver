@@ -6,6 +6,8 @@ using Selectable = Assets.TD.scripts.Selectable;
 
 public class TouchListener : MonoBehaviour
 {
+    //public ConnectToServer ConnectionManager { get; set; }
+
     public GameState GameState { get; private set; }
 
     // Use this for initialization
@@ -124,7 +126,9 @@ public class TouchListener : MonoBehaviour
                 break;
             case GameState.Finished:
                 break;
-            case GameState.WaitingForPlayer:
+            case GameState.Planning:
+                break;
+            case GameState.Preparing:
                 break;
         }
         Debug.Log(GameState);
@@ -195,6 +199,17 @@ public class TouchListener : MonoBehaviour
     
     private void CreateTower(Vector3 targetTowerPosition)
     {
+        /*var addTowerRequest = new AddUnitRequestToServer
+        {
+            action = Actions.AddUnit,
+            content = new AddUnitRequestToServer.Content
+            {
+                type_unit = (int)UnitType.Tower,
+                position_x = (int)targetTowerPosition.x,
+                position_y = (int)targetTowerPosition.y
+            }
+        };
+        ConnectionManager.SendMessageToServer(addTowerRequest);*/
         var position = targetTowerPosition;
         Instantiate(TowerPrefab, position, Quaternion.identity);
     }
