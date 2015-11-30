@@ -9,10 +9,12 @@ public class ConnectToServer : MonoBehaviour {
     TcpClient client = null;
     // Экземпляр класса Socket.
     Socket socket = null;
-    NetworkStream stream = null;
+    public NetworkStream stream = null;
     string NameServer = "";
     int id_game = 0;
     string msg_from_server = "";
+    public string END_JSON = "!end";
+    public char End_json = '!';
 
 	// Use this for initialization
 	void Start () {
@@ -36,7 +38,7 @@ public class ConnectToServer : MonoBehaviour {
                 }
             };
             // С помощью JsonConvert производим сериализацию структуры выше.
-            string json = JsonConvert.SerializeObject(handshake, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(handshake, Formatting.Indented)+"!end";
             // Переводим наше сообщение в ASCII, а затем в массив Byte.
             Byte[] data = System.Text.Encoding.ASCII.GetBytes(json);
             // Отправляем сообщение нашему серверу. 
@@ -54,6 +56,12 @@ public class ConnectToServer : MonoBehaviour {
                 Int32 bytes = stream.Read(buffer, 0, buffer.Length);
                 // Преобразуем в строку.
                 string responseData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytes);
+                if (responseData.Contains(END_JSON) == true)
+                {
+                    string[] splitData = responseData.Split(End_json);
+                    responseData = splitData[0];
+                }
+                else Debug.Log("Плохой пакет: " + responseData);
                 // Происзводим десериализацию.
                 Head_RespFromServer_HandShake resp_from_server = JsonConvert.DeserializeObject<Head_RespFromServer_HandShake>(responseData);
                 // Если поле action равно login, то используем login_resp, иначе используем другой класс десериализации.

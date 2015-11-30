@@ -34,6 +34,13 @@ public class MainMenu : MonoBehaviour {
                         Int32 bytes = stream.Read(buffer, 0, buffer.Length);
                         // Преобразуем в строку.
                         string responseData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytes);
+                        // !!! возможно здесь таится ошибка
+                        if (responseData.Contains(END_JSON)==true)
+                        {
+                            string [] splitData = responseData.Split(End_json);
+                            responseData = splitData[0];
+                        }
+                        else Debug.Log("Плохой пакет: " + responseData);
                         // Происзводим десериализацию.
                         Head_RespFromServer_Login login_resp = JsonConvert.DeserializeObject<Head_RespFromServer_Login>(responseData);
                         // Если поле action равно login, то используем login_resp, иначе используем другой класс десериализации.
@@ -91,9 +98,9 @@ public class MainMenu : MonoBehaviour {
 	// Логическая переменная, отвечающая за нажатие кнопки Exit.
 	public bool is_exit;
     // Строковая переменная, содержащая IP-адрес сервера.
-    private string server = "127.0.0.1";
+    private string server = "104.155.17.158";
     // Целочисленная переменная, содержащая номер порта.
-    Int32 port = 8000;
+    Int32 port = 2121;
     // Пустой экземпляр класса TCP Client.
     TcpClient client = null;
     // Пустой экземпляр класса Socket.
@@ -103,6 +110,8 @@ public class MainMenu : MonoBehaviour {
     // Полученное сообщение от сервера
     string msg_from_server = "";
     bool flag_start = false;
+    public string END_JSON = "!end";
+    public char End_json = '!';
 
 	// Метод, описывающий действия при наведение курсора на объект.
 	void OnMouseEnter() {
@@ -140,12 +149,12 @@ public class MainMenu : MonoBehaviour {
                         action = "login",
                         content = new Head_ReqToServer_Login.Content()
                         {
-                            email = "born_s13@mail.ru",
+                            email = "blablabla@mail.ru",
                             md5_password = "698d51a19d8a121ce581499d7b701668"
                         }
                     };
                     // С помощью JsonConvert производим сериализацию структуры выше.
-                    string json = JsonConvert.SerializeObject(login, Formatting.Indented);
+                    string json = JsonConvert.SerializeObject(login, Formatting.Indented)+"!end";
                     // Переводим наше сообщение в ASCII, а затем в массив Byte.
                     Byte[] data = System.Text.Encoding.ASCII.GetBytes(json);
                     // Отправляем сообщение нашему серверу. 
