@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Assets.TD.scripts
+﻿namespace Assets.TD.scripts
 {
     public static class ApplicationConst
     {
+        public const string ServerAddress = "104.155.17.158";
+        public const int ServerPort = 2121;
+
         public const string FieldTag = "Field";
         public const string TowerTag = "Tower";
-        public const string ChooseCircleTag = "chooseCircle";
         public const string SelectableTag = "Selectable";
         public const string TentTag = "Tent";
         public const string KnightTag = "Knight";

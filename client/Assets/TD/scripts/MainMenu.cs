@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
-using Assets.TD.scripts;
 using System;
 using System.Net.Sockets;
 using System.IO;
 using System.Text;
+using Assets.TD.scripts;
 using Newtonsoft.Json;
 // Класс главного меню.
 public class MainMenu : MonoBehaviour {
 
     public GameObject MainMenuItems;
     public GameObject SettingsMenuItems;
+
     public void Start()
     {
         SettingsMenuItems.SetActive(false);
@@ -20,24 +21,24 @@ public class MainMenu : MonoBehaviour {
     }
 
     public void Update() {
-        if(flag_start==true)
+        if(flag_start)
         {
-            if (socket.Connected == true)
+            if (socket.Connected)
             {
-                if (stream.DataAvailable == true)
+                if (stream.DataAvailable)
                 {
-                    while (socket.Connected == true)
+                    while (socket.Connected)
                     {
                         // Буфер для хранения принятого массива bytes.
-                        Byte[] buffer = new Byte[256];
+                        byte[] buffer = new byte[256];
                         // Читаем пакет ответа сервера. 
-                        Int32 bytes = stream.Read(buffer, 0, buffer.Length);
+                        int bytes = stream.Read(buffer, 0, buffer.Length);
                         // Преобразуем в строку.
-                        string responseData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytes);
+                        string responseData = Encoding.ASCII.GetString(buffer, 0, bytes);
                         // Происзводим десериализацию.
                         Head_RespFromServer_Login login_resp = JsonConvert.DeserializeObject<Head_RespFromServer_Login>(responseData);
                         // Если поле action равно login, то используем login_resp, иначе используем другой класс десериализации.
-                        if (login_resp.action == "login")
+                        if (login_resp.action == Actions.ConnectToGame)
                         {
                             // Делаем надпись GameSearch активной, а Connecting убираем.
                             ConnectingSplashScreen.SetActive(false);
@@ -47,7 +48,7 @@ public class MainMenu : MonoBehaviour {
                             Debug.Log(SaveVar.Player_id);
                             Debug.Log(msg_from_server);
                         };
-                        if (login_resp.action == "connect_to_game")
+                        if (login_resp.action == Actions.ConnectToGame)
                         {
                             Head_ReqFromServer_ConnectToGame connect_resp = JsonConvert.DeserializeObject<Head_ReqFromServer_ConnectToGame>(responseData);
                             SaveVar.Port = connect_resp.content.port;
@@ -90,10 +91,6 @@ public class MainMenu : MonoBehaviour {
 	public bool is_settings;
 	// Логическая переменная, отвечающая за нажатие кнопки Exit.
 	public bool is_exit;
-    // Строковая переменная, содержащая IP-адрес сервера.
-    private string server = "127.0.0.1";
-    // Целочисленная переменная, содержащая номер порта.
-    Int32 port = 8000;
     // Пустой экземпляр класса TCP Client.
     TcpClient client = null;
     // Пустой экземпляр класса Socket.
@@ -118,40 +115,40 @@ public class MainMenu : MonoBehaviour {
 	// Метод, описывающий действия при нажатии на объект. Если это 
 	// объект с флагом is_start, то делается переход на сцену с именем
 	// start. Аналогично происходит и с другими блоками if.
-	    void OnMouseUp() {
-		    if(is_start)
-		    {
-                flag_start = true;
-                // Делаем надпись CONNECTING активной.
-                ConnectingSplashScreen.SetActive(true);
-                // Создаем экземпляр класса TcpClient и пытаемся подключится к серверу.
-                client = new TcpClient(server, port);
-                // "Привязываем" сокет к нашему экземпляру соединения с сервером.
-                socket = client.Client;
-                // Если соединение установлено, то...
-                if (socket.Connected == true)
-                {
-                    // Получаем поток для чтения и записи данных.
-                    stream = client.GetStream();
+	void OnMouseUp() {
+		if(is_start)
+		{
+            // Делаем надпись CONNECTING активной.
+            ConnectingSplashScreen.SetActive(true);
+            // Создаем экземпляр класса TcpClient и пытаемся подключится к серверу.
+            client = new TcpClient(ApplicationConst.ServerAddress, ApplicationConst.ServerPort);
+            // "Привязываем" сокет к нашему экземпляру соединения с сервером.
+            socket = client.Client;
+            flag_start = true;
+            // Если соединение установлено, то...
+            if (socket.Connected)
+            {
+                // Получаем поток для чтения и записи данных.
+                stream = client.GetStream();
 
-                    // Производим сериализацию Json пакета.
-                    Head_ReqToServer_Login login = new Head_ReqToServer_Login()
+                // Производим сериализацию Json пакета.
+                Head_ReqToServer_Login login = new Head_ReqToServer_Login()
+                {
+                    action = Actions.Login,
+                    content = new Head_ReqToServer_Login.Content()
                     {
-                        action = "login",
-                        content = new Head_ReqToServer_Login.Content()
-                        {
-                            email = "born_s13@mail.ru",
-                            md5_password = "698d51a19d8a121ce581499d7b701668"
-                        }
-                    };
-                    // С помощью JsonConvert производим сериализацию структуры выше.
-                    string json = JsonConvert.SerializeObject(login, Formatting.Indented);
-                    // Переводим наше сообщение в ASCII, а затем в массив Byte.
-                    Byte[] data = System.Text.Encoding.ASCII.GetBytes(json);
-                    // Отправляем сообщение нашему серверу. 
-                    stream.Write(data, 0, data.Length);
-                }
-		    }
+                        email = "born_s13@mail.ru",
+                        md5_password = "698d51a19d8a121ce581499d7b701668"
+                    }
+                };
+                // С помощью JsonConvert производим сериализацию структуры выше.
+                string json = JsonConvert.SerializeObject(login, Formatting.Indented);
+                // Переводим наше сообщение в ASCII, а затем в массив Byte.
+                byte[] data = Encoding.ASCII.GetBytes(json);
+                // Отправляем сообщение нашему серверу. 
+                stream.Write(data, 0, data.Length);
+            }
+		}
 		if(is_statistics)
 		{
 			Application.LoadLevel(statistics);

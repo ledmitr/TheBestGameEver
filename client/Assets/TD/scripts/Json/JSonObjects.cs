@@ -1,7 +1,11 @@
-﻿// Класс, хранящий поля блока json (запрос клиента на авторизацию):
-public class Head_ReqToServer_Login
+﻿public abstract class RequestToServer
 {
     public string action { get; set; }
+}
+
+// Класс, хранящий поля блока json (запрос клиента на авторизацию):
+public class Head_ReqToServer_Login : RequestToServer
+{
     public Content content { get; set; }
     // Класс, хранящий поля объекта content:
     // 1) email - электронный адрес 
@@ -14,9 +18,8 @@ public class Head_ReqToServer_Login
 }
 
 // Класс, хранящий поля блока json (ответ сервера на авторизацию клиента):
-public class Head_RespFromServer_Login
+public class Head_RespFromServer_Login : RequestToServer
 {
-    public string action { get; set; }
     public int code { get; set; }
     public Content content { get; set; }
     // Класс, хранящий поля объекта content:
@@ -30,9 +33,8 @@ public class Head_RespFromServer_Login
 }
 
 // Класс, хранящий поля блока json (получение номера порта и секр. ключа):
-public class Head_ReqFromServer_ConnectToGame
+public class Head_ReqFromServer_ConnectToGame : RequestToServer
 {
-    public string action { get; set; }
     public Content content { get; set; }
     // Класс, хранящий поля объекта content:
     // 1) port - номер порта для подключения к игровому серверу  
@@ -47,9 +49,8 @@ public class Head_ReqFromServer_ConnectToGame
 }
 
 // Класс, хранящий поля блока json (подключение клиента к игровому серверу):
-public class Head_ReqToServer_HandShake
+public class Head_ReqToServer_HandShake : RequestToServer
 {
-    public string action { get; set; }
     public Content content{ get; set; }
     // Класс, хранящий поля объекта content:
     // 1) user_id - ваш индетификатор пользователя 
@@ -62,9 +63,8 @@ public class Head_ReqToServer_HandShake
 }
 
 // Класс, хранящий поля блока json (успешное подключение к игровому серверу):
-public class Head_RespFromServer_HandShake
+public class Head_RespFromServer_HandShake : RequestToServer
 {
-    public string action { get; set; }
     public int code { get; set; }
     public Content content { get; set; }
     // Класс, хранящий поля объекта content:
