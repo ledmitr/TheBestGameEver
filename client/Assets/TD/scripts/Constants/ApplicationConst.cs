@@ -1,4 +1,4 @@
-﻿namespace Assets.TD.scripts
+﻿namespace Assets.TD.scripts.Constants
 {
     public static class ApplicationConst
     {

@@ -13,13 +13,11 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile>
-    </CompilerResponseFile>
+    <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>5.2.0f3</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -53,17 +51,17 @@
     <Reference Include="UnityEngine">
       <HintPath>Library\UnityAssemblies\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.Advertisements">
+      <HintPath>Library\UnityAssemblies\UnityEngine.Advertisements.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
+    <Reference Include="UnityEngine.Analytics">
+      <HintPath>Library\UnityAssemblies\UnityEngine.Analytics.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
@@ -83,29 +81,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Camera\TouchCamera.cs" />
-    <Compile Include="Assets\Scripts\Pathfinding\IShortestPath.cs" />
-    <Compile Include="Assets\Scripts\Pathfinding\PriorityQueue.cs" />
-    <Compile Include="Assets\Scripts\Pathfinding\ShortestPathGraphSearch.cs" />
+    <Compile Include="Assets\TD\scripts\ConnectToServer.cs" />
     <Compile Include="Assets\TD\scripts\Constants\Actions.cs" />
     <Compile Include="Assets\TD\scripts\Constants\ApplicationConst.cs" />
-    <Compile Include="Assets\TD\scripts\ConnectToServer.cs" />
     <Compile Include="Assets\TD\scripts\CreateCubesArray.cs" />
     <Compile Include="Assets\TD\scripts\EnemyHealth.cs" />
-    <Compile Include="Assets\TD\scripts\GameScene.cs" />
     <Compile Include="Assets\TD\scripts\Enums\GameState.cs" />
+    <Compile Include="Assets\TD\scripts\Enums\MapCellType.cs" />
+    <Compile Include="Assets\TD\scripts\Enums\PlayerRoles.cs" />
+    <Compile Include="Assets\TD\scripts\Enums\UnitType.cs" />
+    <Compile Include="Assets\TD\scripts\GameInfo.cs" />
+    <Compile Include="Assets\TD\scripts\GameScene.cs" />
     <Compile Include="Assets\TD\scripts\Json\JSonObjects.cs" />
     <Compile Include="Assets\TD\scripts\KnightScript.cs" />
     <Compile Include="Assets\TD\scripts\MainMenu.cs" />
-    <Compile Include="Assets\TD\scripts\Enums\MapCellType.cs" />
-    <Compile Include="Assets\TD\scripts\Enums\PlayerRoles.cs" />
-    <Compile Include="Assets\TD\scripts\SaveVar.cs" />
     <Compile Include="Assets\TD\scripts\Selectable.cs" />
     <Compile Include="Assets\TD\scripts\SettingsMenu.cs" />
     <Compile Include="Assets\TD\scripts\StatisticsMenu.cs" />
     <Compile Include="Assets\TD\scripts\TentScript.cs" />
     <Compile Include="Assets\TD\scripts\TerrainGenerator.cs" />
     <Compile Include="Assets\TD\scripts\TouchListener.cs" />
-    <Compile Include="Assets\TD\scripts\Enums\UnitType.cs" />
     <Compile Include="Assets\TD\scripts\Utils\Math.cs" />
     <Compile Include="Assets\TD\scripts\ViewDrag.cs" />
   </ItemGroup>
@@ -124,6 +119,5 @@
     <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
     <None Include="Assets\field.txt" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2012\UnityVS.CSharp.targets" />
 </Project>

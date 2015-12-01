@@ -1,8 +1,0 @@
-5.2.0f3:2.1.0.0
-Android
-D:/Installed/Unity/Editor/Data/Managed/UnityEngine.dll
-D:/Installed/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll
-D:/Installed/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll
-D:/Installed/Unity/Editor/Data/Managed/UnityEditor.dll
-D:/Installed/Unity/Editor/Data\Managed/Mono.Cecil.dll
-D:/Installed/Unity/Editor/Data/PlaybackEngines/iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll

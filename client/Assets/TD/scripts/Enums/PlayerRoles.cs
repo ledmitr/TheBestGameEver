@@ -1,6 +1,6 @@
-﻿namespace Assets.TD.scripts
+﻿namespace Assets.TD.scripts.Enums
 {
-    public enum PlayerRoles : int
+    public enum PlayerRole : int
     {
         Attacker = 0,
         Defender = 1

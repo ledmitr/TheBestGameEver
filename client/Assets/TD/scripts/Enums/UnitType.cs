@@ -1,4 +1,4 @@
-﻿namespace Assets.TD.scripts
+﻿namespace Assets.TD.scripts.Enums
 {
     public enum UnitType : int
     {

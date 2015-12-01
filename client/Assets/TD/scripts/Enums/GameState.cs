@@ -1,12 +1,17 @@
-﻿public enum GameState
+﻿namespace Assets.TD.scripts.Enums
 {
-    Preparing,
-    Planning,
-    Playing,
-    KnightSelected,
-    TowerSelected,
-    TentSelected,
-    ChooseNewTowerPosition,
-    ChooseNewKnightPosition,
-    Finished
+    public enum GameState
+    {
+        Connected,
+        HandShakeDone,
+        Preparing,
+        Planning,
+        Playing,
+        KnightSelected,
+        TowerSelected,
+        TentSelected,
+        ChooseNewTowerPosition,
+        ChooseNewKnightPosition,
+        Finished
+    }
 }
