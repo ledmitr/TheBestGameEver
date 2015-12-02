@@ -32,13 +32,12 @@ namespace Assets.TD.scripts
                 if (MessagePanel.activeSelf)
                 {
                     BackToGameFromMessageCanvas();
-                    return;
                 }
                 else
                 {
                     MessagePanel.SetActive(true);
-                    return;
                 }
+                return;
             }
 
             if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
@@ -176,7 +175,8 @@ namespace Assets.TD.scripts
                 foreach (GameObject selectableObject in selectableObjects)
                 {
                     Selectable objectMain = selectableObject.transform.parent.gameObject.GetComponent<Selectable>();
-                    objectMain.Select(false);
+                    if (objectMain != null)
+                        objectMain.Select(false);
                 }
             }
         }

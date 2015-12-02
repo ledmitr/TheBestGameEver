@@ -1,3 +1,5 @@
 /.idea
 client/obj
 client/Temp
+/client/Assets/Plugins/*.meta
+*.meta

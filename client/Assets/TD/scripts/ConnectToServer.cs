@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using Assets.TD.scripts.Constants;
 using Assets.TD.scripts.Enums;
@@ -14,16 +15,12 @@ namespace Assets.TD.scripts
         // Экземпляр класса Socket.
         private Socket _socket = null;
         private NetworkStream _stream = null;
-        private string _nameServer = "";
-        private int _idGame = 0;
-        private string _msgFromServer = "";
         private const string EndJsonStr = "!end";
-        private const char EndJson = '!';
 
         // Use this for initialization
         void Start () {
             // Создаем экземпляр класса TcpClient и пытаемся подключится к серверу.
-            _client = new TcpClient(GameInfo.Host, GameInfo.Port);
+            _client = new TcpClient(ApplicationConst.ServerAddress, GameInfo.Port);
             // "Привязываем" сокет к нашему экземпляру соединения с сервером.
             _socket = _client.Client;
             if (_socket.Connected)
@@ -53,58 +50,70 @@ namespace Assets.TD.scripts
 	
         // Update is called once per frame
         void Update () {
-            if (_socket.Connected) 
+            if (_socket != null && _socket.Connected) 
             {
                 if (_stream.DataAvailable)
                 {
-                    byte[] buffer = new byte[256];
+                    byte[] buffer = new byte[1024];
                     Int32 bytes = _stream.Read(buffer, 0, buffer.Length);
                     // Преобразуем в строку.
                     string responseData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytes);
 
                     Debug.Log(String.Format("Readed {0} symbols: {1}", bytes, responseData));
 
+                    using (var file = File.OpenWrite("serverOutput.txt"))
+                    {
+                        file.Write(buffer, 0, bytes);
+                    }
+
+                    string[] messages;
                     if (responseData.Contains(EndJsonStr))
                     {
-                        string[] splitData = responseData.Split(EndJson);
-                        responseData = splitData[0];
+                        messages = responseData.Split(new[] {EndJsonStr}, StringSplitOptions.RemoveEmptyEntries);
                     }
-                    else Debug.Log("Плохой пакет: " + responseData);
-
-                    string messageAction = "";
-                    try
+                    else
                     {
-                        var parsedObject = JObject.Parse(responseData);
-                        messageAction = (parsedObject["action"]).ToString();
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogException(ex);
+                        Debug.Log("Плохой пакет: " + responseData);
                         return;
                     }
 
-                    switch (messageAction)
+                    foreach (var message in messages)
                     {
-                        case Actions.HandShake:
-                            ProcessHandShake(responseData);
-                            break;
-                        case Actions.PrepareToStart:
-                            ProcessPrepareToStart(responseData);
-                            break;
-                        case Actions.GameToStart:
-                            ProcessGameToStart(responseData);
-                            break;
-                        case Actions.StagePlanning:
-                            ProcessStagePlanning(responseData);
-                            break;
-                        case Actions.StageSimulate:
-                            ProcessStageSimulate(responseData);
-                            break;
-                        case Actions.StageFinish:
-                            ProcessStageFinish(responseData);
-                            break;
+                        string messageAction = "";
+                        try
+                        {   
+                            var parsedObject = JObject.Parse(message);
+                            messageAction = (string)parsedObject["action"];
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogException(ex);
+                            //return;
+                        }
+
+                        switch (messageAction)
+                        {
+                            case Actions.HandShake:
+                                ProcessHandShake(message);
+                                break;
+                            case Actions.PrepareToStart:
+                                ProcessPrepareToStart(message);
+                                break;
+                            case Actions.GameToStart:
+                                ProcessGameToStart(message);
+                                break;
+                            case Actions.StagePlanning:
+                                ProcessStagePlanning(message);
+                                break;
+                            case Actions.StageSimulate:
+                                ProcessStageSimulate(message);
+                                break;
+                            case Actions.StageFinish:
+                                ProcessStageFinish(message);
+                                break;
+                        }
+                        Debug.Log(GameInfo.GameState);
                     }
-                    Debug.Log(GameInfo.GameState);
                 }
             }
         }
@@ -163,13 +172,9 @@ namespace Assets.TD.scripts
             // Производим десериализацию.
             Head_RespFromServer_HandShake respFromServer =
                 JsonConvert.DeserializeObject<Head_RespFromServer_HandShake>(responseData);
-            _nameServer = respFromServer.content.server_name;
-            _idGame = respFromServer.content.game_id;
-            _msgFromServer = respFromServer.content.message;
-            Debug.Log(_nameServer);
-            Debug.Log(_idGame);
-            Debug.Log(_msgFromServer);
-
+            GameInfo.ServerName = respFromServer.content.server_name;
+            GameInfo.GameId = respFromServer.content.game_id;
+            Debug.Log(respFromServer);
             if (GameInfo.GameState == GameState.Connected)
                 GameInfo.GameState = GameState.HandShakeDone;
         }

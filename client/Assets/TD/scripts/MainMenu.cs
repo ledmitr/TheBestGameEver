@@ -25,7 +25,7 @@ namespace Assets.TD.scripts
         public void Update() {
             if(_flagStart)
             {
-                if (_socket.Connected)
+                if (_socket != null && _socket.Connected)
                 {
                     if (_stream.DataAvailable)
                     {
