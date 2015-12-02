@@ -2,6 +2,8 @@ package gserv;
 
 import gserv.extra.LogException;
 import org.json.simple.JSONObject;
+import java.util.*;
+import gserv.objects.*;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,6 +16,26 @@ import java.net.Socket;
 public class GameServer implements Runnable {
 
     private static final String SERVER_NAME = "TheBestGameEver";
+
+    /**
+     * Коллекция обектов атакующего игрока
+     */
+    protected volatile GameObject[] attackerObjects;
+
+    /**
+     * Коллекция обектов защищающегося игрока
+     */
+    protected volatile GameObject[] defenderObjects;
+
+    /**
+     * Игровая карта
+     */
+    protected volatile int[][] gameMap;
+
+    /**
+     * Игровой tread
+     */
+    private SimulateGame gameThread;
 
     /**
      * Номер сетевого порта
@@ -53,6 +75,7 @@ public class GameServer implements Runnable {
         game_id = g;
         secret_key = s;
         clients = new Client[2];
+        gameThread = null;
     }
 
     /**
@@ -60,6 +83,7 @@ public class GameServer implements Runnable {
      * Здесь происходит начальная инициализация подключений клиентов
      */
     public void run() {
+        System.out.println("Симуляция игры запущена");
         try {
             LogException.saveToLog("Game server with id = " + game_id + " has been started!", "");
             for (int i = 0; i < 2; i++) {
@@ -135,6 +159,18 @@ public class GameServer implements Runnable {
                 new_content.put("message", err.getMessage());
             }
             clients[numClient].sendData(APITemplates.build("handshake", code, new_content));
+            //Если оба пользователя прошли авторизацию, то запускаем игровой процесс
+            if (clients[0].isLogged() && clients[1].isLogged() && gameThread == null) {
+                gameMap = new int[SimulateGame.MAP_HEIGHT][];
+                for (int i=0; i<gameMap.length; i++) {
+                    gameMap[i] = new int[SimulateGame.MAP_WIDTH];
+                    for (int j=0; j<gameMap[i].length; j++) {
+                        gameMap[i][j] = 0;
+                    }
+                }
+                gameThread = new SimulateGame(gameMap, clients);
+                gameThread.start();
+            }
             return;
         }
         if (!clients[numClient].isLogged()) {
@@ -143,6 +179,24 @@ public class GameServer implements Runnable {
             return;
         }
         //Ниже обрабатываются запросы уже для представившихся и одобренных клиентов
+
+        /**
+         * Меняем статусы клиентов на готовы к запуску
+         */
+        if (data.get("action").toString().equals("prepare_to_start")) {
+            if (data.get("code").toString().equals("0")) {
+                clients[numClient].setStatus(Client.STATUS_READY_TO_START);
+                LogException.saveToLog("Client with id=" + clients[numClient].userId + " ready to start game!", "Подготовка к игре");
+                //Если оба клиента подтвердили готовность к игре, тогда ДА НАЧНЁТСЯ БИТВА
+                if (clients[0].isReady() && clients[1].isReady()) {
+
+                }
+            }
+        }
+
+        /**
+         * Обмен сообщениями
+         */
         if (data.get("action").toString().equals("message")) {
             if (numClient == 1) {
                 clients[0].sendData(APITemplates.build("message", 0, data.get("content").toString()));

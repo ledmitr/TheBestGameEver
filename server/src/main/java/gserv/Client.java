@@ -20,6 +20,8 @@ public class Client extends NetCon {
     public static int STATUS_PAUSE = 4;
     public static int STATUS_GAME_OVER = 5;
 
+    public int role;
+
     /**
      * Хранит текущий статус клиента
      */
@@ -39,6 +41,7 @@ public class Client extends NetCon {
     {
         super(sc);
         status = STATUS_NOT_LOGGED;
+        role = -1;
     }
 
     /**
@@ -62,6 +65,19 @@ public class Client extends NetCon {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Проверяет, готов ли клиент к запуску игры
+     *
+     * @return true в случае если прошёл и false в противном
+     */
+    public boolean isReady()
+    {
+        if (status == STATUS_READY_TO_START) {
+            return true;
+        }
+        return false;
     }
 
     @Override
