@@ -41,6 +41,10 @@ public class SimulateGame extends Thread
      */
     protected volatile ArrayList<GameObject> defenderObjects;
 
+    protected int attackerDeads;
+
+    protected int defenderDeads;
+
     /**
      * Игровая карта
      */
@@ -63,6 +67,8 @@ public class SimulateGame extends Thread
         clients = argClients;
         attackerObjects = attacker;
         defenderObjects = defender;
+        attackerDeads = 0;
+        defenderDeads = 0;
         gameStatus = STATE_PREPARING;
     }
 
@@ -103,7 +109,7 @@ public class SimulateGame extends Thread
                 new_content[i].put("map_width", MAP_WIDTH);
                 new_content[i].put("map_height", MAP_HEIGHT);
                 new_content[i].put("map", map);
-                clients[i].sendData(APITemplates.build("prepare_to_start", 0, new_content[i].toJSONString()));
+                clients[i].sendData(APITemplates.build("prepare_to_start", 0, new_content[i]));
             }
     }
 
@@ -139,6 +145,26 @@ public class SimulateGame extends Thread
         }
     }
 
+    private JSONObject getFreshData(ArrayList<GameObject> obj)
+    {
+        JSONObject content = new JSONObject();
+        JSONArray units = new JSONArray();
+        Iterator objIterator = obj.iterator();
+        while (objIterator.hasNext()) {
+            GameObject currentUnit = (GameObject)objIterator.next();
+            JSONObject unit = new JSONObject();
+            unit.put("type_unit", currentUnit.type);
+            unit.put("hit_point", currentUnit.hitpoint);
+            int pos[] = currentUnit.getPosition();
+            unit.put("position_x", pos[GameObject.COORD_X]);
+            unit.put("position_y", pos[GameObject.COORD_Y]);
+            unit.put("direction", currentUnit.direction);
+            units.add(unit);
+        }
+        content.put("units", units);
+        return content;
+    }
+
     private void gotoStagePlanning(int time)
     {
         LogException.saveToLog("Current stage is planning. It's completed from " + time + " seconds.", "GAME IS RUNNING");
@@ -146,7 +172,7 @@ public class SimulateGame extends Thread
         new_content.put("time", time);
         new_content.put("message", "Current stage of game has been changed on 'planning'.");
         for (int i = 0; i < 2; i++) {
-            clients[i].sendData(APITemplates.build("stage_planning", 0, new_content.toJSONString()));
+            clients[i].sendData(APITemplates.build("stage_planning", 0, new_content));
         }
         //Ждём time секунд
         try {
@@ -168,16 +194,15 @@ public class SimulateGame extends Thread
             } catch (Exception e) {
                 LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
             }
-/*            JSONObject new_content = new JSONObject();
-            JSONArray container = new JSONArray();
-            JSONObject attacker_content = new JSONObject();
-            Iterator attackerIterator = attackerObjects.iterator();
-            while (attackerIterator.hasNext()) {
-                attackerIterator
-            }
-            JSONObject defender_content = new JSONObject();*/
+            JSONArray new_content = new JSONArray();
+            JSONObject attacker_content = getFreshData(attackerObjects);
+            attacker_content.put("is_dead", attackerDeads);
+            new_content.add(attacker_content);
+            JSONObject defender_content = getFreshData(defenderObjects);
+            defender_content.put("is_dead", defenderDeads);
+            new_content.add(defender_content);
             for (int i = 0; i < 2; i++) {
-                clients[i].sendData(APITemplates.build("actual_data", 0, "test Simulate"));
+                clients[i].sendData(APITemplates.build("actual_data", 0, new_content));
             }
         }
     }

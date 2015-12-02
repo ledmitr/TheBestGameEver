@@ -10,12 +10,18 @@ public abstract class GameObject {
     public static final int DEFENDER = 1;
     public static final int ATTACKER = 0;
 
-    protected int type;
-    protected String name;
+    public static final int DIRECTION_LEFT = 0;
+    public static final int DIRECTION_RIGHT = 1;
+    public static final int DIRECTION_TOP = 2;
+    public static final int DIRECTION_DOWN = 3;
+
+    public int type;
+    public String name;
     protected int[] position;
-    protected int gold;
-    protected int hitpoint;
-    protected int owner;
+    public int gold;
+    public int hitpoint;
+    public int owner;
+    public int direction;
 
     {
         position = new int[2];
@@ -26,6 +32,7 @@ public abstract class GameObject {
         hitpoint = 0;
         name = "Unnamed";
         type = 0;
+        direction = DIRECTION_RIGHT;
     }
 
     public void setPosition(int x, int y)

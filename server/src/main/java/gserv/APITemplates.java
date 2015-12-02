@@ -1,5 +1,6 @@
 package gserv;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -32,6 +33,23 @@ public class APITemplates {
      * @return собраный json объект
      */
     public static JSONObject build(String action, int code, JSONObject content)
+    {
+        JSONObject jsonObj = new JSONObject();
+        jsonObj.put("action", action);
+        jsonObj.put("code", code);
+        jsonObj.put("content", content);
+        return jsonObj;
+    }
+
+    /**
+     * Строит стандартный API запрос/ответ, в качестве контента выступает json массив
+     *
+     * @param action  название производимого действия
+     * @param code    состояние действия
+     * @param content строка с содержанием
+     * @return собраный json объект
+     */
+    public static JSONObject build(String action, int code, JSONArray content)
     {
         JSONObject jsonObj = new JSONObject();
         jsonObj.put("action", action);
