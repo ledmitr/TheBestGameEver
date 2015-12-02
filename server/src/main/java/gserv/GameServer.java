@@ -192,6 +192,13 @@ public class GameServer implements Runnable {
             }
         }
 
+        if (data.get("action").toString().equals("add_unit")) {
+            JSONObject content = (JSONObject) data.get("content");
+            if (content.get("type_unit").toString().equals("1")) { //Если тип юнита солдат
+                attackerObjects.add(new SoldierAttacker(new Integer(content.get("position_x").toString()), new Integer(content.get("position_y").toString()), clients[numClient].role, 5));
+            }
+        }
+
         /**
          * Обмен сообщениями
          */
