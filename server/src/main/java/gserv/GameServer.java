@@ -20,12 +20,12 @@ public class GameServer implements Runnable {
     /**
      * Коллекция обектов атакующего игрока
      */
-    protected volatile GameObject[] attackerObjects;
+    protected volatile ArrayList<GameObject> attackerObjects;
 
     /**
      * Коллекция обектов защищающегося игрока
      */
-    protected volatile GameObject[] defenderObjects;
+    protected volatile ArrayList<GameObject> defenderObjects;
 
     /**
      * Игровая карта
@@ -168,7 +168,9 @@ public class GameServer implements Runnable {
                         gameMap[i][j] = 0;
                     }
                 }
-                gameThread = new SimulateGame(gameMap, clients);
+                attackerObjects = new ArrayList<GameObject>();
+                defenderObjects = new ArrayList<GameObject>();
+                gameThread = new SimulateGame(gameMap, clients, attackerObjects, defenderObjects);
                 gameThread.start();
             }
             return;
@@ -187,10 +189,6 @@ public class GameServer implements Runnable {
             if (data.get("code").toString().equals("0")) {
                 clients[numClient].setStatus(Client.STATUS_READY_TO_START);
                 LogException.saveToLog("Client with id=" + clients[numClient].userId + " ready to start game!", "Подготовка к игре");
-                //Если оба клиента подтвердили готовность к игре, тогда ДА НАЧНЁТСЯ БИТВА
-                if (clients[0].isReady() && clients[1].isReady()) {
-
-                }
             }
         }
 
