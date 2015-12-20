@@ -14,5 +14,8 @@
 
         public const string CreateTowerHint = "\uf25a TAP ON THE LAND TO PLACE A TOWER";
         public const string CreateKnightHint = "\uf25a TAP ON A TENT WHERE KNIGHT APPEARS FROM";
+
+        public const int StartHealth = 100;
+        public const int DamageAmount = 10;
     }
 }

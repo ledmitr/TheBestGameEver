@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>5.2.0f3</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -75,10 +77,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Camera\TouchCamera.cs" />
+    <Compile Include="Assets\TD\scripts\ByDistanceComparer.cs" />
     <Compile Include="Assets\TD\scripts\ConnectToServer.cs" />
     <Compile Include="Assets\TD\scripts\Constants\Actions.cs" />
     <Compile Include="Assets\TD\scripts\Constants\ApplicationConst.cs" />
     <Compile Include="Assets\TD\scripts\CreateCubesArray.cs" />
+    <Compile Include="Assets\TD\scripts\DamageComponent.cs" />
     <Compile Include="Assets\TD\scripts\EnemyHealth.cs" />
     <Compile Include="Assets\TD\scripts\Enums\GameState.cs" />
     <Compile Include="Assets\TD\scripts\Enums\MapCellType.cs" />
@@ -92,9 +96,11 @@
     <Compile Include="Assets\TD\scripts\Selectable.cs" />
     <Compile Include="Assets\TD\scripts\SettingsMenu.cs" />
     <Compile Include="Assets\TD\scripts\StatisticsMenu.cs" />
+    <Compile Include="Assets\TD\scripts\DamageStats.cs" />
     <Compile Include="Assets\TD\scripts\TentScript.cs" />
     <Compile Include="Assets\TD\scripts\TerrainGenerator.cs" />
     <Compile Include="Assets\TD\scripts\TouchListener.cs" />
+    <Compile Include="Assets\TD\scripts\TowerScript.cs" />
     <Compile Include="Assets\TD\scripts\Utils\Math.cs" />
     <Compile Include="Assets\TD\scripts\ViewDrag.cs" />
   </ItemGroup>

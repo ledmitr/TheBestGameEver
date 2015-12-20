@@ -6,7 +6,6 @@ namespace Assets.TD.scripts
 {
     public class KnightScript : Selectable
     {
-
         private Vector3 _targetPosition;
 
         private bool _isSelected;
@@ -64,7 +63,9 @@ namespace Assets.TD.scripts
         public void Update()
         {
             if (_isMoving)
+            {
                 Move();
+            }
         }
 
         void OnCollisionEnter(Collision collision)
