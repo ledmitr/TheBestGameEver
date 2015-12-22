@@ -10,6 +10,8 @@ namespace Assets.TD.scripts
         public GameObject ConnectionManager;
         private ConnectToServer ConnectionToServer;
 
+        public UnitManager UnitManager;
+
         // Use this for initialization
         private void Start()
         {
@@ -203,9 +205,10 @@ namespace Assets.TD.scripts
 
         private void CreateTower(Vector3 targetTowerPosition)
         {
-            //ConnectionToServer.SendAddUnitRequest(UnitType.Tower, targetTowerPosition);
-            var position = targetTowerPosition;
-            Instantiate(TowerPrefab, position, Quaternion.identity);
+            if (ConnectionToServer.SendAddUnitRequest(UnitType.Tower, targetTowerPosition))
+            {
+                UnitManager.CreateTower(targetTowerPosition);
+            }
         }
 
         public void ProcessCreateTowerButton()
@@ -219,15 +222,15 @@ namespace Assets.TD.scripts
         private void CreateKnight(GameObject tent)
         {
             var knightPrefab = KnightPrefab;
-            knightPrefab.transform.localScale.Set(1, 1, 1);
+            //knightPrefab.transform.localScale.Set(1, 1, 1);
+            //todo: refactor magic numbers
             var knightPosition = new Vector3(tent.transform.position.x + 1.6F, tent.transform.position.y, tent.transform.position.z - 2.5F);
-            var knight = (GameObject)Instantiate(knightPrefab, knightPosition, Quaternion.identity);
 
-            //ConnectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition);
-
-            var tentScript = tent.GetComponent<TentScript>();
-            var knightScript = knight.GetComponent<KnightScript>();
-            knightScript.SetPath(tentScript.GetPath());
+            if (ConnectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition))
+            {
+                var tentScript = tent.GetComponent<TentScript>();
+                UnitManager.CreateKnight(knightPosition, tentScript.GetPath());
+            }
         }
 
         public void ProcessCreateKnightButton()

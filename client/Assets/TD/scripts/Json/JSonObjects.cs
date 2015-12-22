@@ -1,4 +1,6 @@
-﻿namespace Assets.TD.scripts
+﻿using Assets.TD.scripts.Enums;
+
+namespace Assets.TD.scripts
 {
     public abstract class Message
     {
@@ -135,5 +137,26 @@
     public class StageFinish : Message
     {
         public string content { get; set; }
+    }
+
+    public class ActualData : Message
+    {
+        public ActualDataContentItem[] content { get; set; }
+    }
+
+    public class ActualDataContentItem
+    {
+        public int is_dead { get; set; }
+        public ActualDataUnit[] units { get; set; }
+    }
+
+    public class ActualDataUnit
+    {
+        public int id { get; set; }
+        public UnitType type_unit { get; set; }
+        public int hit_point { get; set; }
+        public int position_x { get; set; }
+        public int position_y { get; set; }
+        public UnitDirection direction { get; set; }
     }
 }

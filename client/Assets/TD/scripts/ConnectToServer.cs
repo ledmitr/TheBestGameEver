@@ -111,6 +111,9 @@ namespace Assets.TD.scripts
                             case Actions.StageFinish:
                                 ProcessStageFinish(message);
                                 break;
+                            case Actions.ActualData:
+                                ProcessActualData(message);
+                                break;
                         }
                         Debug.Log(GameInfo.GameState);
                     }
@@ -189,7 +192,7 @@ namespace Assets.TD.scripts
             }
         }
 
-        public void SendAddUnitRequest(UnitType unitType, Vector3 targetTowerPosition)
+        public bool SendAddUnitRequest(UnitType unitType, Vector3 targetTowerPosition)
         {
             var addTowerRequest = new AddUnitRequestToServer
             {
@@ -202,6 +205,21 @@ namespace Assets.TD.scripts
                 }
             };
             SendMessageToServer(addTowerRequest);
+            return true;
         }
+
+        private void ProcessActualData(string message)
+        {
+            var actualData = JsonConvert.DeserializeObject<ActualData>(message);
+            foreach (var actualDataContentItem in actualData.content)
+            {
+                foreach (var actualDataUnit in actualDataContentItem.units)
+                {
+                    UnitManager.UpdateUnit(actualDataUnit);
+                }
+            }
+        }
+
+        public UnitManager UnitManager;
     }
 }

@@ -6,6 +6,8 @@ namespace Assets.TD.scripts
 {
     public class KnightScript : Selectable
     {
+        public int Id;
+
         private Vector3 _targetPosition;
 
         private bool _isSelected;
