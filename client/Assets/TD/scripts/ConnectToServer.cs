@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace Assets.TD.scripts
 {
+    /// <summary>
+    /// Подключается к серверу и осуществляет взаимодействие с ним.
+    /// </summary>
     public class ConnectToServer : MonoBehaviour {
         // Экземпляр класса TCP Client.
         private TcpClient _client = null;
@@ -192,7 +195,12 @@ namespace Assets.TD.scripts
             }
         }
 
-        public bool SendAddUnitRequest(UnitType unitType, Vector3 targetTowerPosition)
+        /// <summary>
+        /// Запрашивает у сервера создание юнита.
+        /// </summary>
+        /// <param name="unitType">Тип юнита (башня или рыцарь).</param>
+        /// <param name="position">Позиция юнита.</param>
+        public void SendAddUnitRequest(UnitType unitType, Vector3 position)
         {
             var addTowerRequest = new AddUnitRequestToServer
             {
@@ -200,8 +208,8 @@ namespace Assets.TD.scripts
                 content = new AddUnitRequestToServer.Content
                 {
                     type_unit = (int)unitType,
-                    position_x = (int)targetTowerPosition.x,
-                    position_y = (int)targetTowerPosition.y
+                    position_x = (int)position.x,
+                    position_y = (int)position.y
                 }
             };
             SendMessageToServer(addTowerRequest);

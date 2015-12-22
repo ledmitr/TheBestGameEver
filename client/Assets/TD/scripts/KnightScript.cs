@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Assets.TD.scripts
 {
+    /// <summary>
+    /// Управляет рыцарем.
+    /// </summary>
     public class KnightScript : Selectable
     {
         public int Id;
@@ -11,6 +14,10 @@ namespace Assets.TD.scripts
         private Vector3 _targetPosition;
 
         private bool _isSelected;
+
+        /// <summary>
+        /// Проверяет выбран ли юнит.
+        /// </summary>
         public override bool IsSelected()
         {
             return _isSelected;
@@ -21,6 +28,11 @@ namespace Assets.TD.scripts
         private int _currentPosition;
 
         private Renderer _renderer; 
+
+        /// <summary>
+        /// Выбирает юнита или отменяет выбор.
+        /// </summary>
+        /// <param name="isSelected">Выбран ли рыцарь.</param>
         public override void Select(bool isSelected)
         {
             _isSelected = isSelected;
@@ -46,6 +58,10 @@ namespace Assets.TD.scripts
             DefaultMaterial = _renderer.sharedMaterials;
         }
 
+        /// <summary>
+        /// Устанавливает путь.
+        /// </summary>
+        /// <param name="path">Путь.</param>
         public void SetPath(Vector3[] path)
         {
             _pathToMainTower = path;
@@ -54,6 +70,10 @@ namespace Assets.TD.scripts
             Debug.Log("initial target position: " + _targetPosition);
         }
         
+        /// <summary>
+        /// Изменяет целевую точку рыцаря.
+        /// </summary>
+        /// <param name="newTargetPosition">Новая целевая точка.</param>
         public void TargetPositionChanged(Vector3 newTargetPosition)
         {
             _targetPosition = newTargetPosition;

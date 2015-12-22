@@ -2,6 +2,9 @@
 
 namespace Assets.TD.scripts
 {
+    /// <summary>
+    /// Хранит основную информацию об игре.
+    /// </summary>
     public static class GameInfo
     {
         public static int Port;

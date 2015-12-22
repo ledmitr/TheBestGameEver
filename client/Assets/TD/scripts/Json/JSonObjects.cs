@@ -2,12 +2,17 @@
 
 namespace Assets.TD.scripts
 {
+    /// <summary>
+    /// Представляет сообщение в общем виде.
+    /// </summary>
     public abstract class Message
     {
         public string action { get; set; }
     }
 
-// Класс, хранящий поля блока json (запрос клиента на авторизацию):
+    /// <summary>
+    /// Класс, хранящий поля блока json (запрос клиента на авторизацию).
+    /// </summary>
     public class Head_ReqToServer_Login : Message
     {
         public Content content { get; set; }
@@ -21,7 +26,9 @@ namespace Assets.TD.scripts
         }
     }
 
-// Класс, хранящий поля блока json (ответ сервера на авторизацию клиента):
+    /// <summary>
+    /// Класс, хранящий поля блока json (ответ сервера на авторизацию клиента).
+    /// </summary>
     public class Head_RespFromServer_Login : Message
     {
         public int code { get; set; }
@@ -36,7 +43,9 @@ namespace Assets.TD.scripts
         }
     }
 
-// Класс, хранящий поля блока json (получение номера порта и секр. ключа):
+    /// <summary>
+    /// Класс, хранящий поля блока json (получение номера порта и секр. ключа).
+    /// </summary>
     public class Head_ReqFromServer_ConnectToGame : Message
     {
         public Content content { get; set; }
@@ -52,7 +61,9 @@ namespace Assets.TD.scripts
         }
     }
 
-// Класс, хранящий поля блока json (подключение клиента к игровому серверу):
+    /// <summary>
+    /// Класс, хранящий поля блока json (подключение клиента к игровому серверу).
+    /// </summary>
     public class Head_ReqToServer_HandShake : Message
     {
         public Content content { get; set; }
@@ -66,7 +77,9 @@ namespace Assets.TD.scripts
         }
     }
 
-// Класс, хранящий поля блока json (успешное подключение к игровому серверу):
+    /// <summary>
+    /// Класс, хранящий поля блока json (успешное подключение к игровому серверу).
+    /// </summary>
     public class Head_RespFromServer_HandShake : Message
     {
         public int code { get; set; }
@@ -83,6 +96,9 @@ namespace Assets.TD.scripts
         }
     }
 
+    /// <summary>
+    /// Класс для запроса к серверу на создание юнита.
+    /// </summary>
     public class AddUnitRequestToServer : Message
     {
         public Content content { get; set; }
@@ -95,6 +111,9 @@ namespace Assets.TD.scripts
         }
     }
 
+    /// <summary>
+    /// Класс для обработки информации о начале игры.
+    /// </summary>
     public class PrepareToStart : Message
     {
         public Content content { get; set; }
@@ -108,17 +127,26 @@ namespace Assets.TD.scripts
         }
     }
 
+    /// <summary>
+    /// Класс для ответа к серверу о начале игры.
+    /// </summary>
     public class PrepareToStartResponse : Message
     {
         public int code { get; set; }
         public string content { get; set; }
     }
 
+    /// <summary>
+    /// Класс для старта игры.
+    /// </summary>
     public class GameToStart : Message
     {
         public string content { get; set; }
     }
 
+    /// <summary>
+    /// Класс информации о стадии планирования.
+    /// </summary>
     public class StagePlanning : Message
     {
         public Content content { get; set; }
@@ -129,11 +157,17 @@ namespace Assets.TD.scripts
         }
     }
 
+    /// <summary>
+    /// Класс информации о стадии симуляции.
+    /// </summary>
     public class StageSimulate : Message
     {
         public string content { get; set; }
     }
 
+    /// <summary>
+    /// Класс информации о стадии финиша.
+    /// </summary>
     public class StageFinish : Message
     {
         public string content { get; set; }
