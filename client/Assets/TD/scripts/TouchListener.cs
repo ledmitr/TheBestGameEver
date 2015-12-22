@@ -8,6 +8,7 @@ namespace Assets.TD.scripts
     public class TouchListener : MonoBehaviour
     {
         public GameObject ConnectionManager;
+        private bool _StartRole = false;
         private ConnectToServer ConnectionToServer;
 
         // Use this for initialization
@@ -20,15 +21,20 @@ namespace Assets.TD.scripts
             MessagePanel.SetActive(false);
 
             ConnectionToServer = ConnectionManager.GetComponent<ConnectToServer>();
-            //CreateKnightButton.SetActive(GameInfo.Role == PlayerRole.Attacker);
-            //CreateTowerButton.SetActive(GameInfo.Role == PlayerRole.Defender);
         }
 
         // Update is called once per frame
         private void Update()
         {
+            if (GameInfo.GameState == GameState.Playing && _StartRole==false)
+            {
+                CreateKnightButton.SetActive(GameInfo.Role == PlayerRole.Attacker);
+                CreateTowerButton.SetActive(GameInfo.Role == PlayerRole.Defender);
+                _StartRole = true;
+            }
             if (Input.GetKeyDown(KeyCode.Escape))
             {
+                
                 if (MessagePanel.activeSelf)
                 {
                     BackToGameFromMessageCanvas();
