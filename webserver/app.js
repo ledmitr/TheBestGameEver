@@ -14,13 +14,13 @@ var ext = module.exports = {
     'pg': require('pg'),
     'constants': {
         'SERVER_NAME': 'TheBestGameEverWEB',
-        'SERVER_HOST': '23.251.139.4',
+        'SERVER_HOST': '10.240.0.2',
         'CONTROLLERS_DIR': __dirname + '/controllers',
         'WEB_SERVER_PORT': 80,
         'WEB_SOCKET_PORT': 8081,
         'PG_USER': 'postgres',
         'PG_PASSWORD': '111',
-        'PG_HOST': '23.251.139.4',
+        'PG_HOST': '10.240.0.2',
         'PG_PORT': '5432',
         'PG_DATABASE': 'tbge_db',
         'LOG_TIME_UPDATE': 1000
