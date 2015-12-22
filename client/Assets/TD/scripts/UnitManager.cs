@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Assets.TD.scripts
 {
+    /// <summary>
+    /// Управляет юнитами.
+    /// </summary>
     public class UnitManager : MonoBehaviour
     {
         public GameObject KnightPrefab;
@@ -24,6 +27,10 @@ namespace Assets.TD.scripts
 
         }
 
+        /// <summary>
+        /// Обновляет состояние юнита. Создаёт нового, если такого не существует.
+        /// </summary>
+        /// <param name="unitData">Сообщение от сервера о состоянии юнита.</param>
         public void UpdateUnit(ActualDataUnit unitData)
         {
             var unitPosition = new Vector3(unitData.position_x, unitData.position_y);
@@ -53,6 +60,12 @@ namespace Assets.TD.scripts
             }
         }
 
+        /// <summary>
+        /// Создаёт рыцаря.
+        /// </summary>
+        /// <param name="knightPosition">Позиция рыцаря.</param>
+        /// <param name="path">Путь рыцаря.</param>
+        /// <returns>Компонент управления рыцарем.</returns>
         public KnightScript CreateKnight(Vector3 knightPosition, Vector3[] path)
         {
             var knight = (GameObject)Instantiate(KnightPrefab, knightPosition, Quaternion.identity);
@@ -61,6 +74,11 @@ namespace Assets.TD.scripts
             return knightScript;
         }
 
+        /// <summary>
+        /// Создаёт башню.
+        /// </summary>
+        /// <param name="towerPosition">Позиция башни.</param>
+        /// <returns>Компонент управления башней.</returns>
         public TowerScript CreateTower(Vector3 towerPosition)
         {
             var tower = (GameObject)Instantiate(TowerPrefab, towerPosition, Quaternion.identity);
