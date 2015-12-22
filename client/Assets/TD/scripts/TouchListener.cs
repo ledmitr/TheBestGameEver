@@ -219,10 +219,7 @@ namespace Assets.TD.scripts
 
         private void CreateTower(Vector3 targetTowerPosition)
         {
-            if (ConnectionToServer.SendAddUnitRequest(UnitType.Tower, targetTowerPosition))
-            {
-                UnitManager.CreateTower(targetTowerPosition);
-            }
+            ConnectionToServer.SendAddUnitRequest(UnitType.Tower, targetTowerPosition);
         }
 
         /// <summary>
@@ -237,17 +234,11 @@ namespace Assets.TD.scripts
         }
 
         private void CreateKnight(GameObject tent)
-        {
-            var knightPrefab = KnightPrefab;
-            //knightPrefab.transform.localScale.Set(1, 1, 1);
+        {   
             //todo: refactor magic numbers
             var knightPosition = new Vector3(tent.transform.position.x + 1.6F, tent.transform.position.y, tent.transform.position.z - 2.5F);
 
-            if (ConnectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition))
-            {
-                var tentScript = tent.GetComponent<TentScript>();
-                UnitManager.CreateKnight(knightPosition, tentScript.GetPath());
-            }
+            ConnectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition);
         }
 
 

@@ -5,7 +5,7 @@
     /// </summary>
     public static class ApplicationConst
     {
-        public const string ServerAddress = "104.155.17.158";
+        public const string ServerAddress = "23.251.139.4";
         public const int ServerPort = 2121;
 
         public const string FieldTag = "Field";

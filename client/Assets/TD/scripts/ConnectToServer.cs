@@ -190,6 +190,7 @@ namespace Assets.TD.scripts
             if (_socket.Connected && _stream.CanWrite)
             {
                 var serializedObject = JsonConvert.SerializeObject(objectToSend);
+                Debug.Log("Message to server: " + serializedObject);
                 byte[] data = System.Text.Encoding.ASCII.GetBytes(serializedObject);
                 _stream.Write(data, 0, data.Length);
             }
@@ -213,11 +214,12 @@ namespace Assets.TD.scripts
                 }
             };
             SendMessageToServer(addTowerRequest);
-            return true;
+            //return true;
         }
 
         private void ProcessActualData(string message)
         {
+            Debug.Log("Server from message:" + message);
             var actualData = JsonConvert.DeserializeObject<ActualData>(message);
             foreach (var actualDataContentItem in actualData.content)
             {
