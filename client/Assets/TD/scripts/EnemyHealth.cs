@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace Assets.TD.scripts
 {
+    /// <summary>
+    /// Отображает показатель здоровья и контролирует его состояние.
+    /// </summary>
     public class EnemyHealth : MonoBehaviour
     {
         private int _health;
@@ -51,16 +54,27 @@ namespace Assets.TD.scripts
                 MaxHealth = 1;
         }
         
+        /// <summary>
+        /// Наносит урон здоровью.
+        /// </summary>
+        /// <param name="damageAmount">Количество нанесённого урона.</param>
         public void Damage(int damageAmount)
         {
             AdjustCurrentHealth(-damageAmount);
         }
 
+        /// <summary>
+        /// Восстанавливает здоровье.
+        /// </summary>
+        /// <param name="healAmount">Количество восстановленного здоровья.</param>
         public void Heal(int healAmount)
         {
             AdjustCurrentHealth(healAmount);
         }
 
+        /// <summary>
+        /// Полностью восстанавливает здоровье.
+        /// </summary>
         public void HealFull()
         {
             _health = MaxHealth;

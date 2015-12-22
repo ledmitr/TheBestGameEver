@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 namespace Assets.TD.scripts
 {
+    
+    /// <summary>
+    /// Класс обрабатывает пользовательский ввод, управляет интерфейсом.
+    /// </summary>
     public class TouchListener : MonoBehaviour
     {
         public GameObject ConnectionManager;
@@ -60,12 +64,17 @@ namespace Assets.TD.scripts
         }
 
         public GameObject MessagePanel;
-    
+
+        /// <summary>
+        /// Выйти из приложения.
+        /// </summary>
         public void ExitGame()
         {
             Application.Quit();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public void BackToGameFromMessageCanvas()
         {
             MessagePanel.SetActive(false);
@@ -180,7 +189,9 @@ namespace Assets.TD.scripts
                 }
             }
         }
-    
+        /// <summary>
+        /// Вернуться в главное меню.
+        /// </summary>
         public void BackToMenu()
         {
             Application.LoadLevel("MainMenu");
@@ -191,6 +202,9 @@ namespace Assets.TD.scripts
         public GameObject CreateTowerButton;
         public GameObject CreateKnightButton;
 
+        /// <summary>
+        /// Открывает боковую панель.
+        /// </summary>
         public void ProcessHamburgerButton()
         {
             HumburgerButton.SetActive(!HumburgerButton.activeSelf);
@@ -208,6 +222,9 @@ namespace Assets.TD.scripts
             Instantiate(TowerPrefab, position, Quaternion.identity);
         }
 
+        /// <summary>
+        /// Обрабатывает нажатие кнопки "создать башню".
+        /// </summary>
         public void ProcessCreateTowerButton()
         {
             ProcessHamburgerButton();
@@ -230,6 +247,10 @@ namespace Assets.TD.scripts
             knightScript.SetPath(tentScript.GetPath());
         }
 
+
+        /// <summary>
+        /// Обрабатывает нажатие кнопки "создать рыцаря".
+        /// </summary>
         public void ProcessCreateKnightButton()
         {
             ProcessHamburgerButton();
@@ -238,6 +259,9 @@ namespace Assets.TD.scripts
             GameInfo.GameState = GameState.ChooseNewKnightPosition;
         }
 
+        /// <summary>
+        /// Скрывает боковую панель.
+        /// </summary>
         public void HideSidePanel() {
             SidePanel.SetActive(false);
             HumburgerButton.SetActive(true);

@@ -1,5 +1,8 @@
 ﻿namespace Assets.TD.scripts.Constants
 {
+    /// <summary>
+    /// Данные для приложения.
+    /// </summary>
     public static class ApplicationConst
     {
         public const string ServerAddress = "104.155.17.158";
