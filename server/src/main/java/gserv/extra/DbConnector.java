@@ -22,7 +22,7 @@ public class DbConnector {
     /**
      * URL к базе состоит из протокола:подпротокола://[хоста]:[порта_СУБД]/[БД]
      */
-    private static String postgre_url = "jdbc:postgresql://23.251.139.4:5432/tbge_db";
+    private static String postgre_url = "jdbc:postgresql://10.240.0.2:5432/tbge_db";
 
     /**
      * Имя пользователя бд
