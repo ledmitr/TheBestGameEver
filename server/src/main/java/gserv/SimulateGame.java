@@ -24,12 +24,12 @@ public class SimulateGame extends Thread
     /**
      * Ширина карты
      */
-    public static final int MAP_WIDTH = 100;
+    public static final int MAP_WIDTH = 50;
 
     /**
      * Высота карты
      */
-    public static final int MAP_HEIGHT = 100;
+    public static final int MAP_HEIGHT = 50;
 
     /**
      * Коллекция обектов атакующего игрока
