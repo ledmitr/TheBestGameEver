@@ -1,209 +1,301 @@
-﻿using System.Collections;
-using System.Linq;
-using Assets.TD.scripts;
+﻿using Assets.TD.scripts.Constants;
+using Assets.TD.scripts.Enums;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading;
 
-public class TouchListener : MonoBehaviour
+namespace Assets.TD.scripts
 {
-    public GameState GameState { get; private set; }
-
-    // Use this for initialization
-    private void Start()
+    
+    /// <summary>
+    /// Класс обрабатывает пользовательский ввод, управляет интерфейсом.
+    /// </summary>
+    public class TouchListener : MonoBehaviour
     {
-        GameState = GameState.Playing;
-        SidePanel.SetActive(false);
-        HumburgerButton.SetActive(true);
-        HintPanel.SetActive(false);
-        //CreateKnightButton.SetActive(true);
-    }
+        public GameObject ConnectionManager;
+        private bool _Start = false;
+        //public static Timer _ticker;
+        //public int _cnt = 10;
+        private ConnectToServer ConnectionToServer;
 
-    // Update is called once per frame
-    private void Update()
-    {
-        if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
+        // Use this for initialization
+        private void Start()
         {
-            //declare a variable of RaycastHit struct
-            RaycastHit hit;
-            //Create a Ray on the tapped / clicked position
-            Ray ray;
-#if UNITY_EDITOR
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-#elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
-            ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-#endif
-            //Check if the ray hits any collider
-            if (Physics.Raycast(ray, out hit))
-            {
-                ProcessClick(hit);
-                //if (_isCreateTowerMode && hit.collider.tag == ApplicationConst.FieldTag)
-                //{
-                //    CreateTower(hit.transform.position);
-                //    HintPanel.SetActive(false);
-                //    _isCreateTowerMode = false;
-                //} else if (_isCreateKnightMode && hit.collider.tag == ApplicationConst.TentTag)
-                //{
-                //    CreateKnight(hit.collider.gameObject);
-                //    HintPanel.SetActive(false);
-                //    _isCreateKnightMode = false;
-                //}
-                //else
-                //{
-                //    StartCoroutine(ProcessHit(hit));
-                //}
-            }
+            SidePanel.SetActive(false);
+            HumburgerButton.SetActive(true);
+            HintPanel.SetActive(false);
+            MessagePanel.SetActive(false);
+            StatBar.SetActive(false);
+            PreparingStartBar.SetActive(false);
+            ConnectionToServer = ConnectionManager.GetComponent<ConnectToServer>();
         }
-    }
 
-    private void ProcessClick(RaycastHit hit)
-    {
-        if (WasJustAButton())
-            return;        
-
-        Debug.Log(GameState);
-        Debug.Log(hit.collider.tag);
-        switch (hit.collider.tag)
-        {
-            case ApplicationConst.KnightTag:
-                GameState = GameState.KnightSelected;
-                hit.collider.gameObject.GetComponent<KnightScript>().Select();
-                break;
-            case ApplicationConst.TentTag:
-                //hit.collider.gameObject.GetComponent<TentScript>().Select();
-                //GameState = GameState.TentSelected;
-                if (GameState == GameState.ChooseNewKnightPosition)
+        // Update is called once per frame
+        private void Update()
+        {            
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (MessagePanel.activeSelf)
                 {
-                    CreateKnight(hit.collider.gameObject);
-                    HintPanel.SetActive(false);
-                    GameState = GameState.Playing;
-                }
-                break;
-            case ApplicationConst.TowerTag:
-                if (GameState == GameState.KnightSelected)
-                {
-                    var selectedKnight = GameObject.FindGameObjectsWithTag(ApplicationConst.KnightTag)
-                        .Select(x => x.GetComponent<KnightScript>())
-                        .Single(x => x.IsSelected);
-                    selectedKnight.GetComponent<KnightScript>().TargetPositionChanged(hit.collider.transform.position);
-                    GameState = GameState.Playing;
+                    BackToGameFromMessageCanvas();
                 }
                 else
                 {
-                    GameState = GameState.TowerSelected;
-                    //hit.collider.gameObject.GetComponent<TowerScript>().Select();
+                    MessagePanel.SetActive(true);
                 }
-                break;
-            case ApplicationConst.LandTag:
-                if (GameState == GameState.ChooseNewTowerPosition)
+                return;
+            }
+
+            if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
+            {
+                //declare a variable of RaycastHit struct
+                RaycastHit hit;
+                //Create a Ray on the tapped / clicked position
+                Ray ray;
+#if UNITY_EDITOR
+                ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+#elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
+            ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+#endif
+                //Check if the ray hits any collider
+                if (Physics.Raycast(ray, out hit))
                 {
-                    CreateTower(hit.point);
-                    HintPanel.SetActive(false);
-                    //_isCreateTowerMode = false;
-                    GameState = GameState.Playing;
+                    ProcessClick(hit);
                 }
-                break;
+            }
         }
-        Debug.Log(GameState);
-    }
-    
-    private void UnchooseAll() {
-        //hide all chooseCircles
-        var circles = GameObject.FindGameObjectsWithTag(ApplicationConst.ChooseCircleTag);
-        foreach (var circleRendererL in circles.Select(x => x.GetComponent<Renderer>()))
+
+        public GameObject MessagePanel;
+
+        /// <summary>
+        /// Выйти из приложения.
+        /// </summary>
+        public void ExitGame()
         {
-            circleRendererL.enabled = false;
+            Application.Quit();
         }
-    }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void BackToGameFromMessageCanvas()
+        {
+            MessagePanel.SetActive(false);
+        }
 
-    //private IEnumerator ProcessHit(RaycastHit hit)
-    //{
-    //    if (hit.collider.tag == ApplicationConst.TowerTag || hit.collider.tag == ApplicationConst.TentTag)
-    //    {
-    //        UnchooseAll();
+        private void ProcessClick(RaycastHit hit)
+        {
+            if (WasJustAButton())
+                return;
 
-    //        //show chooseCircle at selected object
-    //        var circleRenderer = hit.transform.gameObject.GetComponentsInChildren<Renderer>().FirstOrDefault(x => x.gameObject.tag == ApplicationConst.ChooseCircleTag);
-    //        if (circleRenderer != null)
-    //            circleRenderer.enabled = !circleRenderer.enabled;
-    //    }
-    //    yield return 0;
-    //}
+            Debug.Log(GameInfo.GameState);
+            //Debug.Log(hit.collider.tag);
+            switch (GameInfo.GameState)
+            {
+                case GameState.Playing:
+                    //StatBar.SetActive(true);
+                    //PreparingStartBar.SetActive(false);
+                    if (hit.collider.tag == ApplicationConst.KnightTag)
+                    {
+                        UnselectAll();
+                        GameInfo.GameState = GameState.KnightSelected;
+                        hit.collider.gameObject.GetComponent<KnightScript>().Select(true);
+                    }
+                    break;
+                case GameState.ChooseNewTowerPosition:
+                    if (hit.collider.tag == ApplicationConst.LandTag)
+                    {
+                        CreateTower(hit.point);
+                        HintPanel.SetActive(false);
+                        GameInfo.GameState = GameState.Playing;
+                    }
+                    break;
+                case GameState.ChooseNewKnightPosition:
+                    if (hit.collider.tag == ApplicationConst.TentTag)
+                    {
+                        CreateKnight(hit.collider.gameObject);
+                        HintPanel.SetActive(false);
+                        GameInfo.GameState = GameState.Playing;
+                    }
+                    break;
+                case GameState.TentSelected:
+                    break;
+                case GameState.KnightSelected:
+                    if (hit.collider.tag == ApplicationConst.KnightTag)
+                    {
+                        var knightScript = hit.collider.gameObject.GetComponent<KnightScript>();
+                        if (!knightScript.IsSelected())
+                        {
+                            UnselectAll();
+                            knightScript.Select(true);
+                        }
+                    } 
+                    /*else if (hit.collider.tag == ApplicationConst.TowerTag)
+                    {
+                        SendKnightToTower(hit);
+                    }*/
+                    else if (hit.collider.tag == ApplicationConst.LandTag)
+                    {
+                        UnselectAll();
+                    }
+                    break;
+                case GameState.TowerSelected:
+                    break;
+                case GameState.Finished:
+                    break;
+                case GameState.Planning:
+                    //PreparingStartBar.SetActive(true);
+                    //ticker = new Timer(TimerMethod, null, 1000, 1000);
+                    break;
+                case GameState.Preparing:
+                    break;
+            }
+            Debug.Log(GameInfo.GameState);
+        }
 
-    public void BackToMenu()
-    {
-        Application.LoadLevel("MainMenu");
-    }
+        private void SendKnightToTower(RaycastHit hit)
+        {
+            var knights = GameObject.FindGameObjectsWithTag(ApplicationConst.KnightTag);
+            KnightScript selectedKnight = null;
+            foreach (var knight in knights)
+            {
+                var knightComponent = knight.GetComponent<KnightScript>();
+                if (knightComponent != null && knightComponent.IsSelected())
+                {
+                    selectedKnight = knightComponent;
+                    break;
+                }
+            }
+            if (selectedKnight != null)
+            {
+                //selectedKnight.TargetPositionChanged(hit.collider.transform.position);
+                //selectedKnight.Select(false);
+                GameInfo.GameState = GameState.Playing;
+            }
+            UnselectAll();
+        }
 
-    public GameObject HumburgerButton;
-    public GameObject SidePanel;
-    public GameObject CreateTowerButton;
-    public GameObject CreateKnightButton;
+        private void SetHint(string hintText)
+        {
+            var text = HintPanel.GetComponentInChildren<Text>();
+            if (text != null)
+            {
+                text.text = hintText;
+            }
+        }
 
-    public void ProcessHamburgerButton()
-    {
-        HumburgerButton.SetActive(!HumburgerButton.activeSelf);
-        SidePanel.SetActive(!SidePanel.activeSelf);
-        //CreateKnightButton.SetActive(false);
-        //CreateTowerButton.SetActive(true);
-    }
+        private void SetTextInBar(int numArg, string Text, GameObject obj)
+        {
+            var text = obj.GetComponentsInChildren<Text>();
+            if (text != null)
+            {
+                text[numArg].text = Text;
+            }
+        }
 
-    public GameObject TowerPrefab;
-    public GameObject KnightPrefab;
-    public GameObject HintPanel;
+        private void UnselectAll() {
+            var selectableObjects = GameObject.FindGameObjectsWithTag(ApplicationConst.SelectableTag);
+            if (selectableObjects != null && selectableObjects.Length != 0)
+            {
+                foreach (GameObject selectableObject in selectableObjects)
+                {
+                    Selectable objectMain = selectableObject.transform.parent.gameObject.GetComponent<Selectable>();
+                    if (objectMain != null)
+                        objectMain.Select(false);
+                }
+            }
+        }
+        /// <summary>
+        /// Вернуться в главное меню.
+        /// </summary>
+        public void BackToMenu()
+        {
+            Application.LoadLevel("MainMenu");
+        }
 
-    //private bool _isCreateTowerMode = false;
-    //private bool _isCreateKnightMode = false;
+        public GameObject HumburgerButton;
+        public GameObject SidePanel;
+        public GameObject CreateTowerButton;
+        public GameObject CreateKnightButton;
 
-    private void CreateTower(Vector3 targetTowerPosition)
-    {
-        //var position = new Vector3(targetTowerPosition.x, targetTowerPosition.y + 5.0F, targetTowerPosition.z);
-        var position = targetTowerPosition;
-        Instantiate(TowerPrefab, position, Quaternion.identity);
-    }
+        /// <summary>
+        /// Открывает боковую панель.
+        /// </summary>
+        public void ProcessHamburgerButton()
+        {
+            HumburgerButton.SetActive(!HumburgerButton.activeSelf);
+            SidePanel.SetActive(!SidePanel.activeSelf);
+            CreateKnightButton.SetActive(GameInfo.Role == PlayerRole.Attacker);
+            CreateTowerButton.SetActive(GameInfo.Role == PlayerRole.Defender);
+        }
 
-    public void ProcessCreateTowerButton()
-    {
-        ProcessHamburgerButton();
-        HintPanel.SetActive(true);
-        //_isCreateTowerMode = true;
-        GameState = GameState.ChooseNewTowerPosition;
-    }
+        public GameObject TowerPrefab;
+        public GameObject KnightPrefab;
+        public GameObject HintPanel;
+        public GameObject StatBar;
+        public GameObject PreparingStartBar;
 
-    private void CreateKnight(GameObject tent)
-    {
-        var knight = KnightPrefab;
-        knight.transform.localScale.Set(1, 1, 1);
-        var knightPosition = new Vector3(tent.transform.position.x, 0.5F, tent.transform.position.z - 3);
-        Instantiate(knight, knightPosition, Quaternion.identity);
-    }
+        private void CreateTower(Vector3 targetTowerPosition)
+        {
+            ConnectionToServer.SendAddUnitRequest(UnitType.Tower, targetTowerPosition);
+        }
 
-    public void ProcessCreateKnightButton()
-    {
-        ProcessHamburgerButton();
-        HintPanel.SetActive(true);
-        //HintPanel.FindChild("HintText").SetText("TAP ON TENT TO CREATE KNIGHT")
-        //_isCreateKnightMode = true;
-        GameState = GameState.ChooseNewKnightPosition;
-    }
+        /// <summary>
+        /// Обрабатывает нажатие кнопки "создать башню".
+        /// </summary>
+        public void ProcessCreateTowerButton()
+        {
+            ProcessHamburgerButton();
+            SetHint(ApplicationConst.CreateTowerHint);
+            HintPanel.SetActive(true);
+            GameInfo.GameState = GameState.ChooseNewTowerPosition;
+        }
 
-    public void HideSidePanel() {
-        SidePanel.SetActive(false);
-        HumburgerButton.SetActive(true);
-        UnchooseAll();
-    }
+        private void CreateKnight(GameObject tent)
+        {   
+            //todo: refactor magic numbers
+            var knightPosition = new Vector3(tent.transform.position.x + 1.6F, tent.transform.position.y, tent.transform.position.z - 2.5F);
 
-    private static bool WasJustAButton()
-    {
-        var ct = UnityEngine.EventSystems.EventSystem.current;
+            ConnectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition);
+        }
 
-        if (!ct.IsPointerOverGameObject()) return false;
-        if (!ct.currentSelectedGameObject) return false;
-        if (ct.currentSelectedGameObject.GetComponent<Button>() == null)
-            return false;
 
-        return true;
+        /// <summary>
+        /// Обрабатывает нажатие кнопки "создать рыцаря".
+        /// </summary>
+        public void ProcessCreateKnightButton()
+        {
+            ProcessHamburgerButton();
+            SetHint(ApplicationConst.CreateKnightHint);
+            HintPanel.SetActive(true);
+            GameInfo.GameState = GameState.ChooseNewKnightPosition;
+        }
+
+        /// <summary>
+        /// Скрывает боковую панель.
+        /// </summary>
+        public void HideSidePanel() {
+            SidePanel.SetActive(false);
+            HumburgerButton.SetActive(true);
+            UnselectAll();
+        }
+
+        private static bool WasJustAButton()
+        {
+            var ct = UnityEngine.EventSystems.EventSystem.current;
+
+            if (!ct.IsPointerOverGameObject()) return false;
+            if (!ct.currentSelectedGameObject) return false;
+            if (ct.currentSelectedGameObject.GetComponent<Button>() == null)
+                return false;
+
+            return true;
+        }
+
+        /*public static void TimerMethod(object state)
+        {
+            _cnt--;
+            SetTextInBar(2, _cnt.ToString(), PreparingStartBar);
+            if (_cnt == 0 || GameInfo.GameState==GameState.Playing) _ticker.Dispose(); 
+        }*/
     }
 }
-
-
-
