@@ -2,6 +2,7 @@
 using Assets.TD.scripts.Enums;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading;
 
 namespace Assets.TD.scripts
 {
@@ -12,7 +13,9 @@ namespace Assets.TD.scripts
     public class TouchListener : MonoBehaviour
     {
         public GameObject ConnectionManager;
-        private bool _StartRole = false;
+        private bool _Start = false;
+        //public static Timer _ticker;
+        //public int _cnt = 10;
         private ConnectToServer ConnectionToServer;
 
         public UnitManager UnitManager;
@@ -20,20 +23,21 @@ namespace Assets.TD.scripts
         // Use this for initialization
         private void Start()
         {
-            GameInfo.GameState = GameState.Playing;
             SidePanel.SetActive(false);
             HumburgerButton.SetActive(true);
             HintPanel.SetActive(false);
             MessagePanel.SetActive(false);
-
+            StatBar.SetActive(false);
+            PreparingStartBar.SetActive(false);
             ConnectionToServer = ConnectionManager.GetComponent<ConnectToServer>();
         }
 
         // Update is called once per frame
         private void Update()
-        {            if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                
                 if (MessagePanel.activeSelf)
                 {
                     BackToGameFromMessageCanvas();
@@ -87,10 +91,12 @@ namespace Assets.TD.scripts
                 return;
 
             Debug.Log(GameInfo.GameState);
-            Debug.Log(hit.collider.tag);
+            //Debug.Log(hit.collider.tag);
             switch (GameInfo.GameState)
             {
                 case GameState.Playing:
+                    //StatBar.SetActive(true);
+                    //PreparingStartBar.SetActive(false);
                     if (hit.collider.tag == ApplicationConst.KnightTag)
                     {
                         UnselectAll();
@@ -140,6 +146,8 @@ namespace Assets.TD.scripts
                 case GameState.Finished:
                     break;
                 case GameState.Planning:
+                    //PreparingStartBar.SetActive(true);
+                    //ticker = new Timer(TimerMethod, null, 1000, 1000);
                     break;
                 case GameState.Preparing:
                     break;
@@ -178,6 +186,15 @@ namespace Assets.TD.scripts
             }
         }
 
+        private void SetTextInBar(int numArg, string Text, GameObject obj)
+        {
+            var text = obj.GetComponentsInChildren<Text>();
+            if (text != null)
+            {
+                text[numArg].text = Text;
+            }
+        }
+
         private void UnselectAll() {
             var selectableObjects = GameObject.FindGameObjectsWithTag(ApplicationConst.SelectableTag);
             if (selectableObjects != null && selectableObjects.Length != 0)
@@ -212,12 +229,13 @@ namespace Assets.TD.scripts
             SidePanel.SetActive(!SidePanel.activeSelf);
             CreateKnightButton.SetActive(GameInfo.Role == PlayerRole.Attacker);
             CreateTowerButton.SetActive(GameInfo.Role == PlayerRole.Defender);
-                
         }
 
         public GameObject TowerPrefab;
         public GameObject KnightPrefab;
         public GameObject HintPanel;
+        public GameObject StatBar;
+        public GameObject PreparingStartBar;
 
         private void CreateTower(Vector3 targetTowerPosition)
         {
@@ -275,5 +293,12 @@ namespace Assets.TD.scripts
 
             return true;
         }
+
+        /*public static void TimerMethod(object state)
+        {
+            _cnt--;
+            SetTextInBar(2, _cnt.ToString(), PreparingStartBar);
+            if (_cnt == 0 || GameInfo.GameState==GameState.Playing) _ticker.Dispose(); 
+        }*/
     }
 }

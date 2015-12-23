@@ -19,7 +19,8 @@ namespace Assets.TD.scripts
         private Socket _socket = null;
         private NetworkStream _stream = null;
         private const string EndJsonStr = "!end";
-
+        public GameObject StatBar;
+        public GameObject PreparingStartBar;
         // Use this for initialization
         void Start () {
             // Создаем экземпляр класса TcpClient и пытаемся подключится к серверу.
@@ -132,7 +133,11 @@ namespace Assets.TD.scripts
             var stageSimulateMsg = JsonConvert.DeserializeObject<StageSimulate>(responseData);
             Debug.Log(stageSimulateMsg.content);
             if (GameInfo.GameState == GameState.Planning)
+            {
+                StatBar.SetActive(true);
+                PreparingStartBar.SetActive(false);
                 GameInfo.GameState = GameState.Playing;
+            }
         }
 
         private void ProcessStagePlanning(string responseData)
@@ -141,7 +146,11 @@ namespace Assets.TD.scripts
             Debug.Log(stagePlanningMsg.content.message);
             Debug.Log(stagePlanningMsg.content.time);
             if (GameInfo.GameState == GameState.Preparing)
+            {
+                StatBar.SetActive(false);
+                PreparingStartBar.SetActive(true);
                 GameInfo.GameState = GameState.Planning;
+            }      
         }
 
         private void ProcessGameToStart(string responseData)

@@ -57,6 +57,7 @@
      <Compile Include="Assets\TD\scripts\Enums\GameState.cs" />
      <Compile Include="Assets\TD\scripts\Enums\MapCellType.cs" />
      <Compile Include="Assets\TD\scripts\Enums\PlayerRoles.cs" />
+     <Compile Include="Assets\TD\scripts\Enums\UnitDirection.cs" />
      <Compile Include="Assets\TD\scripts\Enums\UnitType.cs" />
      <Compile Include="Assets\TD\scripts\GameInfo.cs" />
      <Compile Include="Assets\TD\scripts\GameScene.cs" />
@@ -70,6 +71,7 @@
      <Compile Include="Assets\TD\scripts\TerrainGenerator.cs" />
      <Compile Include="Assets\TD\scripts\TouchListener.cs" />
      <Compile Include="Assets\TD\scripts\TowerScript.cs" />
+     <Compile Include="Assets\TD\scripts\UnitManager.cs" />
      <Compile Include="Assets\TD\scripts\Utils\Math.cs" />
      <Compile Include="Assets\TD\scripts\ViewDrag.cs" />
      <None Include="Assets\Standard Assets (Mobile)\Shaders\Particle Shaders\Mobile Multiply Culled.shader" />
