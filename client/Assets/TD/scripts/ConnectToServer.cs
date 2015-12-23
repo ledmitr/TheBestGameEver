@@ -64,11 +64,6 @@ namespace Assets.TD.scripts
 
                     Debug.Log(String.Format("Readed {0} symbols: {1}", bytes, responseData));
 
-                    using (var file = File.OpenWrite("serverOutput.txt"))
-                    {
-                        file.Write(buffer, 0, bytes);
-                    }
-
                     string[] messages;
                     if (responseData.Contains(EndJsonStr))
                     {
@@ -189,7 +184,7 @@ namespace Assets.TD.scripts
         {
             if (_socket.Connected && _stream.CanWrite)
             {
-                var serializedObject = JsonConvert.SerializeObject(objectToSend);
+                var serializedObject = JsonConvert.SerializeObject(objectToSend) + "!end";
                 Debug.Log("Message to server: " + serializedObject);
                 byte[] data = System.Text.Encoding.ASCII.GetBytes(serializedObject);
                 _stream.Write(data, 0, data.Length);

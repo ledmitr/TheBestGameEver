@@ -32,12 +32,6 @@ namespace Assets.TD.scripts
         // Update is called once per frame
         private void Update()
         {
-            if (GameInfo.GameState == GameState.Playing && _StartRole==false)
-            {
-                CreateKnightButton.SetActive(GameInfo.Role == PlayerRole.Attacker);
-                CreateTowerButton.SetActive(GameInfo.Role == PlayerRole.Defender);
-                _StartRole = true;
-            }
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 
@@ -217,6 +211,9 @@ namespace Assets.TD.scripts
         {
             HumburgerButton.SetActive(!HumburgerButton.activeSelf);
             SidePanel.SetActive(!SidePanel.activeSelf);
+            CreateKnightButton.SetActive(GameInfo.Role == PlayerRole.Attacker);
+            CreateTowerButton.SetActive(GameInfo.Role == PlayerRole.Defender);
+                
         }
 
         public GameObject TowerPrefab;
