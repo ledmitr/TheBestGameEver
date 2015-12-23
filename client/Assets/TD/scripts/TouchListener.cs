@@ -15,8 +15,6 @@ namespace Assets.TD.scripts
         private bool _StartRole = false;
         private ConnectToServer ConnectionToServer;
 
-        public UnitManager UnitManager;
-
         // Use this for initialization
         private void Start()
         {
@@ -31,9 +29,9 @@ namespace Assets.TD.scripts
 
         // Update is called once per frame
         private void Update()
-        {            if (Input.GetKeyDown(KeyCode.Escape))
+        {            
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                
                 if (MessagePanel.activeSelf)
                 {
                     BackToGameFromMessageCanvas();
