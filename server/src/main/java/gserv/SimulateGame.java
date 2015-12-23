@@ -24,12 +24,12 @@ public class SimulateGame extends Thread
     /**
      * Ширина карты
      */
-    public static final int MAP_WIDTH = 50;
+    public static final int MAP_WIDTH = 100;
 
     /**
      * Высота карты
      */
-    public static final int MAP_HEIGHT = 50;
+    public static final int MAP_HEIGHT = 100;
 
     /**
      * Коллекция обектов атакующего игрока
@@ -109,7 +109,7 @@ public class SimulateGame extends Thread
                 new_content[i].put("map_width", MAP_WIDTH);
                 new_content[i].put("map_height", MAP_HEIGHT);
                 new_content[i].put("map", map);
-                //clients[i].sendData(APITemplates.build("prepare_to_start", 0, new_content[i]));
+                clients[i].sendData(APITemplates.build("prepare_to_start", 0, new_content[i]));
             }
     }
 
