@@ -24,12 +24,12 @@ public class SimulateGame extends Thread
     /**
      * Ширина карты
      */
-    public static final int MAP_WIDTH = 10;
+    public static final int MAP_WIDTH = 9;
 
     /**
      * Высота карты
      */
-    public static final int MAP_HEIGHT = 10;
+    public static final int MAP_HEIGHT = 9;
 
     /**
      * Коллекция обектов атакующего игрока
@@ -131,11 +131,11 @@ public class SimulateGame extends Thread
             int buf, i = 0, j = 0;
             while((buf=reader.read())!=-1){
                 if ( buf >= '0' && buf <= '9') {
-                    if (i == MAP_HEIGHT) {
+                    if (i == MAP_WIDTH) {
                         i = 0;
                         j++;
                     }
-                    if (j == MAP_WIDTH) break;
+                    if (j == MAP_HEIGHT) break;
                     gameMap[j][i++] = (char)buf - '0';
                 }
             }
@@ -153,6 +153,7 @@ public class SimulateGame extends Thread
         while (objIterator.hasNext()) {
             GameObject currentUnit = (GameObject)objIterator.next();
             JSONObject unit = new JSONObject();
+            unit.put("id_unit", currentUnit.id);
             unit.put("type_unit", currentUnit.type);
             unit.put("hit_point", currentUnit.hitpoint);
             int pos[] = currentUnit.getPosition();
@@ -222,20 +223,22 @@ public class SimulateGame extends Thread
         for (int i = 0; i < 2; i++) {
             clients[i].sendData(APITemplates.build("game_to_start", 0, "Game has been started! Please wait next instructions."));
         }
-        //Первый этап, перехоим в режим планирования
-        gotoStagePlanning(45);
-        //Первый этап, переходим в режим симуляции
-        gotoStageSimulate();
-        //Второй этап, перехоим в режим планирования
-        gotoStagePlanning(45);
+        while(true) {
+            //Первый этап, перехоим в режим планирования
+            gotoStagePlanning(10);
+            //Первый этап, переходим в режим симуляции
+            gotoStageSimulate();
+        }
+/*        //Второй этап, перехоим в режим планирования
+        gotoStagePlanning(10);
         //Второй этап, переходим в режим симуляции
         gotoStageSimulate();
         //Третий этап, перехоим в режим планирования
-        gotoStagePlanning(45);
+        gotoStagePlanning(10);
         //Третий этап, переходим в режим симуляции
         gotoStageSimulate();
         //Конец игры
         //Первый этап, переходим в режим симуляции
-        gotoStageFinish();
+        gotoStageFinish();*/
     }
 }

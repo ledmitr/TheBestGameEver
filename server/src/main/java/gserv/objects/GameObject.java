@@ -22,6 +22,7 @@ public abstract class GameObject {
     public int hitpoint;
     public int owner;
     public int direction;
+    public int id;
 
     {
         position = new int[2];

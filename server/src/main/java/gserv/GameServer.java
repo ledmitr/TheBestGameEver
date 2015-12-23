@@ -17,6 +17,8 @@ public class GameServer implements Runnable {
 
     private static final String SERVER_NAME = "TheBestGameEver";
 
+    protected volatile int unitCounter;
+
     /**
      * Коллекция обектов атакующего игрока
      */
@@ -76,6 +78,7 @@ public class GameServer implements Runnable {
         secret_key = s;
         clients = new Client[2];
         gameThread = null;
+        unitCounter = 0;
     }
 
     /**
@@ -194,8 +197,22 @@ public class GameServer implements Runnable {
 
         if (data.get("action").toString().equals("add_unit")) {
             JSONObject content = (JSONObject) data.get("content");
-            if (content.get("type_unit").toString().equals("1")) { //Если тип юнита солдат
-                attackerObjects.add(new SoldierAttacker(new Integer(content.get("position_x").toString()), new Integer(content.get("position_y").toString()), clients[numClient].role, 5));
+            int posX = new Integer(content.get("position_x").toString());
+            int posY = new Integer(content.get("position_y").toString());
+            if (content.get("type_unit").toString().equals("11")) { //Если тип юнита солдат
+                if (gameMap[posY][posX] == 9) {
+                    attackerObjects.add(new SoldierAttacker(unitCounter++, posX, posY, clients[numClient].role, 5));
+                } else {
+                    System.out.print(gameMap);
+                    clients[numClient].sendData(APITemplates.build("Error", 1, "Unit can't to created."));
+                }
+            }
+            if (content.get("type_unit").toString().equals("21")) { //Если тип юнита башня
+                if (gameMap[posY][posX] == 1) {
+                    defenderObjects.add(new TowerDefender(unitCounter++, posX, posY, clients[numClient].role, 5));
+                } else {
+                    clients[numClient].sendData(APITemplates.build("Error", 1, "Unit can't to created."));
+                }
             }
         }
 
