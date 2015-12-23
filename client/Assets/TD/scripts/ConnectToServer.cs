@@ -189,7 +189,7 @@ namespace Assets.TD.scripts
         {
             if (_socket.Connected && _stream.CanWrite)
             {
-                var serializedObject = JsonConvert.SerializeObject(objectToSend);
+                var serializedObject = JsonConvert.SerializeObject(objectToSend)+"!end";
                 Debug.Log("Message to server: " + serializedObject);
                 byte[] data = System.Text.Encoding.ASCII.GetBytes(serializedObject);
                 _stream.Write(data, 0, data.Length);
