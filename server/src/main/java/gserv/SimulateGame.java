@@ -127,7 +127,8 @@ public class SimulateGame extends Thread
     private void loadMap()
     {
         try {
-            FileReader reader = new FileReader(SimulateGame.class.getResource("~/main.map").getFile());
+            System.out.print(SimulateGame.class.getResource("/main.map").getFile());
+            FileReader reader = new FileReader("/home/main.map");
             int buf, i = 0, j = 0;
             while((buf=reader.read())!=-1){
                 if ( buf >= '0' && buf <= '9') {
