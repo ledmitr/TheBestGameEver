@@ -109,7 +109,7 @@ public class SimulateGame extends Thread
                 new_content[i].put("map_width", MAP_WIDTH);
                 new_content[i].put("map_height", MAP_HEIGHT);
                 new_content[i].put("map", map);
-                clients[i].sendData(APITemplates.build("prepare_to_start", 0, new_content[i]));
+                //clients[i].sendData(APITemplates.build("prepare_to_start", 0, new_content[i]));
             }
     }
 
