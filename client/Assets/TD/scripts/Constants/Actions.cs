@@ -1,5 +1,8 @@
 ﻿namespace Assets.TD.scripts.Constants
 {
+    /// <summary>
+    /// Имена типов сообщений от сервера.
+    /// </summary>
     public static class Actions
     {
         public const string HandShake = "handshake";

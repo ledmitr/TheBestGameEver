@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Assets.TD.scripts
 {
+    /// <summary>
+    /// Осуществляет управление камерой для устройств с сенсорным экраном.
+    /// </summary>
     public class ViewDrag : MonoBehaviour
     {
         private Camera _lCamera;

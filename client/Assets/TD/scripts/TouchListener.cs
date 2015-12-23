@@ -5,11 +5,17 @@ using UnityEngine.UI;
 
 namespace Assets.TD.scripts
 {
+    
+    /// <summary>
+    /// Класс обрабатывает пользовательский ввод, управляет интерфейсом.
+    /// </summary>
     public class TouchListener : MonoBehaviour
     {
         public GameObject ConnectionManager;
         private bool _StartRole = false;
         private ConnectToServer ConnectionToServer;
+
+        public UnitManager UnitManager;
 
         // Use this for initialization
         private void Start()
@@ -66,12 +72,17 @@ namespace Assets.TD.scripts
         }
 
         public GameObject MessagePanel;
-    
+
+        /// <summary>
+        /// Выйти из приложения.
+        /// </summary>
         public void ExitGame()
         {
             Application.Quit();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public void BackToGameFromMessageCanvas()
         {
             MessagePanel.SetActive(false);
@@ -186,7 +197,9 @@ namespace Assets.TD.scripts
                 }
             }
         }
-    
+        /// <summary>
+        /// Вернуться в главное меню.
+        /// </summary>
         public void BackToMenu()
         {
             Application.LoadLevel("MainMenu");
@@ -197,6 +210,9 @@ namespace Assets.TD.scripts
         public GameObject CreateTowerButton;
         public GameObject CreateKnightButton;
 
+        /// <summary>
+        /// Открывает боковую панель.
+        /// </summary>
         public void ProcessHamburgerButton()
         {
             HumburgerButton.SetActive(!HumburgerButton.activeSelf);
@@ -209,11 +225,12 @@ namespace Assets.TD.scripts
 
         private void CreateTower(Vector3 targetTowerPosition)
         {
-            //ConnectionToServer.SendAddUnitRequest(UnitType.Tower, targetTowerPosition);
-            var position = targetTowerPosition;
-            Instantiate(TowerPrefab, position, Quaternion.identity);
+            ConnectionToServer.SendAddUnitRequest(UnitType.Tower, targetTowerPosition);
         }
 
+        /// <summary>
+        /// Обрабатывает нажатие кнопки "создать башню".
+        /// </summary>
         public void ProcessCreateTowerButton()
         {
             ProcessHamburgerButton();
@@ -223,19 +240,17 @@ namespace Assets.TD.scripts
         }
 
         private void CreateKnight(GameObject tent)
-        {
-            var knightPrefab = KnightPrefab;
-            knightPrefab.transform.localScale.Set(1, 1, 1);
+        {   
+            //todo: refactor magic numbers
             var knightPosition = new Vector3(tent.transform.position.x + 1.6F, tent.transform.position.y, tent.transform.position.z - 2.5F);
-            var knight = (GameObject)Instantiate(knightPrefab, knightPosition, Quaternion.identity);
 
-            //ConnectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition);
-
-            var tentScript = tent.GetComponent<TentScript>();
-            var knightScript = knight.GetComponent<KnightScript>();
-            knightScript.SetPath(tentScript.GetPath());
+            ConnectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition);
         }
 
+
+        /// <summary>
+        /// Обрабатывает нажатие кнопки "создать рыцаря".
+        /// </summary>
         public void ProcessCreateKnightButton()
         {
             ProcessHamburgerButton();
@@ -244,6 +259,9 @@ namespace Assets.TD.scripts
             GameInfo.GameState = GameState.ChooseNewKnightPosition;
         }
 
+        /// <summary>
+        /// Скрывает боковую панель.
+        /// </summary>
         public void HideSidePanel() {
             SidePanel.SetActive(false);
             HumburgerButton.SetActive(true);

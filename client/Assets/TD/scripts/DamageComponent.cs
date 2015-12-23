@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Assets.TD.scripts
 {
+    /// <summary>
+    /// Наносит урон.
+    /// </summary>
     public class DamageComponent : MonoBehaviour
     {
         private GameObject _closestTarget;

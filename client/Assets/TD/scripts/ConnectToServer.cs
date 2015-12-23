@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace Assets.TD.scripts
 {
+    /// <summary>
+    /// Подключается к серверу и осуществляет взаимодействие с ним.
+    /// </summary>
     public class ConnectToServer : MonoBehaviour {
         // Экземпляр класса TCP Client.
         private TcpClient _client = null;
@@ -111,6 +114,9 @@ namespace Assets.TD.scripts
                             case Actions.StageFinish:
                                 ProcessStageFinish(message);
                                 break;
+                            case Actions.ActualData:
+                                ProcessActualData(message);
+                                break;
                         }
                         Debug.Log(GameInfo.GameState);
                     }
@@ -184,12 +190,18 @@ namespace Assets.TD.scripts
             if (_socket.Connected && _stream.CanWrite)
             {
                 var serializedObject = JsonConvert.SerializeObject(objectToSend);
+                Debug.Log("Message to server: " + serializedObject);
                 byte[] data = System.Text.Encoding.ASCII.GetBytes(serializedObject);
                 _stream.Write(data, 0, data.Length);
             }
         }
 
-        public void SendAddUnitRequest(UnitType unitType, Vector3 targetTowerPosition)
+        /// <summary>
+        /// Запрашивает у сервера создание юнита.
+        /// </summary>
+        /// <param name="unitType">Тип юнита (башня или рыцарь).</param>
+        /// <param name="position">Позиция юнита.</param>
+        public void SendAddUnitRequest(UnitType unitType, Vector3 position)
         {
             var addTowerRequest = new AddUnitRequestToServer
             {
@@ -197,11 +209,27 @@ namespace Assets.TD.scripts
                 content = new AddUnitRequestToServer.Content
                 {
                     type_unit = (int)unitType,
-                    position_x = (int)targetTowerPosition.x,
-                    position_y = (int)targetTowerPosition.y
+                    position_x = (int)position.x,
+                    position_y = (int)position.y
                 }
             };
             SendMessageToServer(addTowerRequest);
+            //return true;
         }
+
+        private void ProcessActualData(string message)
+        {
+            Debug.Log("Server from message:" + message);
+            var actualData = JsonConvert.DeserializeObject<ActualData>(message);
+            foreach (var actualDataContentItem in actualData.content)
+            {
+                foreach (var actualDataUnit in actualDataContentItem.units)
+                {
+                    UnitManager.UpdateUnit(actualDataUnit);
+                }
+            }
+        }
+
+        public UnitManager UnitManager;
     }
 }
