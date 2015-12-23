@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Built-By: bodrik
+Build-Jdk: 1.7.0_91
+Created-By: Apache Maven 3.0.5
+Main-Class: game.App
+Archiver-Version: Plexus Archiver
+
