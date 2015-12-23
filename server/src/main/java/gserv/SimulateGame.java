@@ -127,7 +127,7 @@ public class SimulateGame extends Thread
     private void loadMap()
     {
         try {
-            FileReader reader = new FileReader(SimulateGame.class.getResource("/main.map").getFile());
+            FileReader reader = new FileReader(SimulateGame.class.getResource("~/main.map").getFile());
             int buf, i = 0, j = 0;
             while((buf=reader.read())!=-1){
                 if ( buf >= '0' && buf <= '9') {
@@ -191,6 +191,32 @@ public class SimulateGame extends Thread
         }
         while (!attackerObjects.isEmpty()) {
             try {
+                Iterator attackerIterator = attackerObjects.iterator();
+                while (attackerIterator.hasNext()) {
+                    GameObject soldier = (GameObject)attackerIterator.next();
+                    int posX = soldier.getPosition()[GameObject.COORD_X];
+                    int posY = soldier.getPosition()[GameObject.COORD_Y];
+                    if (gameMap[posY][posX + 1] == 0) {
+                        soldier.direction = 1;
+                        soldier.setPosition(posX + 1, posY);
+                    } else {
+                        if (gameMap[posY + 1][posX] == 0) {
+                            soldier.direction = 3;
+                            soldier.setPosition(posX, posY + 1);
+                        } else {
+                            if (gameMap[posY - 1][posX] == 0) {
+                                soldier.direction = 2;
+                                soldier.setPosition(posX, posY - 1);
+                            } else {
+
+                            }
+                        }
+                    }
+/*                    Iterator defenderIterator = defenderObjects.iterator();
+                    while (defenderIterator.hasNext()) {
+
+                    }*/
+                }
                 Thread.sleep(SIMULATE_DELAY);
             } catch (Exception e) {
                 LogException.saveToLog(e.getMessage(), e.getStackTrace().toString());
@@ -223,22 +249,22 @@ public class SimulateGame extends Thread
         for (int i = 0; i < 2; i++) {
             clients[i].sendData(APITemplates.build("game_to_start", 0, "Game has been started! Please wait next instructions."));
         }
-        while(true) {
+/*        while(true) {
             //Первый этап, перехоим в режим планирования
             gotoStagePlanning(10);
             //Первый этап, переходим в режим симуляции
             gotoStageSimulate();
-        }
+        }*/
 /*        //Второй этап, перехоим в режим планирования
         gotoStagePlanning(10);
         //Второй этап, переходим в режим симуляции
-        gotoStageSimulate();
+        gotoStageSimulate();*/
         //Третий этап, перехоим в режим планирования
-        gotoStagePlanning(10);
+        gotoStagePlanning(20);
         //Третий этап, переходим в режим симуляции
         gotoStageSimulate();
         //Конец игры
         //Первый этап, переходим в режим симуляции
-        gotoStageFinish();*/
+        gotoStageFinish();
     }
 }

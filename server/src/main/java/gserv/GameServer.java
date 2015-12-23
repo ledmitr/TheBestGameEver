@@ -164,9 +164,9 @@ public class GameServer implements Runnable {
             clients[numClient].sendData(APITemplates.build("handshake", code, new_content));
             //Если оба пользователя прошли авторизацию, то запускаем игровой процесс
             if (clients[0].isLogged() && clients[1].isLogged() && gameThread == null) {
-                gameMap = new int[SimulateGame.MAP_HEIGHT][];
+                gameMap = new int[SimulateGame.MAP_HEIGHT + 1][];
                 for (int i=0; i<gameMap.length; i++) {
-                    gameMap[i] = new int[SimulateGame.MAP_WIDTH];
+                    gameMap[i] = new int[SimulateGame.MAP_WIDTH + 1];
                     for (int j=0; j<gameMap[i].length; j++) {
                         gameMap[i][j] = 0;
                     }
