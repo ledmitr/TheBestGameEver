@@ -127,10 +127,10 @@ namespace Assets.TD.scripts
                             knightScript.Select(true);
                         }
                     } 
-                    else if (hit.collider.tag == ApplicationConst.TowerTag)
+                    /*else if (hit.collider.tag == ApplicationConst.TowerTag)
                     {
                         SendKnightToTower(hit);
-                    }
+                    }*/
                     else if (hit.collider.tag == ApplicationConst.LandTag)
                     {
                         UnselectAll();
@@ -163,7 +163,7 @@ namespace Assets.TD.scripts
             }
             if (selectedKnight != null)
             {
-                selectedKnight.TargetPositionChanged(hit.collider.transform.position);
+                //selectedKnight.TargetPositionChanged(hit.collider.transform.position);
                 //selectedKnight.Select(false);
                 GameInfo.GameState = GameState.Playing;
             }
