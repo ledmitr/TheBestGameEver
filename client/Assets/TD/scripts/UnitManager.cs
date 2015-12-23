@@ -55,7 +55,7 @@ namespace Assets.TD.scripts
                 else
                 {
                     //todo: PATH??
-                    _knights.Add(CreateKnight(unitPosition, new Vector3[0]));
+                    _knights.Add(CreateKnight(unitPosition));
                 }
             }
         }
@@ -64,13 +64,12 @@ namespace Assets.TD.scripts
         /// Создаёт рыцаря.
         /// </summary>
         /// <param name="knightPosition">Позиция рыцаря.</param>
-        /// <param name="path">Путь рыцаря.</param>
         /// <returns>Компонент управления рыцарем.</returns>
-        public KnightScript CreateKnight(Vector3 knightPosition, Vector3[] path)
+        public KnightScript CreateKnight(Vector3 knightPosition)
         {
             var knight = (GameObject)Instantiate(KnightPrefab, knightPosition, Quaternion.identity);
             var knightScript = knight.GetComponent<KnightScript>();
-            knightScript.SetPath(path);
+            //knightScript.SetPath(path);
             return knightScript;
         }
 
@@ -84,6 +83,59 @@ namespace Assets.TD.scripts
             var tower = (GameObject)Instantiate(TowerPrefab, towerPosition, Quaternion.identity);
             var towerScript = tower.GetComponent<TowerScript>();
             return towerScript;
+        }
+
+        public void UpdateUnits(ActualData actualData)
+        {
+            var processedTowersIds = new List<int>();
+            var processedKnightsIds = new List<int>();
+            var towerIds = _towers.Select(x => x.Id).ToList();
+            var knightsIds = _knights.Select(x => x.Id).ToList();
+            foreach (var actualDataContentItem in actualData.content)
+            {
+                foreach (var unitData in actualDataContentItem.units)
+                {
+                    var unitPosition = new Vector3(unitData.position_x, unitData.position_y);
+                    if (unitData.type_unit == UnitType.Tower)
+                    {
+                        var unit = _towers.SingleOrDefault(x => x.Id == unitData.id);
+                        if (unit != null)
+                        {
+                            unit.transform.position = unitPosition;
+                            processedTowersIds.Add(unit.Id);
+                        }
+                        else
+                        {
+                            _towers.Add(CreateTower(unitPosition));
+                        }
+                    }
+                    else
+                    {
+                        var unit = _knights.FirstOrDefault(x => x.Id == unitData.id);
+                        if (unit != null)
+                        {
+                            unit.transform.position = unitPosition;
+                            processedKnightsIds.Add(unit.Id);
+                        }
+                        else
+                        {
+                            _knights.Add(CreateKnight(unitPosition));
+                        }
+                    }
+                }
+            }
+            var knightsIntersect = knightsIds.Except(processedKnightsIds);
+            foreach (var id in knightsIntersect)
+            {
+                var knight = _knights.Single(x => x.Id == id);
+                Destroy(knight.gameObject);
+            }
+            var towersIntersect = towerIds.Except(processedTowersIds);
+            foreach (var id in towersIntersect)
+            {
+                var tower = _towers.Single(x => x.Id == id);
+                Destroy(tower.gameObject);
+            }
         }
     }
 }

@@ -225,13 +225,7 @@ namespace Assets.TD.scripts
         {
             Debug.Log("Server from message:" + message);
             var actualData = JsonConvert.DeserializeObject<ActualData>(message);
-            foreach (var actualDataContentItem in actualData.content)
-            {
-                foreach (var actualDataUnit in actualDataContentItem.units)
-                {
-                    UnitManager.UpdateUnit(actualDataUnit);
-                }
-            }
+            UnitManager.UpdateUnits(actualData);
         }
 
         public UnitManager UnitManager;

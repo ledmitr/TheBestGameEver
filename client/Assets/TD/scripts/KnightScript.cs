@@ -62,7 +62,7 @@ namespace Assets.TD.scripts
         /// Устанавливает путь.
         /// </summary>
         /// <param name="path">Путь.</param>
-        public void SetPath(Vector3[] path)
+        private void SetPath(Vector3[] path)
         {
             _pathToMainTower = path;
             _currentPosition = 0;
@@ -74,7 +74,7 @@ namespace Assets.TD.scripts
         /// Изменяет целевую точку рыцаря.
         /// </summary>
         /// <param name="newTargetPosition">Новая целевая точка.</param>
-        public void TargetPositionChanged(Vector3 newTargetPosition)
+        private void TargetPositionChanged(Vector3 newTargetPosition)
         {
             _targetPosition = newTargetPosition;
             _isSelected = false;
@@ -84,10 +84,10 @@ namespace Assets.TD.scripts
 
         public void Update()
         {
-            if (_isMoving)
+            /*if (_isMoving)
             {
                 Move();
-            }
+            }*/
         }
 
         void OnCollisionEnter(Collision collision)
