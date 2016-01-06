@@ -1,6 +1,21 @@
+# =============== #
+# Unity generated #
+# =============== #
+client/Temp/
+client/Library/
+
+# ================================================= #
+# Visual Studio / MonoDevelop / Other IDE generated #
+# ================================================= #
 /.idea
-client/obj
-client/Temp
-/client/Assets/Plugins/*.meta
-client/Library/metadata
-*.meta
+client/ExportedObj/
+client/obj/
+*.svd
+*.userprefs
+client/*.csproj
+*.pidb
+*.suo
+client/*.sln
+*.user
+*.unityproj
+*.booproj

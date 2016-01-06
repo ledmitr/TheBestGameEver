@@ -36,10 +36,12 @@ namespace Assets.TD.scripts
             _lCamera = GetComponent<Camera>();
         }
 
+#if UNITY_EDITOR
         private static readonly Vector3 CameraRelativeUp = new Vector3(-1.0F, 0.0F, 1.0F);
         private static readonly Vector3 CameraRelativeDown = -CameraRelativeUp;
         private static readonly Vector3 CameraRelativeRight = new Vector3(1.0F, 0.0F, 1.0F);
         private static readonly Vector3 CameraRelativeLeft = -CameraRelativeRight;
+#endif
 
         void Update()
         {

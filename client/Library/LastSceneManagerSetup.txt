@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/TD/scenes/MainMenu.unity
-  isLoaded: 1
-  isActive: 1

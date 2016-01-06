@@ -2,7 +2,6 @@
 using Assets.TD.scripts.Enums;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading;
 
 namespace Assets.TD.scripts
 {
@@ -13,7 +12,7 @@ namespace Assets.TD.scripts
     public class TouchListener : MonoBehaviour
     {
         public GameObject ConnectionManager;
-        private bool _Start = false;
+        private bool _start = false;
         //public static Timer _ticker;
         //public int _cnt = 10;
         private ConnectToServer ConnectionToServer;

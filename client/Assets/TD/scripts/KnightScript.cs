@@ -27,8 +27,6 @@ namespace Assets.TD.scripts
 
         private int _currentPosition;
 
-        private Renderer _renderer; 
-
         /// <summary>
         /// Выбирает юнита или отменяет выбор.
         /// </summary>
@@ -36,10 +34,6 @@ namespace Assets.TD.scripts
         public override void Select(bool isSelected)
         {
             _isSelected = isSelected;
-            if (isSelected)
-                _renderer.sharedMaterials = SelectMaterial;
-            else
-                _renderer.sharedMaterials = DefaultMaterial;
         }
 
         public Material[] SelectMaterial;
@@ -54,8 +48,6 @@ namespace Assets.TD.scripts
             //HealthBar = new HealthBar();
             _isSelected = false;
             _isMoving = _pathToMainTower != null && _pathToMainTower.Length > 1;
-            _renderer = GetComponent<Renderer>();
-            DefaultMaterial = _renderer.sharedMaterials;
         }
 
         /// <summary>
