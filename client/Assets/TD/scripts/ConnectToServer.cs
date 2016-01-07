@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using Assets.TD.scripts.Constants;
 using Assets.TD.scripts.Enums;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Assets.TD.scripts
@@ -13,15 +13,15 @@ namespace Assets.TD.scripts
     /// Подключается к серверу и осуществляет взаимодействие с ним.
     /// </summary>
     public class ConnectToServer : MonoBehaviour {
+        private const string EndStr = "!end";
+        private const string EndJsonStr = "}!end";
+
         // Экземпляр класса TCP Client.
         private TcpClient _client = null;
         // Экземпляр класса Socket.
         private Socket _socket = null;
         private NetworkStream _stream = null;
-        private const string EndJsonStr = "!end";
-        public GameObject StatBar;
-        public GameObject PreparingStartBar;
-        // Use this for initialization
+
         void Start () {
             // Создаем экземпляр класса TcpClient и пытаемся подключится к серверу.
             _client = new TcpClient(ApplicationConst.ServerAddress, GameInfo.Port);
@@ -34,8 +34,7 @@ namespace Assets.TD.scripts
                 _stream = _client.GetStream();
 
                 // Производим сериализацию Json пакета.
-                Head_ReqToServer_HandShake handshake = new Head_ReqToServer_HandShake
-                {
+                Head_ReqToServer_HandShake handshake = new Head_ReqToServer_HandShake {
                     action = Actions.HandShake,
                     content = new Head_ReqToServer_HandShake.Content
                     {
@@ -43,14 +42,11 @@ namespace Assets.TD.scripts
                         secret_key = GameInfo.Key
                     }
                 };
-                // С помощью JsonConvert производим сериализацию структуры выше.
-                string json = JsonConvert.SerializeObject(handshake, Formatting.Indented)+"!end";
-                // Переводим наше сообщение в ASCII, а затем в массив Byte.
-                Byte[] data = System.Text.Encoding.ASCII.GetBytes(json);
-                // Отправляем сообщение нашему серверу. 
-                _stream.Write(data, 0, data.Length);
+                SendMessageToServer(handshake);
             }
         }
+
+        private string _notFinishedMessage = null;
 	
         // Update is called once per frame
         void Update () {
@@ -58,138 +54,66 @@ namespace Assets.TD.scripts
             {
                 if (_stream.DataAvailable)
                 {
-                    byte[] buffer = new byte[1024];
-                    Int32 bytes = _stream.Read(buffer, 0, buffer.Length);
-                    // Преобразуем в строку.
-                    string responseData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytes);
+                    var response = ReadFully(_stream);
 
-                    Debug.Log(String.Format("Readed {0} symbols: {1}", bytes, responseData));
+                    if (_notFinishedMessage != null)
+                        response = _notFinishedMessage + response;
 
-                    string[] messages;
-                    if (responseData.Contains(EndJsonStr))
+                    if (!response.Contains(EndJsonStr))
                     {
-                        messages = responseData.Split(new[] {EndJsonStr}, StringSplitOptions.RemoveEmptyEntries);
+                        _notFinishedMessage = response;
                     }
                     else
                     {
-                        Debug.Log("Плохой пакет: " + responseData);
-                        return;
-                    }
-
-                    foreach (var message in messages)
-                    {
-                        string messageAction = "";
-                        try
-                        {   
-                            var parsedObject = JObject.Parse(message);
-                            messageAction = (string)parsedObject["action"];
-                        }
-                        catch (Exception ex)
+                        var messages = response.Split(new[] {EndStr}, StringSplitOptions.RemoveEmptyEntries);
+                        if (messages.Length > 1 && !messages.Last().EndsWith(EndJsonStr))
                         {
-                            Debug.LogException(ex);
-                            //return;
+                            _notFinishedMessage = messages.Last();
+                            messages = messages.Take(messages.Length - 1).ToArray();
                         }
-
-                        switch (messageAction)
-                        {
-                            case Actions.HandShake:
-                                ProcessHandShake(message);
-                                break;
-                            case Actions.PrepareToStart:
-                                ProcessPrepareToStart(message);
-                                break;
-                            case Actions.GameToStart:
-                                ProcessGameToStart(message);
-                                break;
-                            case Actions.StagePlanning:
-                                ProcessStagePlanning(message);
-                                break;
-                            case Actions.StageSimulate:
-                                ProcessStageSimulate(message);
-                                break;
-                            case Actions.StageFinish:
-                                ProcessStageFinish(message);
-                                break;
-                            case Actions.ActualData:
-                                ProcessActualData(message);
-                                break;
-                        }
-                        Debug.Log(GameInfo.GameState);
+                        GameInfo.ServerMessages.AddRange(messages);
                     }
                 }
             }
         }
 
-        private void ProcessStageFinish(string responseData)
+        // unused
+        private string ReadFromStream()
         {
-            var stageFinishMsg = JsonConvert.DeserializeObject<StageFinish>(responseData);
-            Debug.Log(stageFinishMsg.content);
-            if (GameInfo.GameState == GameState.Playing)
-                GameInfo.GameState = GameState.Finished;
+            byte[] buffer = new byte[1024];
+            Int32 bytes = _stream.Read(buffer, 0, buffer.Length);
+            // Преобразуем в строку.
+            string responseData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytes);
+
+            Debug.Log(String.Format("Readed {0} symbols: {1}", bytes, responseData));
+            return responseData;
         }
 
-        private void ProcessStageSimulate(string responseData)
+        /// <summary>
+        /// Reads data from a stream until the end is reached. The
+        /// data is returned as a byte array.
+        /// </summary>
+        /// <param name="stream">The stream to read data from</param>
+        /// <exception cref="System.IO.IOException">Thrown if any of the underlying IO calls fail</exception>
+        private static string ReadFully(Stream stream)
         {
-            var stageSimulateMsg = JsonConvert.DeserializeObject<StageSimulate>(responseData);
-            Debug.Log(stageSimulateMsg.content);
-            if (GameInfo.GameState == GameState.Planning)
+            byte[] buffer = new byte[1024];
+            using (var ms = new MemoryStream())
             {
-                StatBar.SetActive(true);
-                PreparingStartBar.SetActive(false);
-                GameInfo.GameState = GameState.Playing;
+                while (true)
+                {
+                    int read = stream.Read(buffer, 0, buffer.Length);
+                    if (read <= 0)
+                    {
+                        var resultString = System.Text.Encoding.ASCII.GetString(ms.ToArray());
+                        return resultString;
+                    }
+                    ms.Write(buffer, 0, read);
+                }
             }
         }
 
-        private void ProcessStagePlanning(string responseData)
-        {
-            var stagePlanningMsg = JsonConvert.DeserializeObject<StagePlanning>(responseData);
-            Debug.Log(stagePlanningMsg.content.message);
-            Debug.Log(stagePlanningMsg.content.time);
-            if (GameInfo.GameState == GameState.Preparing)
-            {
-                StatBar.SetActive(false);
-                PreparingStartBar.SetActive(true);
-                GameInfo.GameState = GameState.Planning;
-            }      
-        }
-
-        private void ProcessGameToStart(string responseData)
-        {
-            var gameToStartMsg = JsonConvert.DeserializeObject<GameToStart>(responseData);
-            Debug.Log(gameToStartMsg.content);
-            if (GameInfo.GameState == GameState.HandShakeDone)
-                GameInfo.GameState = GameState.Preparing;
-        }
-
-        private void ProcessPrepareToStart(string responseData)
-        {
-            var prepareToStartMsg = JsonConvert.DeserializeObject<PrepareToStart>(responseData);
-            GameInfo.Role = (PlayerRole) prepareToStartMsg.content.you_role;
-            Debug.Log("Server sent you a role: " + (GameInfo.Role == PlayerRole.Attacker ? "Attacker" : "Defender"));
-            //todo: parse map, save it.
-
-            var message = new PrepareToStartResponse
-            {
-                action = Actions.PrepareToStart,
-                code = 0,
-                content = "RECEIVED"
-            };
-            SendMessageToServer(message);
-        }
-
-        private void ProcessHandShake(string responseData)
-        {
-            // Производим десериализацию.
-            Head_RespFromServer_HandShake respFromServer =
-                JsonConvert.DeserializeObject<Head_RespFromServer_HandShake>(responseData);
-            GameInfo.ServerName = respFromServer.content.server_name;
-            GameInfo.GameId = respFromServer.content.game_id;
-            Debug.Log(respFromServer);
-            if (GameInfo.GameState == GameState.Connected)
-                GameInfo.GameState = GameState.HandShakeDone;
-        }
-
-        private void SendMessageToServer(object objectToSend)
+        public void SendMessageToServer(object objectToSend)
         {
             if (_socket.Connected && _stream.CanWrite)
             {
@@ -218,16 +142,6 @@ namespace Assets.TD.scripts
                 }
             };
             SendMessageToServer(addTowerRequest);
-            //return true;
         }
-
-        private void ProcessActualData(string message)
-        {
-            Debug.Log("Server from message:" + message);
-            var actualData = JsonConvert.DeserializeObject<ActualData>(message);
-            UnitManager.UpdateUnits(actualData);
-        }
-
-        public UnitManager UnitManager;
     }
 }

@@ -5,28 +5,23 @@ using UnityEngine.UI;
 
 namespace Assets.TD.scripts
 {
-    
     /// <summary>
     /// Класс обрабатывает пользовательский ввод, управляет интерфейсом.
     /// </summary>
     public class TouchListener : MonoBehaviour
     {
         public GameObject ConnectionManager;
+        public UIManager UIManager;
         private bool _start = false;
         //public static Timer _ticker;
         //public int _cnt = 10;
-        private ConnectToServer ConnectionToServer;
+        private ConnectToServer _connectionToServer;
 
         // Use this for initialization
         private void Start()
         {
-            SidePanel.SetActive(false);
-            HumburgerButton.SetActive(true);
-            HintPanel.SetActive(false);
-            MessagePanel.SetActive(false);
-            StatBar.SetActive(false);
-            PreparingStartBar.SetActive(false);
-            ConnectionToServer = ConnectionManager.GetComponent<ConnectToServer>();
+            UIManager.MessagePanel.SetActive(false);
+            _connectionToServer = ConnectionManager.GetComponent<ConnectToServer>();
         }
 
         // Update is called once per frame
@@ -34,14 +29,7 @@ namespace Assets.TD.scripts
         {            
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if (MessagePanel.activeSelf)
-                {
-                    BackToGameFromMessageCanvas();
-                }
-                else
-                {
-                    MessagePanel.SetActive(true);
-                }
+                UIManager.ProcessEscapeButton();
                 return;
             }
 
@@ -54,7 +42,7 @@ namespace Assets.TD.scripts
 #if UNITY_EDITOR
                 ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
-            ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
 #endif
                 //Check if the ray hits any collider
                 if (Physics.Raycast(ray, out hit))
@@ -64,21 +52,12 @@ namespace Assets.TD.scripts
             }
         }
 
-        public GameObject MessagePanel;
-
         /// <summary>
         /// Выйти из приложения.
         /// </summary>
         public void ExitGame()
         {
             Application.Quit();
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public void BackToGameFromMessageCanvas()
-        {
-            MessagePanel.SetActive(false);
         }
 
         private void ProcessClick(RaycastHit hit)
@@ -104,7 +83,7 @@ namespace Assets.TD.scripts
                     if (hit.collider.tag == ApplicationConst.LandTag)
                     {
                         CreateTower(hit.point);
-                        HintPanel.SetActive(false);
+                        UIManager.HideHintPanel();
                         GameInfo.GameState = GameState.Playing;
                     }
                     break;
@@ -112,7 +91,7 @@ namespace Assets.TD.scripts
                     if (hit.collider.tag == ApplicationConst.TentTag)
                     {
                         CreateKnight(hit.collider.gameObject);
-                        HintPanel.SetActive(false);
+                        UIManager.HideHintPanel();
                         GameInfo.GameState = GameState.Playing;
                     }
                     break;
@@ -173,15 +152,6 @@ namespace Assets.TD.scripts
             UnselectAll();
         }
 
-        private void SetHint(string hintText)
-        {
-            var text = HintPanel.GetComponentInChildren<Text>();
-            if (text != null)
-            {
-                text.text = hintText;
-            }
-        }
-
         private void SetTextInBar(int numArg, string Text, GameObject obj)
         {
             var text = obj.GetComponentsInChildren<Text>();
@@ -210,32 +180,13 @@ namespace Assets.TD.scripts
         {
             Application.LoadLevel("MainMenu");
         }
-
-        public GameObject HumburgerButton;
-        public GameObject SidePanel;
-        public GameObject CreateTowerButton;
-        public GameObject CreateKnightButton;
-
-        /// <summary>
-        /// Открывает боковую панель.
-        /// </summary>
-        public void ProcessHamburgerButton()
-        {
-            HumburgerButton.SetActive(!HumburgerButton.activeSelf);
-            SidePanel.SetActive(!SidePanel.activeSelf);
-            CreateKnightButton.SetActive(GameInfo.Role == PlayerRole.Attacker);
-            CreateTowerButton.SetActive(GameInfo.Role == PlayerRole.Defender);
-        }
-
+        
         public GameObject TowerPrefab;
         public GameObject KnightPrefab;
-        public GameObject HintPanel;
-        public GameObject StatBar;
-        public GameObject PreparingStartBar;
 
         private void CreateTower(Vector3 targetTowerPosition)
         {
-            ConnectionToServer.SendAddUnitRequest(UnitType.Tower, targetTowerPosition);
+            _connectionToServer.SendAddUnitRequest(UnitType.Tower, targetTowerPosition);
         }
 
         /// <summary>
@@ -243,9 +194,9 @@ namespace Assets.TD.scripts
         /// </summary>
         public void ProcessCreateTowerButton()
         {
-            ProcessHamburgerButton();
-            SetHint(ApplicationConst.CreateTowerHint);
-            HintPanel.SetActive(true);
+            UIManager.ProcessHamburgerButton();
+            UIManager.SetHint(ApplicationConst.CreateTowerHint);
+            UIManager.ShowHintPanel();
             GameInfo.GameState = GameState.ChooseNewTowerPosition;
         }
 
@@ -254,28 +205,18 @@ namespace Assets.TD.scripts
             //todo: refactor magic numbers
             var knightPosition = new Vector3(tent.transform.position.x + 1.6F, tent.transform.position.y, tent.transform.position.z - 2.5F);
 
-            ConnectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition);
+            _connectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition);
         }
-
-
+        
         /// <summary>
         /// Обрабатывает нажатие кнопки "создать рыцаря".
         /// </summary>
         public void ProcessCreateKnightButton()
         {
-            ProcessHamburgerButton();
-            SetHint(ApplicationConst.CreateKnightHint);
-            HintPanel.SetActive(true);
+            UIManager.ProcessHamburgerButton();
+            UIManager.SetHint(ApplicationConst.CreateKnightHint);
+            UIManager.ShowHintPanel();
             GameInfo.GameState = GameState.ChooseNewKnightPosition;
-        }
-
-        /// <summary>
-        /// Скрывает боковую панель.
-        /// </summary>
-        public void HideSidePanel() {
-            SidePanel.SetActive(false);
-            HumburgerButton.SetActive(true);
-            UnselectAll();
         }
 
         private static bool WasJustAButton()

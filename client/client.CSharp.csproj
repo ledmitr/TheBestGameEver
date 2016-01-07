@@ -98,6 +98,7 @@
     <Compile Include="Assets\TD\scripts\Json\JSonObjects.cs" />
     <Compile Include="Assets\TD\scripts\KnightScript.cs" />
     <Compile Include="Assets\TD\scripts\MainMenu.cs" />
+    <Compile Include="Assets\TD\scripts\MessageProcessor.cs" />
     <Compile Include="Assets\TD\scripts\Selectable.cs" />
     <Compile Include="Assets\TD\scripts\SettingsMenu.cs" />
     <Compile Include="Assets\TD\scripts\StatisticsMenu.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Assets\TD\scripts\TerrainGenerator.cs" />
     <Compile Include="Assets\TD\scripts\TouchListener.cs" />
     <Compile Include="Assets\TD\scripts\TowerScript.cs" />
+    <Compile Include="Assets\TD\scripts\UIManager.cs" />
     <Compile Include="Assets\TD\scripts\UnitManager.cs" />
     <Compile Include="Assets\TD\scripts\Utils\Math.cs" />
     <Compile Include="Assets\TD\scripts\ViewDrag.cs" />

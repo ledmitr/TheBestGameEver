@@ -1,4 +1,5 @@
-﻿using Assets.TD.scripts.Enums;
+﻿using System.Collections.Generic;
+using Assets.TD.scripts.Enums;
 
 namespace Assets.TD.scripts
 {
@@ -17,5 +18,7 @@ namespace Assets.TD.scripts
 
         public static PlayerRole Role;
         public static GameState GameState { get; set; }
+
+        public static readonly List<string> ServerMessages = new List<string>(10);
     }
 }
