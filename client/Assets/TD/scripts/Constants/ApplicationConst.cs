@@ -20,5 +20,10 @@
 
         public const int StartHealth = 100;
         public const int DamageAmount = 10;
+
+        public const string GameSearchHeading = "GAME SEARCH";
+        public const string LoadingHeading = "LOADING";
+        public const string ConnectingHeading = "CONNECTING";
+        public const string ErrorHeading = "ERROR";
     }
 }

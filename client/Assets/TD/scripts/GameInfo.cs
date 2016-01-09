@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Assets.TD.scripts.Enums;
 
 namespace Assets.TD.scripts
@@ -19,6 +20,12 @@ namespace Assets.TD.scripts
         public static PlayerRole Role;
         public static GameState GameState { get; set; }
 
-        public static readonly List<string> ServerMessages = new List<string>(10);
+        public static readonly Queue<string> ServerMessages = new Queue<string>();
+
+        public static void AddRange<T>(this Queue<T> queue, IEnumerable<T> enu)
+        {
+            foreach (T obj in enu)
+                queue.Enqueue(obj);
+        }
     }
 }

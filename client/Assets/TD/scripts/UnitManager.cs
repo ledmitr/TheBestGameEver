@@ -54,7 +54,6 @@ namespace Assets.TD.scripts
                 }
                 else
                 {
-                    //todo: PATH??
                     _knights.Add(CreateKnight(unitPosition));
                 }
             }
@@ -65,7 +64,7 @@ namespace Assets.TD.scripts
         /// </summary>
         /// <param name="knightPosition">Позиция рыцаря.</param>
         /// <returns>Компонент управления рыцарем.</returns>
-        public KnightScript CreateKnight(Vector3 knightPosition)
+        private KnightScript CreateKnight(Vector3 knightPosition)
         {
             var knight = (GameObject)Instantiate(KnightPrefab, knightPosition, Quaternion.identity);
             var knightScript = knight.GetComponent<KnightScript>();
@@ -78,7 +77,7 @@ namespace Assets.TD.scripts
         /// </summary>
         /// <param name="towerPosition">Позиция башни.</param>
         /// <returns>Компонент управления башней.</returns>
-        public TowerScript CreateTower(Vector3 towerPosition)
+        private TowerScript CreateTower(Vector3 towerPosition)
         {
             var tower = (GameObject)Instantiate(TowerPrefab, towerPosition, Quaternion.identity);
             var towerScript = tower.GetComponent<TowerScript>();
