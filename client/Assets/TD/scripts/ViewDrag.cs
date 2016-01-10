@@ -9,7 +9,7 @@ namespace Assets.TD.scripts
     public class ViewDrag : MonoBehaviour
     {
         private Camera _lCamera;
-        public GameObject Land;
+        //public GameObject Land;
 
         private Vector3 _hitPosition = Vector3.zero;
         private Vector3 _currentPosition = Vector3.zero;
@@ -28,10 +28,9 @@ namespace Assets.TD.scripts
         // Use this for initialization
         void Start()
         {
-            var landSize = Land.GetComponent<Terrain>().terrainData.size;
             _minCameraXPosition = 0.0F;
-            _minCameraZPosition = -landSize.z;
-            _maxCameraXPosition = landSize.x;
+            _minCameraZPosition = -GameInfo.Map.Height;
+            _maxCameraXPosition = GameInfo.Map.Width;
             _maxCameraZPosition = 0.0F;
             _lCamera = GetComponent<Camera>();
         }

@@ -22,10 +22,19 @@ namespace Assets.TD.scripts
 
         public static readonly Queue<string> ServerMessages = new Queue<string>();
 
+        public static readonly GameMap Map = new GameMap();
+
         public static void AddRange<T>(this Queue<T> queue, IEnumerable<T> enu)
         {
             foreach (T obj in enu)
                 queue.Enqueue(obj);
         }
+    }
+
+    public class GameMap
+    {
+        public int[][] Map { get; set; }
+        public int Height { get; set; }
+        public int Width { get; set; }
     }
 }

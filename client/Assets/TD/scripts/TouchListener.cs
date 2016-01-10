@@ -152,12 +152,12 @@ namespace Assets.TD.scripts
             UnselectAll();
         }
 
-        private void SetTextInBar(int numArg, string Text, GameObject obj)
+        private void SetTextInBar(int numArg, string text, GameObject obj)
         {
-            var text = obj.GetComponentsInChildren<Text>();
-            if (text != null)
+            var textComponent = obj.GetComponentsInChildren<Text>();
+            if (textComponent != null)
             {
-                text[numArg].text = Text;
+                textComponent[numArg].text = text;
             }
         }
 

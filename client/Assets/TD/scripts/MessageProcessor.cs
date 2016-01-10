@@ -4,6 +4,7 @@ using Assets.TD.scripts.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Assets.TD.scripts
 {
@@ -23,6 +24,7 @@ namespace Assets.TD.scripts
         private void Update()
         {
             var messages = GameInfo.ServerMessages;
+            GameInfo.ServerMessages.Clear();
             foreach (var message in messages)
             {
                 string messageAction = "";
@@ -110,7 +112,21 @@ namespace Assets.TD.scripts
             var prepareToStartMsg = JsonConvert.DeserializeObject<PrepareToStart>(responseData);
             GameInfo.Role = (PlayerRole)prepareToStartMsg.content.you_role;
             Debug.Log("Server sent you a role: " + (GameInfo.Role == PlayerRole.Attacker ? "Attacker" : "Defender"));
-            //todo: parse map, save it.
+
+            Debug.Log("server sent you a map");
+            Debug.Log(prepareToStartMsg);
+            
+            if (prepareToStartMsg.content.map_height > 0 && prepareToStartMsg.content.map_width > 0)
+            {
+                GameInfo.Map.Map = prepareToStartMsg.content.map;
+                GameInfo.Map.Height = prepareToStartMsg.content.map_height;
+                GameInfo.Map.Width = prepareToStartMsg.content.map_width;
+                //StartCoroutine(UnitManager.InstantinateMap(GameInfo.Map));
+            }
+            else
+            {
+                Debug.LogError("Map dimensions recieved from server are not positive");
+            }
 
             var message = new PrepareToStartResponse
             {

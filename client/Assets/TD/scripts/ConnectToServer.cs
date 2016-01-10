@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using Assets.TD.scripts.Constants;
 using Assets.TD.scripts.Enums;
 using Newtonsoft.Json;
@@ -97,19 +98,16 @@ namespace Assets.TD.scripts
         /// <exception cref="System.IO.IOException">Thrown if any of the underlying IO calls fail</exception>
         private static string ReadFully(Stream stream)
         {
-            byte[] buffer = new byte[1024];
             using (var ms = new MemoryStream())
             {
-                while (true)
+                byte[] data = new byte[1024];
+                int numBytesRead;
+                while ((numBytesRead = stream.Read(data, 0, data.Length)) > 0)
                 {
-                    int read = stream.Read(buffer, 0, buffer.Length);
-                    if (read <= 0)
-                    {
-                        var resultString = System.Text.Encoding.ASCII.GetString(ms.ToArray());
-                        return resultString;
-                    }
-                    ms.Write(buffer, 0, read);
+                    ms.Write(data, 0, numBytesRead);
                 }
+                var str = Encoding.ASCII.GetString(ms.ToArray(), 0, (int)ms.Length);
+                return str;
             }
         }
 
@@ -117,7 +115,7 @@ namespace Assets.TD.scripts
         {
             if (_socket.Connected && _stream.CanWrite)
             {
-                var serializedObject = JsonConvert.SerializeObject(objectToSend) + "!end";
+                var serializedObject = JsonConvert.SerializeObject(objectToSend) + EndStr;
                 Debug.Log("Message to server: " + serializedObject);
                 byte[] data = System.Text.Encoding.ASCII.GetBytes(serializedObject);
                 _stream.Write(data, 0, data.Length);

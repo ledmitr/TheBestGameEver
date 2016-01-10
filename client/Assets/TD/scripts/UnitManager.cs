@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using Assets.TD.scripts.Constants;
 using Assets.TD.scripts.Enums;
 using UnityEngine;
 
@@ -10,16 +12,30 @@ namespace Assets.TD.scripts
     /// </summary>
     public class UnitManager : MonoBehaviour
     {
-        public GameObject KnightPrefab;
-        public GameObject TowerPrefab;
+        public GameObject CubePrototype = null;
+        public GameObject RoadPrototype = null;
+        public GameObject KnightPrefab = null;
+        public GameObject TowerPrefab = null;
+        public GameObject MainTowerPrefab = null;
+        public GameObject TentPrefab = null;
 
         private List<TowerScript> _towers;
         private List<KnightScript> _knights;
 
+        private GameObject[,] _cubeArray;
+
         private void Start()
         {
+            Debug.Assert(CubePrototype != null);
+            Debug.Assert(RoadPrototype != null);
+            Debug.Assert(KnightPrefab != null);
+            Debug.Assert(TowerPrefab != null);
+            Debug.Assert(MainTowerPrefab != null);
+            Debug.Assert(TentPrefab != null);
+
             _towers = new List<TowerScript>();
             _knights = new List<KnightScript>();
+            _cubeArray = new GameObject[GameInfo.Map.Height, GameInfo.Map.Width];
         }
 
         private void Update()
@@ -135,6 +151,40 @@ namespace Assets.TD.scripts
                 var tower = _towers.Single(x => x.Id == id);
                 Destroy(tower.gameObject);
             }
+        }
+        
+        public IEnumerator InstantinateMap(GameMap map)
+        {
+            for (int x = 0; x < map.Height; x++)
+            {
+                for (int z = 0; z < map.Width; z++)
+                {
+                    switch (map.Map[x][z])
+                    {
+                        case (int)MapCellType.Fortress:
+                            InstantiateObjectOnMap(x, z, MainTowerPrefab, ApplicationConst.TowerTag);
+                            break;
+                        case (int)MapCellType.Tent:
+                            InstantiateObjectOnMap(x, z, TentPrefab, ApplicationConst.TentTag);
+                            break;
+                        case (int)MapCellType.Mountains:
+                            InstantiateObjectOnMap(x, z, CubePrototype, ApplicationConst.FieldTag);
+                            break;
+                        case (int)MapCellType.Road:
+                            InstantiateObjectOnMap(x, z, RoadPrototype, ApplicationConst.RoadTag);
+                            break;
+                    }
+                }
+                yield return 0;
+            }
+        }
+
+        private void InstantiateObjectOnMap(int x, int z, GameObject prefab, string objectTag)
+        {
+            var objectPosition = new Vector3(x, prefab.transform.localScale.y/2, z);
+            var newObject = (GameObject) Instantiate(prefab, objectPosition, prefab.transform.rotation);
+            newObject.tag = objectTag;
+            _cubeArray[x, z] = newObject;
         }
     }
 }
