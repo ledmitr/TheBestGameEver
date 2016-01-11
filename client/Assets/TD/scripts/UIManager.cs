@@ -1,4 +1,5 @@
-﻿using Assets.TD.scripts.Enums;
+﻿using System;
+using Assets.TD.scripts.Enums;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,15 @@ namespace Assets.TD.scripts
 
             StatBar.SetActive(false);
             PreparingStartBar.SetActive(false);
+        }
+
+        public void SetPreparingTime(int secToPrepare)
+        {
+            var textComponent = PreparingStartBar.GetComponentInChildren<Text>();
+            if (textComponent != null)
+            {
+                textComponent.text = string.Format("Game will start in {0} seconds", secToPrepare);
+            }
         }
 
         private void Update()

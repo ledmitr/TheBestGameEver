@@ -10,6 +10,7 @@
 
         public const string FieldTag = "Field";
         public const string TowerTag = "Tower";
+        public const string FortressTag = "Fortress";
         public const string SelectableTag = "Selectable";
         public const string TentTag = "Tent";
         public const string KnightTag = "Knight";

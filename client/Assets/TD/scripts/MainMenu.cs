@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Assets.TD.scripts.Constants;
 using Newtonsoft.Json;
@@ -47,9 +48,9 @@ namespace Assets.TD.scripts
                                 // Преобразуем в строку.
                                 var responseData = Encoding.ASCII.GetString(buffer, 0, bytes);
                                 // !!! возможно здесь таится ошибка
-                                if (responseData.Contains(EndJsonStr))
+                                if (responseData.Contains(EndStr))
                                 {
-                                    var splitData = responseData.Split(new[] {EndJsonStr}, StringSplitOptions.RemoveEmptyEntries);
+                                    var splitData = responseData.Split(new[] {EndStr}, StringSplitOptions.RemoveEmptyEntries);
                                     responseData = splitData[0];
                                 }
                                 else
@@ -76,9 +77,9 @@ namespace Assets.TD.scripts
                                     GameInfo.Port = connectResponse.content.port;
                                     GameInfo.Host = connectResponse.content.host;
                                     GameInfo.Key = connectResponse.content.secret_key;
-                                    Debug.Log(GameInfo.Port);
-                                    Debug.Log(GameInfo.Host);
-                                    Debug.Log(GameInfo.Key);
+                                    //Debug.Log(GameInfo.Port);
+                                    //Debug.Log(GameInfo.Host);
+                                    //Debug.Log(GameInfo.Key);
                                     // Закрывем соединение и поток.
                                     _socket.Close();
                                     _client.Close();
@@ -135,7 +136,7 @@ namespace Assets.TD.scripts
         // Полученное сообщение от сервера
         private string _msgFromServer = "";
         private bool _flagStart;
-        public const string EndJsonStr = "!end";
+        private const string EndStr = "!end";
 
         // Метод, описывающий действия при наведение курсора на объект.
         private void OnMouseEnter()
@@ -191,7 +192,7 @@ namespace Assets.TD.scripts
                             }
                         };
                         // С помощью JsonConvert производим сериализацию структуры выше.
-                        var json = JsonConvert.SerializeObject(login, Formatting.Indented) + EndJsonStr;
+                        var json = JsonConvert.SerializeObject(login, Formatting.Indented) + EndStr;
                         // Переводим наше сообщение в ASCII, а затем в массив Byte.
                         var data = Encoding.ASCII.GetBytes(json);
                         // Отправляем сообщение нашему серверу. 

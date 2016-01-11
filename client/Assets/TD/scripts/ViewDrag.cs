@@ -9,7 +9,6 @@ namespace Assets.TD.scripts
     public class ViewDrag : MonoBehaviour
     {
         private Camera _lCamera;
-        //public GameObject Land;
 
         private Vector3 _hitPosition = Vector3.zero;
         private Vector3 _currentPosition = Vector3.zero;
@@ -26,13 +25,16 @@ namespace Assets.TD.scripts
         private float _maxCameraZPosition;
 
         // Use this for initialization
+        //todo: refactor magic numbers
         void Start()
         {
-            _minCameraXPosition = 0.0F;
-            _minCameraZPosition = -GameInfo.Map.Height;
-            _maxCameraXPosition = GameInfo.Map.Width;
-            _maxCameraZPosition = 0.0F;
+            _minCameraXPosition = 50;
+            _minCameraZPosition = -50;
+            _maxCameraXPosition = 150;
+            _maxCameraZPosition = 50;
             _lCamera = GetComponent<Camera>();
+            _currentPosition = new Vector3(100, 70, 0);
+            transform.position = _currentPosition;
         }
 
 #if UNITY_EDITOR
@@ -85,14 +87,6 @@ namespace Assets.TD.scripts
         } else if (Input.touchCount >= 2)
         {
             ExecutePinchZoom();
-            //var touch0 = Input.GetTouch(0).position;
-            //var touch1 = Input.GetTouch(1).position;
-            //var distance = Vector2.Distance(touch0, touch1);
-            //var diffValue = (distance - oldDistance) / oldDistance + 1;
-            //CurrentZoom -= diffValue * Time.deltaTime * 100 * ZoomSpeed;
-            //CurrentZoom = Mathf.Clamp(CurrentZoom, zoomRange.x, zoomRange.y);
-            //GetComponent<Camera>().orthographicSize = CurrentZoom;
-            //oldDistance = distance;
         }
 #endif
         }

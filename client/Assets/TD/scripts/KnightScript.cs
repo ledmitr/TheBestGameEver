@@ -36,10 +36,10 @@ namespace Assets.TD.scripts
             _isSelected = isSelected;
         }
 
-        public Material[] SelectMaterial;
-        private Material[] DefaultMaterial;
+        //public Material[] SelectMaterial;
+        //private Material[] DefaultMaterial;
         
-        private bool _isMoving;
+        //private bool _isMoving;
 
         public float Speed = 1.5F;
 
@@ -47,7 +47,7 @@ namespace Assets.TD.scripts
         {
             //HealthBar = new HealthBar();
             _isSelected = false;
-            _isMoving = _pathToMainTower != null && _pathToMainTower.Length > 1;
+            //_isMoving = _pathToMainTower != null && _pathToMainTower.Length > 1;
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Assets.TD.scripts
         {
             _targetPosition = newTargetPosition;
             _isSelected = false;
-            _isMoving = true;
+            //_isMoving = true;
             Debug.Log("target position changed to: " + newTargetPosition);
         }
 
@@ -87,7 +87,7 @@ namespace Assets.TD.scripts
             var isItTargetTower = Math.Approximately(collision.gameObject.transform.position.magnitude, _targetPosition.magnitude);
             if (collision.gameObject.tag == ApplicationConst.TowerTag && isItTargetTower)
             {
-                _isMoving = false;
+                //_isMoving = false;
             }
         }
 
@@ -121,7 +121,7 @@ namespace Assets.TD.scripts
             }
             else
             {
-                _isMoving = false;
+                //_isMoving = false;
                 Debug.Log("path done!");
             }
         }

@@ -12,7 +12,7 @@ namespace Assets.TD.scripts
     {
         public GameObject ConnectionManager;
         public UIManager UIManager;
-        private bool _start = false;
+        //private bool _start = false;
         //public static Timer _ticker;
         //public int _cnt = 10;
         private ConnectToServer _connectionToServer;

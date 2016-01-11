@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using Assets.TD.scripts.Constants;
 using Assets.TD.scripts.Enums;
+using Assets.TD.scripts.Utils.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -23,7 +24,7 @@ namespace Assets.TD.scripts
         private Socket _socket = null;
         private NetworkStream _stream = null;
 
-        void Start () {
+        private void Start() {
             // Создаем экземпляр класса TcpClient и пытаемся подключится к серверу.
             _client = new TcpClient(ApplicationConst.ServerAddress, GameInfo.Port);
             // "Привязываем" сокет к нашему экземпляру соединения с сервером.
@@ -33,6 +34,8 @@ namespace Assets.TD.scripts
                 GameInfo.GameState = GameState.Connected;
                 // Получаем поток для чтения и записи данных.
                 _stream = _client.GetStream();
+
+                //Debug.Log("server connected.\n handshake message recieved");
 
                 // Производим сериализацию Json пакета.
                 Head_ReqToServer_HandShake handshake = new Head_ReqToServer_HandShake {
@@ -44,49 +47,53 @@ namespace Assets.TD.scripts
                     }
                 };
                 SendMessageToServer(handshake);
+                //Debug.Log("handshake message sent");
             }
         }
 
         private string _notFinishedMessage = null;
 	
         // Update is called once per frame
-        void Update () {
-            if (_socket != null && _socket.Connected) 
+        private void Update()
+        {
+            if (_socket != null && _socket.Connected && _stream.DataAvailable)
             {
-                if (_stream.DataAvailable)
+                //Debug.Log("start reading message");
+                var response = ReadFromStream(_stream);
+                Debug.Log("FROM server: " + response);
+
+                if (!string.IsNullOrEmpty(_notFinishedMessage))
                 {
-                    var response = ReadFully(_stream);
+                    response = _notFinishedMessage + response;
+                    _notFinishedMessage = string.Empty;
+                }
 
-                    if (_notFinishedMessage != null)
-                        response = _notFinishedMessage + response;
-
-                    if (!response.Contains(EndJsonStr))
+                if (!response.Contains(EndJsonStr))
+                {
+                    _notFinishedMessage = response;
+                }
+                else
+                {
+                    var messages = response.Split(new[] {EndStr}, StringSplitOptions.RemoveEmptyEntries);
+                    if (messages.Length > 1 && !messages.Last().EndsWith(EndJsonStr))
                     {
-                        _notFinishedMessage = response;
+                        _notFinishedMessage = messages.Last();
+                        messages = messages.Take(messages.Length - 1).ToArray();
                     }
-                    else
-                    {
-                        var messages = response.Split(new[] {EndStr}, StringSplitOptions.RemoveEmptyEntries);
-                        if (messages.Length > 1 && !messages.Last().EndsWith(EndJsonStr))
-                        {
-                            _notFinishedMessage = messages.Last();
-                            messages = messages.Take(messages.Length - 1).ToArray();
-                        }
-                        GameInfo.ServerMessages.AddRange(messages);
-                    }
+                    GameInfo.ServerMessages.AddRange(messages);
                 }
             }
         }
 
         // unused
-        private string ReadFromStream()
+        private static string ReadFromStream(Stream stream)
         {
             byte[] buffer = new byte[1024];
-            Int32 bytes = _stream.Read(buffer, 0, buffer.Length);
+            Int32 bytes = stream.Read(buffer, 0, buffer.Length);
             // Преобразуем в строку.
-            string responseData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytes);
+            string responseData = Encoding.ASCII.GetString(buffer, 0, bytes);
 
-            Debug.Log(String.Format("Readed {0} symbols: {1}", bytes, responseData));
+            //Debug.Log(String.Format("Read {0} symbols: {1}", bytes, responseData));
             return responseData;
         }
 
@@ -105,6 +112,7 @@ namespace Assets.TD.scripts
                 while ((numBytesRead = stream.Read(data, 0, data.Length)) > 0)
                 {
                     ms.Write(data, 0, numBytesRead);
+                    //Debug.Log(numBytesRead + " bytes read from server");
                 }
                 var str = Encoding.ASCII.GetString(ms.ToArray(), 0, (int)ms.Length);
                 return str;
@@ -116,7 +124,7 @@ namespace Assets.TD.scripts
             if (_socket.Connected && _stream.CanWrite)
             {
                 var serializedObject = JsonConvert.SerializeObject(objectToSend) + EndStr;
-                Debug.Log("Message to server: " + serializedObject);
+                Debug.Log("TO server: " + serializedObject);
                 byte[] data = System.Text.Encoding.ASCII.GetBytes(serializedObject);
                 _stream.Write(data, 0, data.Length);
             }

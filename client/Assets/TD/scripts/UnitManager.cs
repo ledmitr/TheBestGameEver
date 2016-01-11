@@ -16,6 +16,7 @@ namespace Assets.TD.scripts
         public GameObject RoadPrototype = null;
         public GameObject KnightPrefab = null;
         public GameObject TowerPrefab = null;
+        public GameObject LandPrefab = null;
         public GameObject MainTowerPrefab = null;
         public GameObject TentPrefab = null;
 
@@ -23,6 +24,11 @@ namespace Assets.TD.scripts
         private List<KnightScript> _knights;
 
         private GameObject[,] _cubeArray;
+
+        public void InitCubeArray(int height, int width)
+        {
+            _cubeArray = new GameObject[height, width];
+        }
 
         private void Start()
         {
@@ -35,7 +41,6 @@ namespace Assets.TD.scripts
 
             _towers = new List<TowerScript>();
             _knights = new List<KnightScript>();
-            _cubeArray = new GameObject[GameInfo.Map.Height, GameInfo.Map.Width];
         }
 
         private void Update()
@@ -159,19 +164,22 @@ namespace Assets.TD.scripts
             {
                 for (int z = 0; z < map.Width; z++)
                 {
-                    switch (map.Map[x][z])
+                    switch ((MapCellType)map.Map[x][z])
                     {
-                        case (int)MapCellType.Fortress:
-                            InstantiateObjectOnMap(x, z, MainTowerPrefab, ApplicationConst.TowerTag);
+                        case MapCellType.Fortress:
+                            InstantiateObjectOnMap(x, z, MainTowerPrefab, ApplicationConst.FortressTag);
                             break;
-                        case (int)MapCellType.Tent:
+                        case MapCellType.Tent:
                             InstantiateObjectOnMap(x, z, TentPrefab, ApplicationConst.TentTag);
                             break;
-                        case (int)MapCellType.Mountains:
+                        case MapCellType.Mountains:
                             InstantiateObjectOnMap(x, z, CubePrototype, ApplicationConst.FieldTag);
                             break;
-                        case (int)MapCellType.Road:
+                        case MapCellType.Road:
                             InstantiateObjectOnMap(x, z, RoadPrototype, ApplicationConst.RoadTag);
+                            break;
+                        case MapCellType.Empty:
+                            InstantiateObjectOnMap(x, z, LandPrefab, ApplicationConst.LandTag);
                             break;
                     }
                 }
@@ -181,7 +189,7 @@ namespace Assets.TD.scripts
 
         private void InstantiateObjectOnMap(int x, int z, GameObject prefab, string objectTag)
         {
-            var objectPosition = new Vector3(x, prefab.transform.localScale.y/2, z);
+            var objectPosition = new Vector3(x, 0, z);
             var newObject = (GameObject) Instantiate(prefab, objectPosition, prefab.transform.rotation);
             newObject.tag = objectTag;
             _cubeArray[x, z] = newObject;

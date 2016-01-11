@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Linq;
 using Assets.TD.scripts.Constants;
 using Assets.TD.scripts.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Assets.TD.scripts
 {
@@ -24,7 +24,6 @@ namespace Assets.TD.scripts
         private void Update()
         {
             var messages = GameInfo.ServerMessages;
-            GameInfo.ServerMessages.Clear();
             foreach (var message in messages)
             {
                 string messageAction = "";
@@ -64,6 +63,7 @@ namespace Assets.TD.scripts
                 }
                 Debug.Log(GameInfo.GameState);
             }
+            GameInfo.ServerMessages.Clear();
         }
 
         private void ProcessStageFinish(string responseData)
@@ -95,6 +95,7 @@ namespace Assets.TD.scripts
             {
                 UIManager.StatBar.SetActive(false);
                 UIManager.PreparingStartBar.SetActive(true);
+                UIManager.SetPreparingTime(stagePlanningMsg.content.time);
                 GameInfo.GameState = GameState.Planning;
             }
         }
@@ -121,7 +122,8 @@ namespace Assets.TD.scripts
                 GameInfo.Map.Map = prepareToStartMsg.content.map;
                 GameInfo.Map.Height = prepareToStartMsg.content.map_height;
                 GameInfo.Map.Width = prepareToStartMsg.content.map_width;
-                //StartCoroutine(UnitManager.InstantinateMap(GameInfo.Map));
+                UnitManager.InitCubeArray(GameInfo.Map.Height, GameInfo.Map.Width);
+                StartCoroutine(UnitManager.InstantinateMap(GameInfo.Map));
             }
             else
             {
