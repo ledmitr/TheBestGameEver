@@ -85,7 +85,7 @@ namespace Assets.TD.scripts
                     {
                         var objectPosition = new Vector3(x * 6, _cubeArrayDefiner[x][z], z * 6);
                         var cube = (GameObject)Instantiate(Prototype, objectPosition, transform.rotation);
-                        cube.tag = ApplicationConst.FieldTag;
+                        cube.tag = ApplicationConst.MountainTag;
                         CubeArray[x, z] = cube;
                     }
                     else if (_cubeArrayDefiner[x][z] == -1) {

@@ -65,13 +65,13 @@ namespace Assets.TD.scripts
             if (WasJustAButton())
                 return;
 
+            Debug.Log("you hit on " + hit.collider.tag);
+
             Debug.Log(GameInfo.GameState);
             //Debug.Log(hit.collider.tag);
             switch (GameInfo.GameState)
             {
                 case GameState.Playing:
-                    //StatBar.SetActive(true);
-                    //PreparingStartBar.SetActive(false);
                     if (hit.collider.tag == ApplicationConst.KnightTag)
                     {
                         UnselectAll();
@@ -181,11 +181,10 @@ namespace Assets.TD.scripts
             Application.LoadLevel("MainMenu");
         }
         
-        public GameObject TowerPrefab;
-        public GameObject KnightPrefab;
-
         private void CreateTower(Vector3 targetTowerPosition)
         {
+            GameInfo.CoinsAmount -= ApplicationConst.TowerCost;
+            UIManager.UpdateButtonState(UnitType.Tower);
             _connectionToServer.SendAddUnitRequest(UnitType.Tower, targetTowerPosition);
         }
 
@@ -201,10 +200,13 @@ namespace Assets.TD.scripts
         }
 
         private void CreateKnight(GameObject tent)
-        {   
-            //todo: refactor magic numbers
-            var knightPosition = new Vector3(tent.transform.position.x + 1.6F, tent.transform.position.y, tent.transform.position.z - 2.5F);
+        {
+            GameInfo.CoinsAmount -= ApplicationConst.KnightCost;
+            UIManager.UpdateButtonState(UnitType.Knight);
 
+            //todo: refactor magic numbers
+            //todo: set knight position to tent front
+            var knightPosition = new Vector3(tent.transform.position.x + 1, tent.transform.position.y, tent.transform.position.z);
             _connectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition);
         }
         
@@ -213,6 +215,9 @@ namespace Assets.TD.scripts
         /// </summary>
         public void ProcessCreateKnightButton()
         {
+            if (GameInfo.CoinsAmount < ApplicationConst.KnightCost)
+                return;
+
             UIManager.ProcessHamburgerButton();
             UIManager.SetHint(ApplicationConst.CreateKnightHint);
             UIManager.ShowHintPanel();

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Assets.TD.scripts.Constants;
 using Assets.TD.scripts.Enums;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +8,8 @@ namespace Assets.TD.scripts
     public class UIManager : MonoBehaviour
     {
         public GameObject StatBar;
+        public Text StatBarCoins;
+
         public GameObject PreparingStartBar;
 
         public GameObject HumburgerButton;
@@ -16,7 +18,10 @@ namespace Assets.TD.scripts
 
         public GameObject SidePanel;
         public GameObject HintPanel;
+
         public GameObject MessagePanel;
+        public GameObject MessageExitButton;
+        public Text MessageText;
 
         private void Start()
         {
@@ -42,7 +47,12 @@ namespace Assets.TD.scripts
 
         private void Update()
         {
-            
+            UpdateStatBar();
+        }
+
+        private void UpdateStatBar()
+        {
+            StatBarCoins.text = GameInfo.CoinsAmount.ToString();
         }
 
         /// <summary>
@@ -65,15 +75,7 @@ namespace Assets.TD.scripts
             HumburgerButton.SetActive(true);
             //UnselectAll();
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private void HideMessagePanel()
-        {
-            MessagePanel.SetActive(false);
-        }
-
+        
         public void HideHintPanel()
         {
             HintPanel.SetActive(false);
@@ -95,14 +97,24 @@ namespace Assets.TD.scripts
 
         public void ProcessEscapeButton()
         {
-            if (MessagePanel.activeSelf)
-            {
-                HideMessagePanel();
-            }
-            else
-            {
-                MessagePanel.SetActive(true);
-            }
+            MessagePanel.SetActive(!MessagePanel.activeSelf);
+        }
+
+        public void ProcessFinish()
+        {
+            MessagePanel.SetActive(true);
+            MessageExitButton.SetActive(false);
+            MessageText.text = ApplicationConst.GameFinishedStr;
+        }
+
+        public void UpdateButtonState(UnitType unitType)
+        {
+            bool isKnight = unitType == UnitType.Knight;
+            int unitCost = isKnight ? ApplicationConst.KnightCost : ApplicationConst.TowerCost;
+            GameObject createButton = isKnight ? CreateKnightButton : CreateTowerButton;
+            var buttonComponent = createButton.GetComponent<Button>();
+            if (buttonComponent != null)
+                buttonComponent.interactable = GameInfo.CoinsAmount > unitCost;
         }
     }
 }

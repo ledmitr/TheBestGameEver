@@ -37,6 +37,7 @@ namespace Assets.TD.scripts
                     Debug.LogException(ex);
                 }
 
+                Debug.Log("processing action: " + messageAction);
                 switch (messageAction)
                 {
                     case Actions.HandShake:
@@ -70,20 +71,23 @@ namespace Assets.TD.scripts
         {
             var stageFinishMsg = JsonConvert.DeserializeObject<StageFinish>(responseData);
             Debug.Log(stageFinishMsg.content);
+            GameInfo.GameState = GameState.Finished;
+            UIManager.ProcessFinish();
+            
+            /*//todo: think about need of these checks in class at all
             if (GameInfo.GameState == GameState.Playing)
-                GameInfo.GameState = GameState.Finished;
+            {
+                
+            }*/
         }
 
         private void ProcessStageSimulate(string responseData)
         {
             var stageSimulateMsg = JsonConvert.DeserializeObject<StageSimulate>(responseData);
             Debug.Log(stageSimulateMsg.content);
-            if (GameInfo.GameState == GameState.Planning)
-            {
-                UIManager.StatBar.SetActive(true);
-                UIManager.PreparingStartBar.SetActive(false);
-                GameInfo.GameState = GameState.Playing;
-            }
+            UIManager.PreparingStartBar.SetActive(false);
+            UIManager.StatBar.SetActive(true);
+            GameInfo.GameState = GameState.Playing;
         }
 
         private void ProcessStagePlanning(string responseData)
@@ -91,21 +95,17 @@ namespace Assets.TD.scripts
             var stagePlanningMsg = JsonConvert.DeserializeObject<StagePlanning>(responseData);
             Debug.Log(stagePlanningMsg.content.message);
             Debug.Log(stagePlanningMsg.content.time);
-            if (GameInfo.GameState == GameState.Preparing)
-            {
-                UIManager.StatBar.SetActive(false);
-                UIManager.PreparingStartBar.SetActive(true);
-                UIManager.SetPreparingTime(stagePlanningMsg.content.time);
-                GameInfo.GameState = GameState.Planning;
-            }
+            UIManager.StatBar.SetActive(false);
+            UIManager.PreparingStartBar.SetActive(true);
+            UIManager.SetPreparingTime(stagePlanningMsg.content.time);
+            GameInfo.GameState = GameState.Planning;
         }
 
         private void ProcessGameToStart(string responseData)
         {
             var gameToStartMsg = JsonConvert.DeserializeObject<GameToStart>(responseData);
             Debug.Log(gameToStartMsg.content);
-            if (GameInfo.GameState == GameState.HandShakeDone)
-                GameInfo.GameState = GameState.Preparing;
+            GameInfo.GameState = GameState.Preparing;
         }
 
         private void ProcessPrepareToStart(string responseData)
@@ -113,7 +113,6 @@ namespace Assets.TD.scripts
             var prepareToStartMsg = JsonConvert.DeserializeObject<PrepareToStart>(responseData);
             GameInfo.Role = (PlayerRole)prepareToStartMsg.content.you_role;
             Debug.Log("Server sent you a role: " + (GameInfo.Role == PlayerRole.Attacker ? "Attacker" : "Defender"));
-
             Debug.Log("server sent you a map");
             Debug.Log(prepareToStartMsg);
             
@@ -122,6 +121,7 @@ namespace Assets.TD.scripts
                 GameInfo.Map.Map = prepareToStartMsg.content.map;
                 GameInfo.Map.Height = prepareToStartMsg.content.map_height;
                 GameInfo.Map.Width = prepareToStartMsg.content.map_width;
+                GameInfo.CoinsAmount = ApplicationConst.StartCoinsAmount;
                 UnitManager.InitCubeArray(GameInfo.Map.Height, GameInfo.Map.Width);
                 StartCoroutine(UnitManager.InstantinateMap(GameInfo.Map));
             }

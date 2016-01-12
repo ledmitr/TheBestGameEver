@@ -173,7 +173,7 @@ namespace Assets.TD.scripts
                             InstantiateObjectOnMap(x, z, TentPrefab, ApplicationConst.TentTag);
                             break;
                         case MapCellType.Mountains:
-                            InstantiateObjectOnMap(x, z, CubePrototype, ApplicationConst.FieldTag);
+                            InstantiateObjectOnMap(x, z, CubePrototype, ApplicationConst.MountainTag);
                             break;
                         case MapCellType.Road:
                             InstantiateObjectOnMap(x, z, RoadPrototype, ApplicationConst.RoadTag);
