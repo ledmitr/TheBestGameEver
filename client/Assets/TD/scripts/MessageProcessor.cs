@@ -22,8 +22,12 @@ namespace Assets.TD.scripts
         }
 
         private void Update()
-        {
-            var messages = GameInfo.ServerMessages;
+        {   
+            var messages = GameInfo.ServerMessages.ToList();
+            if (!messages.Any())
+                return;
+            GameInfo.ServerMessages.Clear();
+            Debug.Log(string.Format("Count messages to process: {0}", messages.Count));
             foreach (var message in messages)
             {
                 string messageAction = "";
@@ -37,7 +41,7 @@ namespace Assets.TD.scripts
                     Debug.LogException(ex);
                 }
 
-                Debug.Log("processing action: " + messageAction);
+                Debug.Log(string.Format("processing action: {0}", messageAction));
                 switch (messageAction)
                 {
                     case Actions.HandShake:
@@ -61,10 +65,12 @@ namespace Assets.TD.scripts
                     case Actions.ActualData:
                         ProcessActualData(message);
                         break;
+                    case "":
+                        Debug.LogError("Incorrect message action");
+                        break;
                 }
                 Debug.Log(GameInfo.GameState);
             }
-            GameInfo.ServerMessages.Clear();
         }
 
         private void ProcessStageFinish(string responseData)
@@ -73,12 +79,6 @@ namespace Assets.TD.scripts
             Debug.Log(stageFinishMsg.content);
             GameInfo.GameState = GameState.Finished;
             UIManager.ProcessFinish();
-            
-            /*//todo: think about need of these checks in class at all
-            if (GameInfo.GameState == GameState.Playing)
-            {
-                
-            }*/
         }
 
         private void ProcessStageSimulate(string responseData)
@@ -112,9 +112,14 @@ namespace Assets.TD.scripts
         {
             var prepareToStartMsg = JsonConvert.DeserializeObject<PrepareToStart>(responseData);
             GameInfo.Role = (PlayerRole)prepareToStartMsg.content.you_role;
-            Debug.Log("Server sent you a role: " + (GameInfo.Role == PlayerRole.Attacker ? "Attacker" : "Defender"));
-            Debug.Log("server sent you a map");
-            Debug.Log(prepareToStartMsg);
+#if UNITY_EDITOR
+            GameInfo.Role = PlayerRole.Defender;
+
+#else
+            GameInfo.Role = PlayerRole.Attacker;
+#endif
+
+            Debug.Log(string.Format("Server sent you a role: {0}", (GameInfo.Role == PlayerRole.Attacker ? "Attacker" : "Defender")));
             
             if (prepareToStartMsg.content.map_height > 0 && prepareToStartMsg.content.map_width > 0)
             {
@@ -153,7 +158,7 @@ namespace Assets.TD.scripts
 
         private void ProcessActualData(string message)
         {
-            Debug.Log("Server from message:" + message);
+            Debug.Log(string.Format("Server from message:{0}", message));
             var actualData = JsonConvert.DeserializeObject<ActualData>(message);
             UnitManager.UpdateUnits(actualData);
         }

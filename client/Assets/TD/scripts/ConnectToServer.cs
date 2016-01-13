@@ -75,7 +75,7 @@ namespace Assets.TD.scripts
                 else
                 {
                     var messages = response.Split(new[] {EndStr}, StringSplitOptions.RemoveEmptyEntries);
-                    if (messages.Length > 1 && !messages.Last().EndsWith(EndJsonStr))
+                    if (messages.Length > 1 && !response.EndsWith(EndJsonStr))
                     {
                         _notFinishedMessage = messages.Last();
                         messages = messages.Take(messages.Length - 1).ToArray();

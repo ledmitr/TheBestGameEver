@@ -170,7 +170,10 @@ namespace Assets.TD.scripts
                             InstantiateObjectOnMap(x, z, MainTowerPrefab, ApplicationConst.FortressTag);
                             break;
                         case MapCellType.Tent:
-                            InstantiateObjectOnMap(x, z, TentPrefab, ApplicationConst.TentTag);
+                            var tent = InstantiateObjectOnMap(x, z, TentPrefab, ApplicationConst.TentTag);
+                            var tentClosestRoad = GameInfo.Map.CalcTentClosestRoad(new Vector2(x, z));
+                            Debug.Log(string.Format("tent closest road is : {0}", tentClosestRoad));
+                            RotateTent(tent, tentClosestRoad);
                             break;
                         case MapCellType.Mountains:
                             InstantiateObjectOnMap(x, z, CubePrototype, ApplicationConst.MountainTag);
@@ -187,12 +190,19 @@ namespace Assets.TD.scripts
             }
         }
 
-        private void InstantiateObjectOnMap(int x, int z, GameObject prefab, string objectTag)
+        private void RotateTent(GameObject tent, Vector2 tentClosestRoad)
+        {
+            var forward = new Vector3(tentClosestRoad.x + tent.transform.position.x, 0, tent.transform.position.z + tentClosestRoad.y);
+            tent.transform.rotation = Quaternion.LookRotation(forward);
+        }
+
+        private GameObject InstantiateObjectOnMap(int x, int z, GameObject prefab, string objectTag)
         {
             var objectPosition = new Vector3(x, 0, z);
             var newObject = (GameObject) Instantiate(prefab, objectPosition, prefab.transform.rotation);
             newObject.tag = objectTag;
             _cubeArray[x, z] = newObject;
+            return newObject;
         }
     }
 }

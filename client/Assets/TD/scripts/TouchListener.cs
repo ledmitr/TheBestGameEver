@@ -1,6 +1,7 @@
 ﻿using Assets.TD.scripts.Constants;
 using Assets.TD.scripts.Enums;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Assets.TD.scripts
@@ -62,13 +63,13 @@ namespace Assets.TD.scripts
 
         private void ProcessClick(RaycastHit hit)
         {
-            if (WasJustAButton())
+            //block clicks under UI
+            if (EventSystem.current.IsPointerOverGameObject())
                 return;
 
             Debug.Log("you hit on " + hit.collider.tag);
-
             Debug.Log(GameInfo.GameState);
-            //Debug.Log(hit.collider.tag);
+            
             switch (GameInfo.GameState)
             {
                 case GameState.Playing:
@@ -205,8 +206,8 @@ namespace Assets.TD.scripts
             UIManager.UpdateButtonState(UnitType.Knight);
 
             //todo: refactor magic numbers
-            //todo: set knight position to tent front
-            var knightPosition = new Vector3(tent.transform.position.x + 1, tent.transform.position.y, tent.transform.position.z);
+            var tentClosestRoad = GameInfo.Map.CalcTentClosestRoad(new Vector2(tent.transform.position.x, tent.transform.position.z));
+            var knightPosition = new Vector3(tentClosestRoad.x + tent.transform.position.x, tent.transform.position.y, tentClosestRoad.y + tent.transform.position.z);
             _connectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition);
         }
         
