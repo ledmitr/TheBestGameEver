@@ -20,8 +20,8 @@ namespace Assets.TD.scripts
         public GameObject MainTowerPrefab = null;
         public GameObject TentPrefab = null;
 
-        private List<TowerScript> _towers;
-        private List<KnightScript> _knights;
+        private Dictionary<int, GameObject> _towers;
+        private Dictionary<int, GameObject> _knights;
 
         private GameObject[,] _cubeArray;
 
@@ -39,8 +39,8 @@ namespace Assets.TD.scripts
             Debug.Assert(MainTowerPrefab != null);
             Debug.Assert(TentPrefab != null);
 
-            _towers = new List<TowerScript>(3);
-            _knights = new List<KnightScript>(10);
+            _towers = new Dictionary<int, GameObject>(3);
+            _knights = new Dictionary<int, GameObject>(10);
         }
 
         private void Update()
@@ -48,133 +48,134 @@ namespace Assets.TD.scripts
 
         }
 
-        /// <summary>
-        /// Обновляет состояние юнита. Создаёт нового, если такого не существует.
-        /// </summary>
-        /// <param name="unitData">Сообщение от сервера о состоянии юнита.</param>
-        public void UpdateUnit(ActualDataUnit unitData)
+        private static void SetMinimumHealth(ActualDataUnit unitData, GameObject unit)
         {
-            var unitPosition = new Vector3(unitData.position_x, unitData.position_y);
-
-            if (unitData.type_unit == UnitType.Tower){
-                var unit = _towers.FirstOrDefault(x => x.Id == unitData.id);
-                if (unit != null)
-                {
-                    unit.transform.position = unitPosition;
-                }
-                else
-                {
-                    _towers.Add(CreateTower(unitPosition));
-                }
-            }
-            else
-            {
-                var unit = _knights.FirstOrDefault(x => x.Id == unitData.id);
-                if (unit != null)
-                {
-                    unit.transform.position = unitPosition;
-                }
-                else
-                {
-                    _knights.Add(CreateKnight(unitPosition));
-                }
-            }
+            var healthComponent = unit.GetComponent<EnemyHealth>();
+            healthComponent.MaxHealth = unitData.hit_point;
         }
-
+        
         /// <summary>
         /// Создаёт рыцаря.
         /// </summary>
-        /// <param name="knightPosition">Позиция рыцаря.</param>
+        /// <param name="unitData">Позиция рыцаря.</param>
         /// <returns>Компонент управления рыцарем.</returns>
-        private KnightScript CreateKnight(Vector3 knightPosition)
+        private GameObject CreateKnight(ActualDataUnit unitData)
         {
+            var knightPosition = new Vector3(unitData.position_x, 0, unitData.position_y);
             var knight = (GameObject)Instantiate(KnightPrefab, knightPosition, Quaternion.identity);
-            var knightScript = knight.GetComponent<KnightScript>();
-            //knightScript.SetPath(path);
-            return knightScript;
+            SetMinimumHealth(unitData, knight);
+            return knight;
         }
-
+        
         /// <summary>
         /// Создаёт башню.
         /// </summary>
-        /// <param name="towerPosition">Позиция башни.</param>
+        /// <param name="unitData">Позиция башни.</param>
         /// <returns>Компонент управления башней.</returns>
-        private TowerScript CreateTower(Vector3 towerPosition)
+        private GameObject CreateTower(ActualDataUnit unitData)
         {
+            var towerPosition = new Vector3(unitData.position_x, 0, unitData.position_y);
             var tower = (GameObject)Instantiate(TowerPrefab, towerPosition, Quaternion.identity);
-            var towerScript = tower.GetComponent<TowerScript>();
-            return towerScript;
+            SetMinimumHealth(unitData, tower);
+            return tower;
         }
 
         public void UpdateUnits(ActualData actualData)
         {
-            var processedTowersIds = new List<int>();
-            var processedKnightsIds = new List<int>();
-            var towerIds = _towers.Select(x => x.Id).ToList();
-            var knightsIds = _knights.Select(x => x.Id).ToList();
+            var processedTowersIds = new HashSet<int>();
+            var processedKnightsIds = new HashSet<int>();
             foreach (var actualDataContentItem in actualData.content)
             {
                 foreach (var unitData in actualDataContentItem.units)
                 {
-                    var unitPosition = new Vector3(unitData.position_x, unitData.position_y);
                     if (unitData.type_unit == UnitType.Tower)
                     {
-                        var unit = _towers.SingleOrDefault(x => x.Id == unitData.id);
-                        if (unit != null)
-                        {
-                            unit.transform.position = unitPosition;
-                            processedTowersIds.Add(unit.Id);
-                        }
-                        else
-                        {
-                            _towers.Add(CreateTower(unitPosition));
-                        }
+                        UpdateUnit(_towers, unitData, processedTowersIds);
                     }
                     else
                     {
-                        var unit = _knights.FirstOrDefault(x => x.Id == unitData.id);
-                        if (unit != null)
-                        {
-                            unit.transform.position = unitPosition;
-                            processedKnightsIds.Add(unit.Id);
-                        }
-                        else
-                        {
-                            _knights.Add(CreateKnight(unitPosition));
-                        }
+                        UpdateUnit(_knights, unitData, processedKnightsIds);
                     }
                 }
             }
-            var knightsIntersect = knightsIds.Except(processedKnightsIds);
-            foreach (var id in knightsIntersect)
+
+            DestroyNotExistedUnits(processedTowersIds, _towers);
+            DestroyNotExistedUnits(processedKnightsIds, _knights);
+        }
+
+        private static void DestroyNotExistedUnits(IEnumerable<int> processedIds, Dictionary<int, GameObject> gameObjects)
+        {
+            // выбираем все идентификаторы, которые есть
+            var ids = gameObjects.Select(x => x.Key);
+            // вычитаем из них все обработанные, то есть присланные сервером, то есть сущзествующие в игре
+            var unitsIntersect = ids.Except(processedIds);
+            // удалем те, которые не существуют
+            foreach (var id in unitsIntersect)
             {
-                var knight = _knights.Single(x => x.Id == id);
-                Destroy(knight.gameObject);
-            }
-            var towersIntersect = towerIds.Except(processedTowersIds);
-            foreach (var id in towersIntersect)
-            {
-                var tower = _towers.Single(x => x.Id == id);
-                Destroy(tower.gameObject);
+                // находим объект в списке по идентификатору
+                var unit = gameObjects[id].gameObject;
+                // уничтожаем игровой объект
+                Destroy(unit);
+                // удалем его из списка
+                gameObjects.Remove(id);
             }
         }
+
+        private void UpdateUnit(IDictionary<int, GameObject> gameObjects, ActualDataUnit unitData, ICollection<int> processedIds)
+        {
+            if (gameObjects.ContainsKey(unitData.id_unit))
+            {
+                AdjustUnitData(gameObjects[unitData.id_unit], unitData);
+            }
+            else
+            {
+                if (unitData.type_unit == UnitType.Knight)
+                    _knights.Add(unitData.id_unit, CreateKnight(unitData));
+                else
+                    _towers.Add(unitData.id_unit, CreateTower(unitData));
+            }
+            processedIds.Add(unitData.id_unit);
+        }
+
+        private static readonly Dictionary<UnitDirection, int> DirectionAnglesDictionary = new Dictionary<UnitDirection, int>
+        {
+            {UnitDirection.Top, 180}, {UnitDirection.Bottom, 270}, {UnitDirection.Left, 90}, {UnitDirection.Right, 0} 
+        }; 
         
+        private static void AdjustUnitData(GameObject unit, ActualDataUnit unitData)
+        {
+            if (unitData.type_unit == UnitType.Knight)
+            {
+                var unitPosition = new Vector3(unitData.position_y, 0, unitData.position_x);
+                unit.transform.position = unitPosition;
+
+                float rotationAngle = DirectionAnglesDictionary[unitData.direction];
+                unit.transform.eulerAngles = new Vector3(0, rotationAngle, 0);
+            }
+
+            var healthScript = unit.GetComponent<EnemyHealth>();
+            healthScript.SetHealth(unitData.hit_point);
+        }
+
         public IEnumerator InstantinateMap(GameMap map)
         {
             for (int x = 0; x < map.Height; x++)
             {
                 for (int z = 0; z < map.Width; z++)
                 {
+                    var cellPosition = new Vector2(x, z);
                     switch ((MapCellType)map.Map[x][z])
                     {
                         case MapCellType.Fortress:
                             InstantiateObjectOnMap(x, z, MainTowerPrefab, ApplicationConst.FortressTag);
+                            GameInfo.Map.FortressPosition = cellPosition;
                             break;
                         case MapCellType.Tent:
                             var tent = InstantiateObjectOnMap(x, z, TentPrefab, ApplicationConst.TentTag);
-                            var tentClosestRoad = GameInfo.Map.CalcTentClosestRoad(new Vector2(x, z));
-                            Debug.Log(string.Format("tent closest road is : {0}", tentClosestRoad));
+                            var tentClosestRoad = GameInfo.Map.CalcTentClosestRoad(cellPosition);
+                            //Debug.Log(string.Format("tent closest road is : {0}", tentClosestRoad));
                             RotateTent(tent, tentClosestRoad);
+                            GameInfo.Map.TentPosition = cellPosition;
                             break;
                         case MapCellType.Mountains:
                             InstantiateObjectOnMap(x, z, CubePrototype, ApplicationConst.MountainTag);
@@ -189,6 +190,7 @@ namespace Assets.TD.scripts
                 }
                 yield return 0;
             }
+            GameInfo.MainUnitCoords = GameInfo.Role == PlayerRole.Attacker ? GameInfo.Map.TentPosition : GameInfo.Map.FortressPosition;
         }
 
         private void RotateTent(GameObject tent, Vector2 tentClosestRoad)

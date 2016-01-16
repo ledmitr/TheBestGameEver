@@ -1,11 +1,7 @@
-﻿using UnityEngine;
-
-namespace Assets.TD.scripts
+﻿namespace Assets.TD.scripts
 {
-    public class TowerScript : MonoBehaviour
+    public class TowerScript : Unit
     {
-        public int Id;
-
         private void Start()
         {
         }

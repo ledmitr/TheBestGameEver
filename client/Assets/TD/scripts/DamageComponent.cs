@@ -20,17 +20,17 @@ namespace Assets.TD.scripts
 
         private void Update()
         {
-            TryToDamageClosestTarget();
+            //TryToDamageClosestTarget();
         }
 
-        private void TryToDamageClosestTarget()
+        /*private void TryToDamageClosestTarget()
         {
             if (_closestTarget == null)
                 _closestTarget = GetClosestTarget();
             
             if (Vector3.Distance(_closestTarget.transform.position, gameObject.transform.position) < DamageStats.Distance)
                 _closestTarget.GetComponent<EnemyHealth>().Damage(DamageStats.Amount);
-        }
+        }*/
 
         private GameObject GetClosestTarget()
         {

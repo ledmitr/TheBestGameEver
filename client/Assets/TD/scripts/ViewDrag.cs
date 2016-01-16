@@ -24,6 +24,8 @@ namespace Assets.TD.scripts
         private float _maxCameraXPosition;
         private float _maxCameraZPosition;
 
+        private float _cameraYPosition = 70;
+
         // Use this for initialization
         //todo: refactor magic numbers
         void Start()
@@ -33,7 +35,8 @@ namespace Assets.TD.scripts
             _maxCameraXPosition = 150;
             _maxCameraZPosition = 50;
             _lCamera = GetComponent<Camera>();
-            _currentPosition = new Vector3(100, 70, 0);
+
+            _currentPosition = new Vector3(100, _cameraYPosition, 0);
             transform.position = _currentPosition;
         }
 
@@ -139,6 +142,11 @@ namespace Assets.TD.scripts
                 // Make sure the orthographic size never drops below zero.
                 _lCamera.orthographicSize = Mathf.Clamp(_lCamera.orthographicSize, ZoomRange.x, ZoomRange.y);
             }
+        }
+
+        public void SetCameraPosition(Vector2 newCameraPosition)
+        {
+            transform.position = new Vector3(newCameraPosition.x + _minCameraXPosition, _cameraYPosition, newCameraPosition.y + _minCameraZPosition);
         }
     }
 }

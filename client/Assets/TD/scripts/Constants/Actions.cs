@@ -16,5 +16,6 @@
         public const string StageFinish = "stage_finish";
         public const string AddUnit = "add_unit";
         public const string ActualData = "actual_data";
+        public const string Error = "Error";
     }
 }

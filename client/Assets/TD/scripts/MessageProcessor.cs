@@ -65,6 +65,9 @@ namespace Assets.TD.scripts
                     case Actions.ActualData:
                         ProcessActualData(message);
                         break;
+                    case Actions.Error:
+                        ProcessError();
+                        break;
                     case "":
                         Debug.LogError("Incorrect message action");
                         break;
@@ -73,37 +76,18 @@ namespace Assets.TD.scripts
             }
         }
 
-        private void ProcessStageFinish(string responseData)
+        private void ProcessHandShake(string responseData)
         {
-            var stageFinishMsg = JsonConvert.DeserializeObject<StageFinish>(responseData);
-            Debug.Log(stageFinishMsg.content);
-            GameInfo.GameState = GameState.Finished;
-            UIManager.ProcessFinish();
-            ConnectToServer.FinishGame();
-        }
+            // Производим десериализацию.
+            Head_RespFromServer_HandShake respFromServer =
+                JsonConvert.DeserializeObject<Head_RespFromServer_HandShake>(responseData);
+            GameInfo.ServerName = respFromServer.content.server_name;
+            GameInfo.GameId = respFromServer.content.game_id;
+            Debug.Log(respFromServer);
+            if (GameInfo.GameState == GameState.Connected)
+                GameInfo.GameState = GameState.HandShakeDone;
 
-        private void ProcessStageSimulate(string responseData)
-        {
-            var stageSimulateMsg = JsonConvert.DeserializeObject<StageSimulate>(responseData);
-            Debug.Log(stageSimulateMsg.content);
-            UIManager.PreparingStartBar.SetActive(false);
-            UIManager.StatBar.SetActive(true);
-            GameInfo.GameState = GameState.Playing;
-        }
-
-        private void ProcessStagePlanning(string responseData)
-        {
-            var stagePlanningMsg = JsonConvert.DeserializeObject<StagePlanning>(responseData);
-            Debug.Log(stagePlanningMsg.content.message);
-            Debug.Log(stagePlanningMsg.content.time);
-            UIManager.StatBar.SetActive(false);
-            UIManager.PreparingStartBar.SetActive(true);
-            UIManager.SetPreparingTime(stagePlanningMsg.content.time);
-            GameInfo.GameState = GameState.Planning;
-
-            //TODO: DELETE AFTER DEBUG
-            ConnectToServer.SendAddUnitRequest(UnitType.Knight, new Vector3(13, 0, 0));
-            ConnectToServer.SendAddUnitRequest(UnitType.Tower, new Vector3(15, 15, 0));
+            UIManager.SetLoadingDetails("HANDSHAKE DONE");
         }
 
         private void ProcessGameToStart(string responseData)
@@ -111,6 +95,7 @@ namespace Assets.TD.scripts
             var gameToStartMsg = JsonConvert.DeserializeObject<GameToStart>(responseData);
             Debug.Log(gameToStartMsg.content);
             GameInfo.GameState = GameState.Preparing;
+            UIManager.SetLoadingDetails("GAME IS PREPARING");
         }
 
         private void ProcessPrepareToStart(string responseData)
@@ -119,14 +104,16 @@ namespace Assets.TD.scripts
 
             GameInfo.Role = (PlayerRole)prepareToStartMsg.content.you_role;
             Debug.Log(string.Format("Server sent you a role: {0}", (GameInfo.Role == PlayerRole.Attacker ? "Attacker" : "Defender")));
-            
+
             if (prepareToStartMsg.content.map_height > 0 && prepareToStartMsg.content.map_width > 0)
             {
                 GameInfo.Map.Map = prepareToStartMsg.content.map;
                 GameInfo.Map.Height = prepareToStartMsg.content.map_height;
                 GameInfo.Map.Width = prepareToStartMsg.content.map_width;
                 GameInfo.CoinsAmount = ApplicationConst.StartCoinsAmount;
+
                 UnitManager.InitCubeArray(GameInfo.Map.Height, GameInfo.Map.Width);
+                UIManager.SetLoadingDetails("MAP CREATION");
                 StartCoroutine(UnitManager.InstantinateMap(GameInfo.Map));
             }
             else
@@ -143,23 +130,48 @@ namespace Assets.TD.scripts
             ConnectToServer.SendMessageToServer(message);
         }
 
-        private void ProcessHandShake(string responseData)
+        private void ProcessStagePlanning(string responseData)
         {
-            // Производим десериализацию.
-            Head_RespFromServer_HandShake respFromServer =
-                JsonConvert.DeserializeObject<Head_RespFromServer_HandShake>(responseData);
-            GameInfo.ServerName = respFromServer.content.server_name;
-            GameInfo.GameId = respFromServer.content.game_id;
-            Debug.Log(respFromServer);
-            if (GameInfo.GameState == GameState.Connected)
-                GameInfo.GameState = GameState.HandShakeDone;
+            var stagePlanningMsg = JsonConvert.DeserializeObject<StagePlanning>(responseData);
+            Debug.Log(stagePlanningMsg.content.message);
+            Debug.Log(stagePlanningMsg.content.time);
+            UIManager.SetUiActive();
+            UIManager.UpdateGoToMainUnitButton(GameInfo.Role);
+            UIManager.StatBar.SetActive(false);
+            UIManager.PreparingStartBar.SetActive(true);
+            UIManager.SetPreparingTime(stagePlanningMsg.content.time);
+            GameInfo.GameState = GameState.Planning;
+        }
+
+        private void ProcessStageSimulate(string responseData)
+        {
+            var stageSimulateMsg = JsonConvert.DeserializeObject<StageSimulate>(responseData);
+            Debug.Log(stageSimulateMsg.content);
+            UIManager.PreparingStartBar.SetActive(false);
+            UIManager.StatBar.SetActive(true);
+            GameInfo.GameState = GameState.Playing;
         }
 
         private void ProcessActualData(string message)
         {
             Debug.Log(string.Format("Server from message:{0}", message));
             var actualData = JsonConvert.DeserializeObject<ActualData>(message);
+            GameInfo.KilledAmount = actualData.content[(int)PlayerRole.Attacker].is_dead;
             UnitManager.UpdateUnits(actualData);
+        }
+
+        private void ProcessStageFinish(string responseData)
+        {
+            var stageFinishMsg = JsonConvert.DeserializeObject<StageFinish>(responseData);
+            Debug.Log(stageFinishMsg.content);
+            GameInfo.GameState = GameState.Finished;
+            UIManager.ProcessFinish();
+            ConnectToServer.FinishGame();
+        }
+
+        private void ProcessError()
+        {
+
         }
     }
 }

@@ -31,5 +31,8 @@ namespace Assets.TD.scripts
             }
             return Vector2.zero;
         }
+
+        public Vector2 TentPosition { get; set; }
+        public Vector2 FortressPosition { get; set; }
     }
 }

@@ -186,7 +186,7 @@ namespace Assets.TD.scripts
 
     public class ActualDataUnit
     {
-        public int id { get; set; }
+        public int id_unit { get; set; }
         public UnitType type_unit { get; set; }
         public int hit_point { get; set; }
         public int position_x { get; set; }

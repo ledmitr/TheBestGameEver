@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Assets.TD.scripts.Enums;
+using UnityEngine;
 
 namespace Assets.TD.scripts
 {
@@ -24,6 +25,9 @@ namespace Assets.TD.scripts
         public static readonly GameMap Map = new GameMap();
 
         public static int CoinsAmount { get; set; }
+        public static int KilledAmount { get; set; }
+
+        public static Vector2 MainUnitCoords { get; set; }
 
         //todo: finish
         /*public static void Clean()

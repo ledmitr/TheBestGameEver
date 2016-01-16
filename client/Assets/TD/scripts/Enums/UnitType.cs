@@ -2,7 +2,7 @@
 {
     public enum UnitType : int
     {
-        Knight = 0,
-        Tower = 1
+        Knight = 11,
+        Tower = 21
     }
 }

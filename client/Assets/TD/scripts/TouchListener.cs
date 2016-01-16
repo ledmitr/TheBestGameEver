@@ -73,12 +73,12 @@ namespace Assets.TD.scripts
             switch (GameInfo.GameState)
             {
                 case GameState.Playing:
-                    if (hit.collider.tag == ApplicationConst.KnightTag)
+                    /*if (hit.collider.tag == ApplicationConst.KnightTag)
                     {
                         UnselectAll();
                         GameInfo.GameState = GameState.KnightSelected;
                         hit.collider.gameObject.GetComponent<KnightScript>().Select(true);
-                    }
+                    }*/
                     break;
                 case GameState.ChooseNewTowerPosition:
                     if (hit.collider.tag == ApplicationConst.LandTag)
@@ -98,7 +98,7 @@ namespace Assets.TD.scripts
                     break;
                 case GameState.TentSelected:
                     break;
-                case GameState.KnightSelected:
+                /*case GameState.KnightSelected:
                     if (hit.collider.tag == ApplicationConst.KnightTag)
                     {
                         var knightScript = hit.collider.gameObject.GetComponent<KnightScript>();
@@ -108,14 +108,14 @@ namespace Assets.TD.scripts
                             knightScript.Select(true);
                         }
                     } 
-                    /*else if (hit.collider.tag == ApplicationConst.TowerTag)
+                    else if (hit.collider.tag == ApplicationConst.TowerTag)
                     {
                         SendKnightToTower(hit);
-                    }*/
+                    }
                     else if (hit.collider.tag == ApplicationConst.LandTag)
                     {
                         UnselectAll();
-                    }
+                    }*/
                     break;
                 case GameState.TowerSelected:
                     break;
@@ -186,7 +186,7 @@ namespace Assets.TD.scripts
         {
             GameInfo.CoinsAmount -= ApplicationConst.TowerCost;
             UIManager.UpdateButtonState(UnitType.Tower);
-            _connectionToServer.SendAddUnitRequest(UnitType.Tower, targetTowerPosition);
+            _connectionToServer.SendAddUnitRequest(UnitType.Tower, new Vector2(targetTowerPosition.z, targetTowerPosition.x));
         }
 
         /// <summary>
@@ -205,8 +205,7 @@ namespace Assets.TD.scripts
             GameInfo.CoinsAmount -= ApplicationConst.KnightCost;
             UIManager.UpdateButtonState(UnitType.Knight);
 
-            var tentClosestRoad = GameInfo.Map.CalcTentClosestRoad(new Vector2(tent.transform.position.x, tent.transform.position.z));
-            var knightPosition = new Vector3(tentClosestRoad.x + tent.transform.position.x, tent.transform.position.y, tentClosestRoad.y + tent.transform.position.z);
+            var knightPosition = new Vector2(tent.transform.position.z, tent.transform.position.x);
             _connectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition);
         }
         

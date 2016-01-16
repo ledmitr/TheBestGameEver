@@ -135,7 +135,7 @@ namespace Assets.TD.scripts
         /// </summary>
         /// <param name="unitType">Тип юнита (башня или рыцарь).</param>
         /// <param name="position">Позиция юнита.</param>
-        public void SendAddUnitRequest(UnitType unitType, Vector3 position)
+        public void SendAddUnitRequest(UnitType unitType, Vector2 position)
         {
             var addTowerRequest = new AddUnitRequestToServer
             {
