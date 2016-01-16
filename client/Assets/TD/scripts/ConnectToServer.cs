@@ -149,5 +149,12 @@ namespace Assets.TD.scripts
             };
             SendMessageToServer(addTowerRequest);
         }
+
+        public void FinishGame()
+        {
+            _stream.Close();
+            _client.Close();
+            _socket.Close();
+        }
     }
 }

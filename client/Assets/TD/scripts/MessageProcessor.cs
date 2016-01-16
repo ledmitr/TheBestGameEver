@@ -79,6 +79,7 @@ namespace Assets.TD.scripts
             Debug.Log(stageFinishMsg.content);
             GameInfo.GameState = GameState.Finished;
             UIManager.ProcessFinish();
+            ConnectToServer.FinishGame();
         }
 
         private void ProcessStageSimulate(string responseData)
@@ -99,6 +100,10 @@ namespace Assets.TD.scripts
             UIManager.PreparingStartBar.SetActive(true);
             UIManager.SetPreparingTime(stagePlanningMsg.content.time);
             GameInfo.GameState = GameState.Planning;
+
+            //TODO: DELETE AFTER DEBUG
+            ConnectToServer.SendAddUnitRequest(UnitType.Knight, new Vector3(13, 0, 0));
+            ConnectToServer.SendAddUnitRequest(UnitType.Tower, new Vector3(15, 15, 0));
         }
 
         private void ProcessGameToStart(string responseData)
@@ -111,14 +116,8 @@ namespace Assets.TD.scripts
         private void ProcessPrepareToStart(string responseData)
         {
             var prepareToStartMsg = JsonConvert.DeserializeObject<PrepareToStart>(responseData);
+
             GameInfo.Role = (PlayerRole)prepareToStartMsg.content.you_role;
-#if UNITY_EDITOR
-            GameInfo.Role = PlayerRole.Defender;
-
-#else
-            GameInfo.Role = PlayerRole.Attacker;
-#endif
-
             Debug.Log(string.Format("Server sent you a role: {0}", (GameInfo.Role == PlayerRole.Attacker ? "Attacker" : "Defender")));
             
             if (prepareToStartMsg.content.map_height > 0 && prepareToStartMsg.content.map_width > 0)

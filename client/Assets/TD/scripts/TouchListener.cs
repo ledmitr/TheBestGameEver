@@ -67,7 +67,7 @@ namespace Assets.TD.scripts
             if (EventSystem.current.IsPointerOverGameObject())
                 return;
 
-            Debug.Log("you hit on " + hit.collider.tag);
+            Debug.Log(string.Format("you hit on {0}", hit.collider.tag));
             Debug.Log(GameInfo.GameState);
             
             switch (GameInfo.GameState)
@@ -205,7 +205,6 @@ namespace Assets.TD.scripts
             GameInfo.CoinsAmount -= ApplicationConst.KnightCost;
             UIManager.UpdateButtonState(UnitType.Knight);
 
-            //todo: refactor magic numbers
             var tentClosestRoad = GameInfo.Map.CalcTentClosestRoad(new Vector2(tent.transform.position.x, tent.transform.position.z));
             var knightPosition = new Vector3(tentClosestRoad.x + tent.transform.position.x, tent.transform.position.y, tentClosestRoad.y + tent.transform.position.z);
             _connectionToServer.SendAddUnitRequest(UnitType.Knight, knightPosition);

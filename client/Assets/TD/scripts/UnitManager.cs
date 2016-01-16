@@ -39,8 +39,8 @@ namespace Assets.TD.scripts
             Debug.Assert(MainTowerPrefab != null);
             Debug.Assert(TentPrefab != null);
 
-            _towers = new List<TowerScript>();
-            _knights = new List<KnightScript>();
+            _towers = new List<TowerScript>(3);
+            _knights = new List<KnightScript>(10);
         }
 
         private void Update()
@@ -55,6 +55,7 @@ namespace Assets.TD.scripts
         public void UpdateUnit(ActualDataUnit unitData)
         {
             var unitPosition = new Vector3(unitData.position_x, unitData.position_y);
+
             if (unitData.type_unit == UnitType.Tower){
                 var unit = _towers.FirstOrDefault(x => x.Id == unitData.id);
                 if (unit != null)
