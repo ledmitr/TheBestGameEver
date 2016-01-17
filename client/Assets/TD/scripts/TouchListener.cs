@@ -130,29 +130,7 @@ namespace Assets.TD.scripts
             }
             Debug.Log(GameInfo.GameState);
         }
-
-        private void SendKnightToTower(RaycastHit hit)
-        {
-            var knights = GameObject.FindGameObjectsWithTag(ApplicationConst.KnightTag);
-            KnightScript selectedKnight = null;
-            foreach (var knight in knights)
-            {
-                var knightComponent = knight.GetComponent<KnightScript>();
-                if (knightComponent != null && knightComponent.IsSelected())
-                {
-                    selectedKnight = knightComponent;
-                    break;
-                }
-            }
-            if (selectedKnight != null)
-            {
-                //selectedKnight.TargetPositionChanged(hit.collider.transform.position);
-                //selectedKnight.Select(false);
-                GameInfo.GameState = GameState.Playing;
-            }
-            UnselectAll();
-        }
-
+        
         private void SetTextInBar(int numArg, string text, GameObject obj)
         {
             var textComponent = obj.GetComponentsInChildren<Text>();
@@ -162,18 +140,6 @@ namespace Assets.TD.scripts
             }
         }
 
-        private void UnselectAll() {
-            var selectableObjects = GameObject.FindGameObjectsWithTag(ApplicationConst.SelectableTag);
-            if (selectableObjects != null && selectableObjects.Length != 0)
-            {
-                foreach (GameObject selectableObject in selectableObjects)
-                {
-                    Selectable objectMain = selectableObject.transform.parent.gameObject.GetComponent<Selectable>();
-                    if (objectMain != null)
-                        objectMain.Select(false);
-                }
-            }
-        }
         /// <summary>
         /// Вернуться в главное меню.
         /// </summary>

@@ -1,127 +1,45 @@
-﻿using Assets.TD.scripts.Constants;
-using Assets.TD.scripts.Utils;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.TD.scripts
 {
     /// <summary>
     /// Управляет рыцарем.
     /// </summary>
-    public class KnightScript : Selectable
+    public class KnightScript : Unit
     {
-        private Vector3 _targetPosition;
+        private float _sinceNewPositionSet;
+        private Vector3 _prevPosition;
+        private Vector3 _nextPosition;
+        private Vector3 _newPosition;
 
-        private bool _isSelected;
-
-        /// <summary>
-        /// Проверяет выбран ли юнит.
-        /// </summary>
-        public override bool IsSelected()
+        private void Start()
         {
-            return _isSelected;
+            _prevPosition = transform.position;
         }
 
-        private Vector3[] _pathToMainTower;
-
-        private int _currentPosition;
-
-        /// <summary>
-        /// Выбирает юнита или отменяет выбор.
-        /// </summary>
-        /// <param name="isSelected">Выбран ли рыцарь.</param>
-        public override void Select(bool isSelected)
+        private void Update()
         {
-            _isSelected = isSelected;
+            _sinceNewPositionSet += Time.deltaTime;
+            var extrapolatedPosition = Vector3.LerpUnclamped(_prevPosition, _newPosition, _sinceNewPositionSet);
+            transform.position = extrapolatedPosition;
+            Debug.Log(extrapolatedPosition);
         }
 
-        //public Material[] SelectMaterial;
-        //private Material[] DefaultMaterial;
-        
-        //private bool _isMoving;
-
-        public float Speed = 1.5F;
-
-        public void Start()
+        public void SetNewPosition(Vector3 newPosition)
         {
-            //HealthBar = new HealthBar();
-            _isSelected = false;
-            //_isMoving = _pathToMainTower != null && _pathToMainTower.Length > 1;
+            _prevPosition = _newPosition;
+            _newPosition = newPosition;
+            _nextPosition = PredictNextPosition();
+            //transform.position = newPosition;
+            _sinceNewPositionSet = 1F;
+
+            Debug.Log(string.Format("new knight position. prev: {0}, new: {1}, next: {2}", 
+                                        _prevPosition, _newPosition, _nextPosition));
         }
 
-        /// <summary>
-        /// Устанавливает путь.
-        /// </summary>
-        /// <param name="path">Путь.</param>
-        private void SetPath(Vector3[] path)
+        private Vector3 PredictNextPosition()
         {
-            _pathToMainTower = path;
-            _currentPosition = 0;
-            _targetPosition = _pathToMainTower[_currentPosition];
-            Debug.Log("initial target position: " + _targetPosition);
-        }
-        
-        /// <summary>
-        /// Изменяет целевую точку рыцаря.
-        /// </summary>
-        /// <param name="newTargetPosition">Новая целевая точка.</param>
-        private void TargetPositionChanged(Vector3 newTargetPosition)
-        {
-            _targetPosition = newTargetPosition;
-            _isSelected = false;
-            //_isMoving = true;
-            Debug.Log("target position changed to: " + newTargetPosition);
-        }
-
-        public void Update()
-        {
-            /*if (_isMoving)
-            {
-                Move();
-            }*/
-        }
-
-        void OnCollisionEnter(Collision collision)
-        {
-            var isItTargetTower = Math.Approximately(collision.gameObject.transform.position.magnitude, _targetPosition.magnitude);
-            if (collision.gameObject.tag == ApplicationConst.TowerTag && isItTargetTower)
-            {
-                //_isMoving = false;
-            }
-        }
-
-        private Collider lCollider {
-            get { return GetComponent<Collider>(); }
-        }
-        
-        private void Move()
-        {
-            var magnitudePosition = new Vector3(gameObject.transform.position.x, 0, gameObject.transform.position.z).magnitude;
-            var magnitudeTarget = new Vector3(_targetPosition.x, 0, _targetPosition.z).magnitude;
-            var targetPostionReached = Math.Approximately(magnitudePosition, magnitudeTarget);
-            if (!targetPostionReached)
-            {
-                var v = Vector3.Lerp(gameObject.transform.position, _targetPosition,
-                    1/(Speed*Vector3.Distance(gameObject.transform.position, _targetPosition)));
-
-                RaycastHit hit;
-                if (Physics.Raycast(v, Vector3.down, out hit, 5.0f))
-                {
-                    // collider.bounds.extents.y will be half of the height of the bounding box
-                    // only useful if your pivot point is in the center, if it's at the feet you don't need this
-                    v.y = hit.point.y + lCollider.bounds.extents.y;
-                }
-                // set our position to the new destination
-                gameObject.transform.position = v;
-            }
-            else if (++_currentPosition < _pathToMainTower.Length)
-            {
-                TargetPositionChanged(_pathToMainTower[_currentPosition]);
-            }
-            else
-            {
-                //_isMoving = false;
-                Debug.Log("path done!");
-            }
+            return Vector3.LerpUnclamped(_prevPosition, _newPosition, 2F);
         }
     }
 }

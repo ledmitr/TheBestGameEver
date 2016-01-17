@@ -61,9 +61,10 @@ namespace Assets.TD.scripts
         /// <returns>Компонент управления рыцарем.</returns>
         private GameObject CreateKnight(ActualDataUnit unitData)
         {
-            var knightPosition = new Vector3(unitData.position_x, 0, unitData.position_y);
+            var knightPosition = new Vector3(unitData.position_y, 0, unitData.position_x);
             var knight = (GameObject)Instantiate(KnightPrefab, knightPosition, Quaternion.identity);
             SetMinimumHealth(unitData, knight);
+            knight.GetComponent<KnightScript>().SetNewPosition(knightPosition);
             return knight;
         }
         
@@ -74,7 +75,7 @@ namespace Assets.TD.scripts
         /// <returns>Компонент управления башней.</returns>
         private GameObject CreateTower(ActualDataUnit unitData)
         {
-            var towerPosition = new Vector3(unitData.position_x, 0, unitData.position_y);
+            var towerPosition = new Vector3(unitData.position_y, 0, unitData.position_x);
             var tower = (GameObject)Instantiate(TowerPrefab, towerPosition, Quaternion.identity);
             SetMinimumHealth(unitData, tower);
             return tower;
@@ -147,7 +148,10 @@ namespace Assets.TD.scripts
             if (unitData.type_unit == UnitType.Knight)
             {
                 var unitPosition = new Vector3(unitData.position_y, 0, unitData.position_x);
-                unit.transform.position = unitPosition;
+                //unit.transform.position = unitPosition;
+
+                var knightScript = unit.GetComponent<KnightScript>();
+                knightScript.SetNewPosition(unitPosition);
 
                 float rotationAngle = DirectionAnglesDictionary[unitData.direction];
                 unit.transform.eulerAngles = new Vector3(0, rotationAngle, 0);

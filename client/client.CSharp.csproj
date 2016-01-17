@@ -79,9 +79,6 @@
     <Compile Include="Assets\TD\scripts\ConnectToServer.cs" />
     <Compile Include="Assets\TD\scripts\Constants\Actions.cs" />
     <Compile Include="Assets\TD\scripts\Constants\ApplicationConst.cs" />
-    <Compile Include="Assets\TD\scripts\CreateCubesArray.cs" />
-    <Compile Include="Assets\TD\scripts\DamageComponent.cs" />
-    <Compile Include="Assets\TD\scripts\DamageStats.cs" />
     <Compile Include="Assets\TD\scripts\EnemyHealth.cs" />
     <Compile Include="Assets\TD\scripts\Enums\GameState.cs" />
     <Compile Include="Assets\TD\scripts\Enums\MapCellType.cs" />
@@ -96,7 +93,6 @@
     <Compile Include="Assets\TD\scripts\MainMenu.cs" />
     <Compile Include="Assets\TD\scripts\MessageProcessor.cs" />
     <Compile Include="Assets\TD\scripts\RotationFreezer.cs" />
-    <Compile Include="Assets\TD\scripts\Selectable.cs" />
     <Compile Include="Assets\TD\scripts\SettingsMenu.cs" />
     <Compile Include="Assets\TD\scripts\StatisticsMenu.cs" />
     <Compile Include="Assets\TD\scripts\TentScript.cs" />

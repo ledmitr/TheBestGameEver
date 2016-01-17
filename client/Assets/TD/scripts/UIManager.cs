@@ -32,8 +32,8 @@ namespace Assets.TD.scripts
         public Text MessageText;
 
         public GameObject GoToMainUnitButton;
-        private string TentText = "TENT";
-        private string FortressText = "FORT\nRESS";
+        private string TentText = "\uf015";
+        private string FortressText = "\uf286";
         private string _preparingTimeString = "Game will start in {0} sec";
 
         private void Start()
