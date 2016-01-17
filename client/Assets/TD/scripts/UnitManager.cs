@@ -12,6 +12,8 @@ namespace Assets.TD.scripts
     /// </summary>
     public class UnitManager : MonoBehaviour
     {
+        public UIManager UIManager;
+
         public GameObject CubePrototype = null;
         public GameObject RoadPrototype = null;
         public GameObject KnightPrefab = null;
@@ -22,6 +24,16 @@ namespace Assets.TD.scripts
 
         private Dictionary<int, GameObject> _towers;
         private Dictionary<int, GameObject> _knights;
+
+        public Dictionary<int, GameObject> GetTowers()
+        {
+            return _towers;
+        }
+
+        public Dictionary<int, GameObject> GetKnights()
+        {
+            return _knights;
+        }
 
         private GameObject[,] _cubeArray;
 
@@ -130,10 +142,21 @@ namespace Assets.TD.scripts
             }
             else
             {
+                GameObject unit;
                 if (unitData.type_unit == UnitType.Knight)
-                    _knights.Add(unitData.id_unit, CreateKnight(unitData));
+                {
+                    unit = CreateKnight(unitData);
+                    _knights.Add(unitData.id_unit, unit);
+                    if (GameInfo.Role == PlayerRole.Attacker)
+                        UIManager.AddUnitButton(unit, unitData);
+                }
                 else
-                    _towers.Add(unitData.id_unit, CreateTower(unitData));
+                {
+                    unit = CreateTower(unitData);
+                    _towers.Add(unitData.id_unit, unit);
+                    if (GameInfo.Role == PlayerRole.Defender)
+                        UIManager.AddUnitButton(unit, unitData);
+                }
             }
             processedIds.Add(unitData.id_unit);
         }

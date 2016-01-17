@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Assets.TD.scripts.Constants;
 using Assets.TD.scripts.Enums;
 using UnityEngine;
@@ -8,6 +9,8 @@ namespace Assets.TD.scripts
 {
     public class UIManager : MonoBehaviour
     {
+        public UnitManager UnitManager;
+
         public GameObject MainCamera;
         
         public GameObject LoadingPanel;
@@ -19,6 +22,7 @@ namespace Assets.TD.scripts
 
         public GameObject PreparingStartBar;
         private Text _preparingTime;
+        private string _preparingTimeString = "Game will start in {0} sec";
 
         public GameObject HumburgerButton;
         public GameObject CreateTowerButton;
@@ -31,10 +35,11 @@ namespace Assets.TD.scripts
         public GameObject MessageExitButton;
         public Text MessageText;
 
+        public GameObject UnitsPanel;
         public GameObject GoToMainUnitButton;
         private string TentText = "\uf015";
         private string FortressText = "\uf286";
-        private string _preparingTimeString = "Game will start in {0} sec";
+        public GameObject UnitButtonPrefab;
 
         private void Start()
         {
@@ -99,6 +104,16 @@ namespace Assets.TD.scripts
         private void Update()
         {
             UpdateStatBar();
+        }
+        
+        public void AddUnitButton(GameObject unit, ActualDataUnit unitData)
+        {
+            var unitButton = Instantiate(UnitButtonPrefab);
+            unitButton.transform.SetParent(UnitsPanel.transform, false);
+            var unitButtonComponent = unitButton.GetComponent<UnitButton>();
+            unitButtonComponent.UnitType = unitData.type_unit;
+            unitButtonComponent.Unit = unit;
+            unitButtonComponent.CameraScript = MainCamera.GetComponent<ViewDrag>();
         }
 
         private void UpdateStatBar()
@@ -166,7 +181,7 @@ namespace Assets.TD.scripts
             GameObject createButton = isKnight ? CreateKnightButton : CreateTowerButton;
             var buttonComponent = createButton.GetComponent<Button>();
             if (buttonComponent != null)
-                buttonComponent.interactable = GameInfo.CoinsAmount > unitCost;
+                buttonComponent.interactable = GameInfo.CoinsAmount >= unitCost;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Assets.TD.scripts
             _sinceNewPositionSet += Time.deltaTime;
             var extrapolatedPosition = Vector3.LerpUnclamped(_prevPosition, _newPosition, _sinceNewPositionSet);
             transform.position = extrapolatedPosition;
-            Debug.Log(extrapolatedPosition);
+            //Debug.Log(extrapolatedPosition);
         }
 
         public void SetNewPosition(Vector3 newPosition)
@@ -33,8 +33,7 @@ namespace Assets.TD.scripts
             //transform.position = newPosition;
             _sinceNewPositionSet = 1F;
 
-            Debug.Log(string.Format("new knight position. prev: {0}, new: {1}, next: {2}", 
-                                        _prevPosition, _newPosition, _nextPosition));
+            //Debug.Log(string.Format("new knight position. prev: {0}, new: {1}, next: {2}", _prevPosition, _newPosition, _nextPosition));
         }
 
         private Vector3 PredictNextPosition()

@@ -97,10 +97,12 @@
     <Compile Include="Assets\TD\scripts\StatisticsMenu.cs" />
     <Compile Include="Assets\TD\scripts\TentScript.cs" />
     <Compile Include="Assets\TD\scripts\TerrainGenerator.cs" />
+    <Compile Include="Assets\TD\scripts\TextOutline.cs" />
     <Compile Include="Assets\TD\scripts\TouchListener.cs" />
     <Compile Include="Assets\TD\scripts\TowerScript.cs" />
     <Compile Include="Assets\TD\scripts\UIManager.cs" />
     <Compile Include="Assets\TD\scripts\Unit.cs" />
+    <Compile Include="Assets\TD\scripts\UnitButton.cs" />
     <Compile Include="Assets\TD\scripts\UnitManager.cs" />
     <Compile Include="Assets\TD\scripts\Utils\ByDistanceComparer.cs" />
     <Compile Include="Assets\TD\scripts\Utils\Extensions\MyExtensions.cs" />
