@@ -1,2 +1,6 @@
 /.idea
-node_modules/
+client/obj
+client/Temp
+/client/Assets/Plugins/*.meta
+client/Library/metadata
+*.meta
