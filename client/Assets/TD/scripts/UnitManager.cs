@@ -22,9 +22,10 @@ namespace Assets.TD.scripts
         public GameObject MainTowerPrefab = null;
         public GameObject TentPrefab = null;
 
+        private GameObject _fortress;
         private Dictionary<int, GameObject> _towers;
         private Dictionary<int, GameObject> _knights;
-
+        
         public Dictionary<int, GameObject> GetTowers()
         {
             return _towers;
@@ -34,7 +35,7 @@ namespace Assets.TD.scripts
         {
             return _knights;
         }
-
+        
         private GameObject[,] _cubeArray;
 
         public void InitCubeArray(int height, int width)
@@ -64,6 +65,7 @@ namespace Assets.TD.scripts
         {
             var healthComponent = unit.GetComponent<EnemyHealth>();
             healthComponent.MaxHealth = unitData.hit_point;
+            healthComponent.SetHealth(unitData.hit_point);
         }
         
         /// <summary>
@@ -89,10 +91,12 @@ namespace Assets.TD.scripts
         {
             var towerPosition = new Vector3(unitData.position_y, 0, unitData.position_x);
             var tower = (GameObject)Instantiate(TowerPrefab, towerPosition, Quaternion.identity);
-            SetMinimumHealth(unitData, tower);
+            //SetMinimumHealth(unitData, tower);
             return tower;
         }
 
+        private EnemyHealth fortressHealthComponent;
+        private bool _isFortressStartHealthSet = false;
         public void UpdateUnits(ActualData actualData)
         {
             var processedTowersIds = new HashSet<int>();
@@ -112,8 +116,21 @@ namespace Assets.TD.scripts
                 }
             }
 
+            AdjustFortressHealth(actualData);
             DestroyNotExistedUnits(processedTowersIds, _towers);
             DestroyNotExistedUnits(processedKnightsIds, _knights);
+        }
+
+        private void AdjustFortressHealth(ActualData actualData)
+        {
+            var fortressHeath = actualData.content[(int) PlayerRole.Defender].tower_health;
+            if (!_isFortressStartHealthSet)
+            {
+                fortressHealthComponent = _fortress.GetComponent<EnemyHealth>();
+                fortressHealthComponent.MaxHealth = fortressHeath;
+                _isFortressStartHealthSet = true;
+            }
+            fortressHealthComponent.SetHealth(fortressHeath);
         }
 
         private static void DestroyNotExistedUnits(IEnumerable<int> processedIds, Dictionary<int, GameObject> gameObjects)
@@ -178,10 +195,10 @@ namespace Assets.TD.scripts
 
                 float rotationAngle = DirectionAnglesDictionary[unitData.direction];
                 unit.transform.eulerAngles = new Vector3(0, rotationAngle, 0);
-            }
 
-            var healthScript = unit.GetComponent<EnemyHealth>();
-            healthScript.SetHealth(unitData.hit_point);
+                var healthScript = unit.GetComponent<EnemyHealth>();
+                healthScript.SetHealth(unitData.hit_point);
+            }
         }
 
         public IEnumerator InstantinateMap(GameMap map)
@@ -194,7 +211,7 @@ namespace Assets.TD.scripts
                     switch ((MapCellType)map.Map[x][z])
                     {
                         case MapCellType.Fortress:
-                            InstantiateObjectOnMap(x, z, MainTowerPrefab, ApplicationConst.FortressTag);
+                            _fortress = InstantiateObjectOnMap(x, z, MainTowerPrefab, ApplicationConst.FortressTag);
                             GameInfo.Map.FortressPosition = cellPosition;
                             break;
                         case MapCellType.Tent:
@@ -234,5 +251,6 @@ namespace Assets.TD.scripts
             _cubeArray[x, z] = newObject;
             return newObject;
         }
+
     }
 }

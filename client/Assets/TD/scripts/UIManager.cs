@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using Assets.TD.scripts.Constants;
 using Assets.TD.scripts.Enums;
 using UnityEngine;
@@ -9,8 +8,6 @@ namespace Assets.TD.scripts
 {
     public class UIManager : MonoBehaviour
     {
-        public UnitManager UnitManager;
-
         public GameObject MainCamera;
         
         public GameObject LoadingPanel;

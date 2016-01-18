@@ -152,12 +152,22 @@ namespace Assets.TD.scripts
             GameInfo.GameState = GameState.Playing;
         }
 
+        private bool _isCoinsActualized = false;
         private void ProcessActualData(string message)
         {
             Debug.Log(string.Format("Server from message:{0}", message));
             var actualData = JsonConvert.DeserializeObject<ActualData>(message);
             GameInfo.KilledAmount = actualData.content[(int)PlayerRole.Attacker].is_dead;
             UnitManager.UpdateUnits(actualData);
+
+            if (!_isCoinsActualized)
+            {
+                if (GameInfo.Role == PlayerRole.Defender)
+                    GameInfo.CoinsAmount = ApplicationConst.StartCoinsAmount - UnitManager.GetTowers().Count * ApplicationConst.TowerCost;
+                else
+                    GameInfo.CoinsAmount = ApplicationConst.StartCoinsAmount - UnitManager.GetKnights().Count * ApplicationConst.KnightCost;
+                _isCoinsActualized = true;
+            }
         }
 
         private void ProcessStageFinish(string responseData)

@@ -181,6 +181,7 @@ namespace Assets.TD.scripts
     public class ActualDataContentItem
     {
         public int is_dead { get; set; }
+        public int tower_health { get; set; }
         public ActualDataUnit[] units { get; set; }
     }
 
