@@ -194,6 +194,19 @@ public class SimulateGame extends Thread
         }
     }
 
+    private boolean checkStep(int x, int y) {
+        Iterator attackerIterator = attackerObjects.iterator();
+        while (attackerIterator.hasNext()) {
+            SoldierAttacker soldier = (SoldierAttacker) attackerIterator.next();
+            int posX = soldier.getPosition()[GameObject.COORD_X];
+            int posY = soldier.getPosition()[GameObject.COORD_Y];
+            if (posX == x && posY == y) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void gotoStageSimulate()
     {
         LogException.saveToLog("Current stage is simulate.", "GAME IS RUNNING");
@@ -213,8 +226,10 @@ public class SimulateGame extends Thread
                     int trackY = soldier.getTracks()[GameObject.COORD_Y];
                     //Просто передвигаем юнита
                     if ((gameMap[posY][posX + 1] == 0 || gameMap[posY][posX + 1] == 8) && !(trackX == posX + 1 && trackY == posY)) {
-                        soldier.direction = 1;
-                        soldier.setPosition(posX + 1, posY);
+                        if (checkStep(posX + 1, posY)) {
+                            soldier.direction = 1;
+                            soldier.setPosition(posX + 1, posY);
+                        }
 /*                        if (gameMap[posY][posX] == 5) {
                             gameMap[posY][posX] = 0;
                         }
@@ -223,8 +238,10 @@ public class SimulateGame extends Thread
                         }*/
                     } else {
                         if ((gameMap[posY + 1][posX] == 0 || gameMap[posY + 1][posX] == 8) && !(trackX == posX && trackY == posY + 1)) {
-                            soldier.direction = 3;
-                            soldier.setPosition(posX, posY + 1);
+                            if (checkStep(posX, posY + 1)) {
+                                soldier.direction = 3;
+                                soldier.setPosition(posX, posY + 1);
+                            }
 /*                            if (gameMap[posY][posX] == 5) {
                                 gameMap[posY][posX] = 0;
                             }
@@ -233,8 +250,10 @@ public class SimulateGame extends Thread
                             }*/
                         } else {
                             if ((gameMap[posY - 1][posX] == 0 || gameMap[posY - 1][posX] == 8) && !(trackX == posX && trackY == posY - 1)) {
-                                soldier.direction = 2;
-                                soldier.setPosition(posX, posY - 1);
+                                if (checkStep(posX, posY - 1)) {
+                                    soldier.direction = 2;
+                                    soldier.setPosition(posX, posY - 1);
+                                }
 /*                                if (gameMap[posY][posX] == 5) {
                                     gameMap[posY][posX] = 0;
                                 }
@@ -243,8 +262,10 @@ public class SimulateGame extends Thread
                                 }*/
                             } else {
                                 if (!(trackX == posX - 1 && trackY == posY)) {
-                                    soldier.direction = 0;
-                                    soldier.setPosition(posX - 1, posY);
+                                    if (checkStep(posX - 1, posY)) {
+                                        soldier.direction = 0;
+                                        soldier.setPosition(posX - 1, posY);
+                                    }
 /*                                    if (gameMap[posY][posX] == 5) {
                                         gameMap[posY][posX] = 0;
                                     }
