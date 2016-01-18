@@ -11,7 +11,7 @@ public class TowerDefender extends GameObject{
     public int attackRange;
 
     public TowerDefender(int sid, int x, int y, int own, int hp) {
-        attackRange = 1;
+        attackRange = 2;
         position = new int[2];
         owner = own;
         gold = 10;
