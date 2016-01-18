@@ -5,7 +5,13 @@ package gserv.objects;
  */
 public class TowerDefender extends GameObject{
 
+    /**
+     * Радиус обстрела башен
+     */
+    public int attackRange;
+
     public TowerDefender(int sid, int x, int y, int own, int hp) {
+        attackRange = 1;
         position = new int[2];
         owner = own;
         gold = 10;

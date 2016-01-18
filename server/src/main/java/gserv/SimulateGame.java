@@ -22,6 +22,11 @@ public class SimulateGame extends Thread
     public static final int SIMULATE_DELAY = 1000; //ms
 
     /**
+     * Количество атакующих юнитов, которые должны попасть к башне для победы атакующего.
+     */
+    public static final int MAX_HEALTH_TOWER = 10;
+
+    /**
      * Ширина карты
      */
     public static final int MAP_WIDTH = 100;
@@ -195,33 +200,99 @@ public class SimulateGame extends Thread
         for (int i = 0; i < 2; i++) {
             clients[i].sendData(APITemplates.build("stage_simulate", 0, "Current stage of game has been changed on 'simulate'."));
         }
+        exitPoint:
         while (!attackerObjects.isEmpty()) {
             try {
+                //Эмулируем передвижения юнитов
                 Iterator attackerIterator = attackerObjects.iterator();
                 while (attackerIterator.hasNext()) {
-                    GameObject soldier = (GameObject)attackerIterator.next();
+                    SoldierAttacker soldier = (SoldierAttacker)attackerIterator.next();
                     int posX = soldier.getPosition()[GameObject.COORD_X];
                     int posY = soldier.getPosition()[GameObject.COORD_Y];
-                    if (gameMap[posY][posX + 1] == 0) {
+                    int trackX = soldier.getTracks()[GameObject.COORD_X];
+                    int trackY = soldier.getTracks()[GameObject.COORD_Y];
+                    //Просто передвигаем юнита
+                    if ((gameMap[posY][posX + 1] == 0 || gameMap[posY][posX + 1] == 8) && !(trackX == posX + 1 && trackY == posY)) {
                         soldier.direction = 1;
                         soldier.setPosition(posX + 1, posY);
+                        gameMap[posY][posX] = 0;
+                        gameMap[posY][posX + 1] = soldier.type;
                     } else {
-                        if (gameMap[posY + 1][posX] == 0) {
+                        if ((gameMap[posY + 1][posX] == 0 || gameMap[posY + 1][posX] == 8) && !(trackX == posX && trackY == posY + 1)) {
                             soldier.direction = 3;
                             soldier.setPosition(posX, posY + 1);
+                            gameMap[posY][posX] = 0;
+                            gameMap[posY + 1][posX] = soldier.type;
                         } else {
-                            if (gameMap[posY - 1][posX] == 0) {
+                            if ((gameMap[posY - 1][posX] == 0 || gameMap[posY - 1][posX] == 8) && !(trackX == posX && trackY == posY - 1)) {
                                 soldier.direction = 2;
                                 soldier.setPosition(posX, posY - 1);
+                                gameMap[posY][posX] = 0;
+                                gameMap[posY - 1][posX] = soldier.type;
                             } else {
-
+                                if (!(trackX == posX - 1 && trackY == posY)) {
+                                    soldier.direction = 0;
+                                    soldier.setPosition(posX - 1, posY);
+                                    gameMap[posY][posX] = 0;
+                                    gameMap[posY][posX - 1] = soldier.type;
+                                }
                             }
                         }
+                    }
+                    posX = soldier.getPosition()[GameObject.COORD_X];
+                    posY = soldier.getPosition()[GameObject.COORD_Y];
+                    // Если солдат дошёл до главного тавера
+                    if (gameMap[posY][posX] == 8) {
+                        defenderDeads++;
+                        attackerIterator.remove();
+                    } else {
+                        //Если здоровье солдата на нуле, убиваем его к чертям
+                        if (soldier.hitpoint == 0) {
+                            attackerDeads++;
+                            attackerIterator.remove();
+                        }
+                    }
+                    if (defenderDeads >= MAX_HEALTH_TOWER) {
+                        break exitPoint;
                     }
 /*                    Iterator defenderIterator = defenderObjects.iterator();
                     while (defenderIterator.hasNext()) {
 
                     }*/
+                }
+                //Эмулируем обстрел башен
+                Iterator defenderIterator = defenderObjects.iterator();
+                nextTower:
+                while (defenderIterator.hasNext()) {
+                    TowerDefender tower = (TowerDefender)defenderIterator.next();
+                    int posX = tower.getPosition()[GameObject.COORD_X];
+                    int posY = tower.getPosition()[GameObject.COORD_Y];
+                    Iterator soldiersIterator = attackerObjects.iterator();
+                    nextSoldier:
+                    while (soldiersIterator.hasNext()) {
+                        GameObject soldier = (GameObject) soldiersIterator.next();
+                        int posXSoldier = soldier.getPosition()[GameObject.COORD_X];
+                        int posYSoldier = soldier.getPosition()[GameObject.COORD_Y];
+                        for (int i = 0; i <= tower.attackRange; i++) {
+                            for (int j = 0; j <= tower.attackRange; j++) {
+                                if (soldier.hitpoint > 0) {
+                                    if ((posX == posXSoldier - i && posY == posYSoldier - j) ||
+                                        (posX == posXSoldier - i && posY == posYSoldier + j) ||
+                                        (posX == posXSoldier + i && posY == posYSoldier - j) ||
+                                        (posX == posXSoldier + i && posY == posYSoldier + j)
+                                    ) {
+                                        soldier.hitpoint--;
+                                        if (soldier.hitpoint == 0) {
+                                            defenderDeads++;
+                                        }
+                                        continue nextTower;
+                                    }
+                                } else {
+                                    continue nextSoldier;
+                                }
+                            }
+                        }
+                    }
                 }
                 Thread.sleep(SIMULATE_DELAY);
             } catch (Exception e) {
@@ -232,7 +303,7 @@ public class SimulateGame extends Thread
             attacker_content.put("is_dead", attackerDeads);
             new_content.add(attacker_content);
             JSONObject defender_content = getFreshData(defenderObjects);
-            defender_content.put("is_dead", defenderDeads);
+            defender_content.put("tower_health", MAX_HEALTH_TOWER - defenderDeads);
             new_content.add(defender_content);
             for (int i = 0; i < 2; i++) {
                 clients[i].sendData(APITemplates.build("actual_data", 0, new_content));
@@ -242,9 +313,13 @@ public class SimulateGame extends Thread
 
     private void gotoStageFinish()
     {
+        int whoWin = 0; // 0 - победили атакующие, 1 - защищающиеся
+        if (MAX_HEALTH_TOWER <= defenderDeads) {
+            whoWin = 1;
+        }
         LogException.saveToLog("Current stage is simulate.", "GAME IS RUNNING");
         for (int i = 0; i < 2; i++) {
-            clients[i].sendData(APITemplates.build("stage_finish", 0, "Current stage of game has been changed on 'finish'."));
+            clients[i].sendData(APITemplates.build("stage_finish", whoWin, "Current stage of game has been changed on 'finish'."));
         }
     }
 
@@ -266,7 +341,7 @@ public class SimulateGame extends Thread
         //Второй этап, переходим в режим симуляции
         gotoStageSimulate();*/
         //Третий этап, перехоим в режим планирования
-        gotoStagePlanning(20);
+        gotoStagePlanning(40);
         //Третий этап, переходим в режим симуляции
         gotoStageSimulate();
         //Конец игры
