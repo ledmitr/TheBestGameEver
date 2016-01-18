@@ -215,42 +215,42 @@ public class SimulateGame extends Thread
                     if ((gameMap[posY][posX + 1] == 0 || gameMap[posY][posX + 1] == 8) && !(trackX == posX + 1 && trackY == posY)) {
                         soldier.direction = 1;
                         soldier.setPosition(posX + 1, posY);
-                        if (gameMap[posY][posX] == 5) {
+/*                        if (gameMap[posY][posX] == 5) {
                             gameMap[posY][posX] = 0;
                         }
                         if (gameMap[posY][posX + 1] == 0 ) {
                             gameMap[posY][posX + 1] = 5;
-                        }
+                        }*/
                     } else {
                         if ((gameMap[posY + 1][posX] == 0 || gameMap[posY + 1][posX] == 8) && !(trackX == posX && trackY == posY + 1)) {
                             soldier.direction = 3;
                             soldier.setPosition(posX, posY + 1);
-                            if (gameMap[posY][posX] == 5) {
+/*                            if (gameMap[posY][posX] == 5) {
                                 gameMap[posY][posX] = 0;
                             }
                             if (gameMap[posY + 1][posX] == 0) {
                                 gameMap[posY + 1][posX] = 5;
-                            }
+                            }*/
                         } else {
                             if ((gameMap[posY - 1][posX] == 0 || gameMap[posY - 1][posX] == 8) && !(trackX == posX && trackY == posY - 1)) {
                                 soldier.direction = 2;
                                 soldier.setPosition(posX, posY - 1);
-                                if (gameMap[posY][posX] == 5) {
+/*                                if (gameMap[posY][posX] == 5) {
                                     gameMap[posY][posX] = 0;
                                 }
                                 if (gameMap[posY - 1][posX] == 0) {
                                     gameMap[posY - 1][posX] = 5;
-                                }
+                                }*/
                             } else {
                                 if (!(trackX == posX - 1 && trackY == posY)) {
                                     soldier.direction = 0;
                                     soldier.setPosition(posX - 1, posY);
-                                    if (gameMap[posY][posX] == 5) {
+/*                                    if (gameMap[posY][posX] == 5) {
                                         gameMap[posY][posX] = 0;
                                     }
                                     if (gameMap[posY][posX - 1] == 0) {
                                         gameMap[posY][posX - 1] = 5;
-                                    }
+                                    }*/
                                 }
                             }
                         }
